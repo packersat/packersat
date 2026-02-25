@@ -46,6 +46,9 @@
     .login-btn { width: 100%; background: var(--red); color: var(--white); border: none; border-radius: 4px; padding: 0.85rem; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; }
     .login-btn:hover { background: var(--light-red); }
     .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .google-btn { width: 100%; background: rgba(255,255,255,0.06); color: var(--white); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 500; cursor: pointer; transition: background 0.2s, border-color 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.7rem; }
+    .google-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+    .google-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .login-error { background: rgba(192,24,43,0.15); border: 1px solid rgba(192,24,43,0.4); border-radius: 4px; padding: 0.7rem 1rem; font-size: 0.85rem; color: #ff8a8a; margin-top: 1rem; display: none; }
 
     /* ── PORTAL LAYOUT ── */
@@ -191,6 +194,15 @@
         <input type="password" id="login-password" placeholder="••••••••" />
       </div>
       <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In</button>
+      <div style="display:flex;align-items:center;gap:0.8rem;margin:1.2rem 0">
+        <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
+        <span style="font-size:0.75rem;color:rgba(250,250,248,0.3);letter-spacing:0.05em">or</span>
+        <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
+      </div>
+      <button class="google-btn" id="google-btn" onclick="doGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+        Sign in with Google
+      </button>
       <div class="login-error" id="login-error"></div>
     </div>
   </div>
@@ -368,7 +380,7 @@
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged }
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, addDoc, updateDoc, deleteDoc, collection, getDocs, query, where, orderBy }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -388,6 +400,7 @@
 
   let CU = null; // current user object
   let allUsers = {}; // uid -> user data cache
+  const googleProvider = new GoogleAuthProvider();
 
   // ─────────────────────────────────────────
   // AUTH
@@ -424,6 +437,35 @@
   };
 
   window.doLogout = async function() { await signOut(auth); };
+
+  window.doGoogleLogin = async function() {
+    const btn = document.getElementById('google-btn');
+    const err = document.getElementById('login-error');
+    err.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Signing in...';
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      // Check if user already has a Firestore record
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (!snap.exists()) {
+        // Auto-create a student record for new Google sign-ins
+        await setDoc(doc(db, 'users', user.uid), {
+          name: user.displayName || user.email,
+          email: user.email,
+          role: 'student',
+          createdAt: new Date().toISOString()
+        });
+      }
+      // onAuthStateChanged will handle the rest
+    } catch (e) {
+      if (e.code !== 'auth/popup-closed-by-user') {
+        err.textContent = friendlyError(e.code);
+        err.style.display = 'block';
+      }
+      btn.disabled = false; btn.textContent = 'Sign in with Google';
+    }
+  };
 
   async function cacheAllUsers() {
     const snap = await getDocs(collection(db, 'users'));
