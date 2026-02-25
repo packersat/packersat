@@ -939,11 +939,9 @@
       annEl.innerHTML = anns.slice(0,3).map(a=>`<div class="announce-item"><h4>${a.title}</h4><p>${a.body}</p></div>`).join('');
     }
 
-    // Build students list — use setTimeout to ensure DOM is ready
-    setTimeout(() => loadTutorStudentsList(myStudents), 0);
-
-    // Tutor sessions table
-    setTimeout(() => loadTutorSessionsTable(mySessions), 0);
+    // Store for use by other pages
+    window._tutorMyStudents = myStudents;
+    window._tutorMySessions = mySessions;
   }
 
   function loadTutorStudentsList(myStudents) {
@@ -970,6 +968,21 @@
         </div>
       </div>`).join('');
     myStudents.forEach(([uid])=>{ loadStudentScores(uid); loadStudentNotes(uid); });
+  }
+
+  async function loadTutorStudentsPage() {
+    await cacheAllUsers();
+    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
+    window._tutorMyStudents = myStudents;
+    loadTutorStudentsList(myStudents);
+  }
+
+  async function loadTutorSessionsPage() {
+    const sessSnap = await getDocs(collection(db,'sessions'));
+    const mySessions = [];
+    sessSnap.forEach(d=>{ if(d.data().tutorId===CU.uid) mySessions.push({id:d.id,...d.data()}); });
+    window._tutorMySessions = mySessions;
+    loadTutorSessionsTable(mySessions);
   }
 
   function loadTutorSessionsTable(sessions) {
@@ -1228,7 +1241,9 @@
     if (pageId==='admin-sessions') loadAdminSessions();
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
-    if (pageId==='tutor-students'||pageId==='tutor-sessions'||pageId==='tutor-dashboard') loadTutorDashboard();
+    if (pageId==='tutor-dashboard') loadTutorDashboard();
+    if (pageId==='tutor-students') loadTutorStudentsPage();
+    if (pageId==='tutor-sessions') loadTutorSessionsPage();
   };
 
   window.openModal = function(id) { document.getElementById(id).classList.add('open'); };
