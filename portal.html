@@ -904,10 +904,7 @@
     // Always reload fresh from Firestore so tutorId assignments are up to date
     await cacheAllUsers();
     // My students
-    console.log('Tutor UID:', CU.uid);
-    console.log('All users:', JSON.stringify(Object.entries(allUsers).map(([id,u])=>({id, role:u.role, tutorId:u.tutorId}))));
     const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
-    console.log('My students found:', myStudents.length);
     document.getElementById('tutor-stat-students').textContent = myStudents.length;
 
     // Sessions
@@ -942,11 +939,11 @@
       annEl.innerHTML = anns.slice(0,3).map(a=>`<div class="announce-item"><h4>${a.title}</h4><p>${a.body}</p></div>`).join('');
     }
 
-    // Build students list
-    loadTutorStudentsList(myStudents);
+    // Build students list — use setTimeout to ensure DOM is ready
+    setTimeout(() => loadTutorStudentsList(myStudents), 0);
 
     // Tutor sessions table
-    loadTutorSessionsTable(mySessions);
+    setTimeout(() => loadTutorSessionsTable(mySessions), 0);
   }
 
   function loadTutorStudentsList(myStudents) {
