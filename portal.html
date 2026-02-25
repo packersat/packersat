@@ -640,7 +640,7 @@
         <td>${u.name||'—'}</td>
         <td style="color:rgba(250,250,248,0.5)">${u.email}</td>
         <td><span class="badge badge-${u.role}">${u.role}</span></td>
-        <td>${u.role==='student' ? `<button class="action-btn" onclick="openAssignModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">📎 ${assignedTutor}</button>` : '—'}</td>
+        <td>${u.role==='student' ? `<button class="action-btn" onclick="openAssignModal('${uid.trim()}','${(u.name||'').replace(/'/g,"\\'")}')">📎 ${assignedTutor}</button>` : '—'}</td>
         <td><button class="action-btn danger" onclick="promptDelete('${uid}','${(u.name||u.email).replace(/'/g,"\\'")}')">Remove</button></td>`;
       tbody.appendChild(tr);
     });
@@ -825,7 +825,7 @@
     });
     openModal('modal-assign');
     document.getElementById('confirm-assign-btn').onclick = async function() {
-      const tutorId = sel.value;
+      const tutorId = sel.value.trim();
       await updateDoc(doc(db,'users',studentId), { tutorId: tutorId||null });
       allUsers[studentId].tutorId = tutorId||null;
       showMsg(document.getElementById('assign-msg'), tutorId ? 'Tutor assigned!' : 'Tutor removed.', 'success');
@@ -901,8 +901,13 @@
   }
 
   async function loadTutorDashboard() {
+    // Always reload fresh from Firestore so tutorId assignments are up to date
+    await cacheAllUsers();
     // My students
-    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&u.tutorId===CU.uid);
+    console.log('Tutor UID:', CU.uid);
+    console.log('All users:', JSON.stringify(Object.entries(allUsers).map(([id,u])=>({id, role:u.role, tutorId:u.tutorId}))));
+    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
+    console.log('My students found:', myStudents.length);
     document.getElementById('tutor-stat-students').textContent = myStudents.length;
 
     // Sessions
@@ -1026,7 +1031,7 @@
   window.openSessionModal = function() {
     const sel = document.getElementById('session-student');
     sel.innerHTML = '<option value="">Select student</option>';
-    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&u.tutorId===CU.uid);
+    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
     myStudents.forEach(([uid,u])=>{ sel.innerHTML += `<option value="${uid}">${u.name||u.email}</option>`; });
     openModal('modal-session');
     document.getElementById('confirm-session-btn').onclick = async function() {
@@ -1226,6 +1231,7 @@
     if (pageId==='admin-sessions') loadAdminSessions();
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
+    if (pageId==='tutor-students'||pageId==='tutor-sessions'||pageId==='tutor-dashboard') loadTutorDashboard();
   };
 
   window.openModal = function(id) { document.getElementById(id).classList.add('open'); };
