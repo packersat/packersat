@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Packer SAT Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --maroon: #6B0F1A;
+      --red: #C0182B;
+      --crimson: #8B1520;
+      --light-red: #E8293C;
+      --white: #FAFAF8;
+      --off-white: #F2EDE8;
+      --cream: #EDE0D4;
+      --dark: #1A0508;
+      --darker: #110305;
+      --gold: #C8A96E;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(192,24,43,0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--darker);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: flex; }
+
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 40%, rgba(107,15,26,0.45) 0%, transparent 70%),
+        var(--darker);
+    }
+    .login-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(192,24,43,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(192,24,43,0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    }
+    .login-box {
+      position: relative; z-index: 2;
+      width: 100%; max-width: 420px;
+      padding: 0 1.5rem;
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .login-logo h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    .login-logo h1 span { color: var(--red); }
+    .login-logo p { color: rgba(250,250,248,0.45); font-size: 0.85rem; margin-top: 0.3rem; letter-spacing: 0.05em; }
+    .login-card {
+      background: rgba(26,5,8,0.9);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2.5rem;
+      backdrop-filter: blur(10px);
+    }
+    .login-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
+    }
+    .login-card .subtitle { color: rgba(250,250,248,0.5); font-size: 0.88rem; margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(250,250,248,0.5);
+      margin-bottom: 0.5rem;
+    }
+    .form-group input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(192,24,43,0.25);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--red); }
+    .login-btn {
+      width: 100%;
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      border-radius: 4px;
+      padding: 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.5rem;
+    }
+    .login-btn:hover { background: var(--light-red); }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .login-error {
+      background: rgba(192,24,43,0.15);
+      border: 1px solid rgba(192,24,43,0.4);
+      border-radius: 4px;
+      padding: 0.7rem 1rem;
+      font-size: 0.85rem;
+      color: #ff8a8a;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    /* ── PORTAL LAYOUT ── */
+    #portal-screen { flex-direction: column; }
+    .portal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(26,5,8,0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 50;
+    }
+    .portal-nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .portal-nav-logo span { color: var(--red); }
+    .portal-nav-right { display: flex; align-items: center; gap: 1.5rem; }
+    .portal-user-badge {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.88rem; color: rgba(250,250,248,0.6);
+    }
+    .role-pill {
+      background: rgba(192,24,43,0.2);
+      border: 1px solid rgba(192,24,43,0.35);
+      color: var(--cream);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+    }
+    .logout-btn {
+      background: transparent;
+      border: 1px solid rgba(250,250,248,0.15);
+      color: rgba(250,250,248,0.5);
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { border-color: rgba(250,250,248,0.4); color: var(--white); }
+
+    .portal-body {
+      display: flex;
+      flex: 1;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: rgba(26,5,8,0.7);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 0;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.75rem 1.5rem;
+      color: rgba(250,250,248,0.5);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 2px solid transparent;
+    }
+    .sidebar-item:hover { color: var(--white); background: rgba(192,24,43,0.08); }
+    .sidebar-item.active {
+      color: var(--white);
+      background: rgba(192,24,43,0.12);
+      border-left-color: var(--red);
+    }
+    .sidebar-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-header { margin-bottom: 2rem; }
+    .page-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    .page-header p { color: rgba(250,250,248,0.5); margin-top: 0.3rem; font-size: 0.9rem; }
+
+    /* ── CARDS ── */
+    .card {
+      background: rgba(26,5,8,0.7);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem;
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, rgba(107,15,26,0.3), rgba(26,5,8,0.8));
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.3rem 1.5rem;
+    }
+    .stat-card .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--white);
+    }
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(250,250,248,0.4);
+      margin-top: 0.3rem;
+    }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(250,250,248,0.4);
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.9rem 1rem;
+      font-size: 0.88rem;
+      border-bottom: 1px solid rgba(192,24,43,0.08);
+      color: rgba(250,250,248,0.8);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(192,24,43,0.05); }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+    }
+    .badge-admin { background: rgba(200,169,110,0.15); border: 1px solid rgba(200,169,110,0.3); color: var(--gold); }
+    .badge-tutor { background: rgba(192,24,43,0.15); border: 1px solid rgba(192,24,43,0.3); color: #ff9999; }
+    .badge-student { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(250,250,248,0.6); }
+
+    .action-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: rgba(250,250,248,0.5);
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 0.4rem;
+    }
+    .action-btn:hover { border-color: var(--red); color: var(--white); }
+    .action-btn.danger:hover { border-color: #ff4444; color: #ff4444; }
+
+    /* ── ADD USER FORM ── */
+    .add-user-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .add-user-form .full { grid-column: 1 / -1; }
+    .input-field {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(192,24,43,0.25);
+      border-radius: 4px;
+      padding: 0.7rem 0.9rem;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+    .input-field:focus { border-color: var(--red); }
+    .input-field::placeholder { color: rgba(250,250,248,0.25); }
+    select.input-field option { background: #1a0508; }
+    .btn-red {
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      border-radius: 4px;
+      padding: 0.7rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-red:hover { background: var(--light-red); }
+    .btn-red:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .form-msg {
+      font-size: 0.82rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 4px;
+      margin-top: 0.8rem;
+      display: none;
+    }
+    .form-msg.success { background: rgba(50,200,100,0.1); border: 1px solid rgba(50,200,100,0.3); color: #7dffaa; }
+    .form-msg.error { background: rgba(192,24,43,0.1); border: 1px solid rgba(192,24,43,0.3); color: #ff8a8a; }
+
+    /* ── DASHBOARD WELCOME ── */
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--maroon), var(--crimson));
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-banner::before {
+      content: '';
+      position: absolute; top: -30px; right: -30px;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+    .welcome-banner h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
+    }
+    .welcome-banner p { color: rgba(250,250,248,0.7); font-size: 0.9rem; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,2,3,0.85);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      width: 90%; max-width: 440px;
+      transform: scale(0.94) translateY(16px);
+      transition: transform 0.3s cubic-bezier(.22,1,.36,1);
+    }
+    .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+    .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1.2rem; }
+    .modal-actions { display: flex; gap: 0.8rem; margin-top: 1.2rem; justify-content: flex-end; }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: rgba(250,250,248,0.5);
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { color: var(--white); border-color: rgba(250,250,248,0.3); }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: rgba(250,250,248,0.3);
+      font-size: 0.9rem;
+    }
+    .empty-state .icon { font-size: 2rem; margin-bottom: 0.8rem; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .stats-row { grid-template-columns: 1fr; }
+      .add-user-form { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" class="screen active">
+  <div class="login-bg"></div>
+  <div class="login-grid"></div>
+  <div class="login-box">
+    <div class="login-logo">
+      <h1>Packer <span>SAT</span> Portal</h1>
+      <p>The Packer Collegiate Institute</p>
+    </div>
+    <div class="login-card">
+      <h2>Welcome back</h2>
+      <p class="subtitle">Sign in to your account</p>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@packer.edu" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In</button>
+      <div class="login-error" id="login-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PORTAL SCREEN -->
+<div id="portal-screen" class="screen">
+  <nav class="portal-nav">
+    <div class="portal-nav-logo">Packer <span>SAT</span> Portal</div>
+    <div class="portal-nav-right">
+      <div class="portal-user-badge">
+        <span id="nav-username">User</span>
+        <span class="role-pill" id="nav-role">—</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </nav>
+  <div class="portal-body">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-item active" onclick="showPage('dashboard', this)" data-page="dashboard">
+        <span class="sidebar-icon">🏠</span> Dashboard
+      </div>
+      <div class="sidebar-item" onclick="showPage('users', this)" data-page="users" id="sidebar-users" style="display:none">
+        <span class="sidebar-icon">👥</span> Manage Users
+      </div>
+      <div class="sidebar-item" onclick="showPage('sessions', this)" data-page="sessions">
+        <span class="sidebar-icon">📅</span> Sessions
+      </div>
+      <div class="sidebar-item" onclick="showPage('profile', this)" data-page="profile">
+        <span class="sidebar-icon">👤</span> My Profile
+      </div>
+    </div>
+    <div class="main-content">
+
+      <!-- DASHBOARD PAGE -->
+      <div class="page active" id="page-dashboard">
+        <div class="welcome-banner">
+          <h3 id="welcome-name">Welcome back!</h3>
+          <p id="welcome-sub">Here's an overview of the SAT tutoring program.</p>
+        </div>
+        <div class="stats-row" id="admin-stats" style="display:none">
+          <div class="stat-card">
+            <div class="stat-num" id="stat-students">—</div>
+            <div class="stat-label">Students</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-tutors">—</div>
+            <div class="stat-label">Tutors</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">Free</div>
+            <div class="stat-label">Program Cost</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📢 Announcements</div>
+          <div id="announcements-list">
+            <p style="color:rgba(250,250,248,0.4); font-size:0.9rem;">No announcements yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANAGE USERS PAGE (Admin only) -->
+      <div class="page" id="page-users">
+        <div class="page-header">
+          <h2>Manage Users</h2>
+          <p>Create and manage student and tutor accounts.</p>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:1.5rem">
+          <!-- Add User -->
+          <div class="card">
+            <div class="card-title">➕ Add New User</div>
+            <div class="add-user-form">
+              <input class="input-field" type="text" id="new-name" placeholder="Full Name" />
+              <input class="input-field" type="email" id="new-email" placeholder="Email address" />
+              <input class="input-field" type="password" id="new-password" placeholder="Temporary password" />
+              <select class="input-field" id="new-role">
+                <option value="student">Student</option>
+                <option value="tutor">Tutor</option>
+                <option value="admin">Admin</option>
+              </select>
+              <div class="full">
+                <button class="btn-red" id="add-user-btn" onclick="addUser()">Create Account</button>
+                <div class="form-msg" id="add-user-msg"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Tips -->
+          <div class="card">
+            <div class="card-title">💡 Tips</div>
+            <p style="color:rgba(250,250,248,0.55); font-size:0.88rem; line-height:1.8;">
+              • New users will log in with the email and temporary password you set.<br><br>
+              • Tutors can view all students and manage sessions.<br><br>
+              • Students can view their own sessions and profile.<br><br>
+              • Admins have full access to this panel.
+            </p>
+          </div>
+        </div>
+
+        <!-- User List -->
+        <div class="card">
+          <div class="card-title">👥 All Users</div>
+          <div class="table-wrap">
+            <table id="users-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <tr><td colspan="4"><div class="empty-state"><div class="icon">👥</div>No users yet. Add one above.</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SESSIONS PAGE -->
+      <div class="page" id="page-sessions">
+        <div class="page-header">
+          <h2>Sessions</h2>
+          <p>Upcoming tutoring sessions.</p>
+        </div>
+        <div class="card">
+          <div class="empty-state">
+            <div class="icon">📅</div>
+            No sessions scheduled yet. Check back soon!
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE PAGE -->
+      <div class="page" id="page-profile">
+        <div class="page-header">
+          <h2>My Profile</h2>
+          <p>Your account information.</p>
+        </div>
+        <div class="card" style="max-width:480px">
+          <div class="card-title">Account Details</div>
+          <table>
+            <tr><td style="color:rgba(250,250,248,0.4); width:120px">Name</td><td id="profile-name">—</td></tr>
+            <tr><td style="color:rgba(250,250,248,0.4)">Email</td><td id="profile-email">—</td></tr>
+            <tr><td style="color:rgba(250,250,248,0.4)">Role</td><td id="profile-role">—</td></tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <h3>Remove User</h3>
+    <p style="color:rgba(250,250,248,0.6); font-size:0.9rem;">Are you sure you want to remove <strong id="delete-name"></strong> from the system? This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-red" id="confirm-delete-btn">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, onSnapshot }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAgl3-vGO-FAHSodXvTFtWv7V5_48qW22w",
+    authDomain: "packer-sat.firebaseapp.com",
+    projectId: "packer-sat",
+    storageBucket: "packer-sat.firebasestorage.app",
+    messagingSenderId: "442480334688",
+    appId: "1:442480334688:web:9c22966209985694bb7005"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let currentUser = null;
+  let currentRole = null;
+  let deleteTargetId = null;
+
+  // ── AUTH STATE ──
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) {
+        currentUser = { uid: user.uid, email: user.email, ...snap.data() };
+        currentRole = currentUser.role;
+        enterPortal();
+      } else {
+        // New auth user but no Firestore record yet — sign out
+        await signOut(auth);
+      }
+    } else {
+      showLogin();
+    }
+  });
+
+  // ── LOGIN ──
+  window.doLogin = async function() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const btn = document.getElementById('login-btn');
+    const err = document.getElementById('login-error');
+    err.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (e) {
+      err.textContent = friendlyError(e.code);
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  };
+
+  // ── LOGOUT ──
+  window.doLogout = async function() {
+    await signOut(auth);
+  };
+
+  // ── ENTER PORTAL ──
+  function enterPortal() {
+    document.getElementById('login-screen').classList.remove('active');
+    document.getElementById('portal-screen').classList.add('active');
+
+    document.getElementById('nav-username').textContent = currentUser.name || currentUser.email;
+    document.getElementById('nav-role').textContent = currentUser.role;
+    document.getElementById('welcome-name').textContent = `Welcome back, ${currentUser.name || 'there'}!`;
+    document.getElementById('profile-name').textContent = currentUser.name || '—';
+    document.getElementById('profile-email').textContent = currentUser.email;
+    document.getElementById('profile-role').textContent = capitalize(currentUser.role);
+
+    if (currentRole === 'admin') {
+      document.getElementById('sidebar-users').style.display = 'flex';
+      document.getElementById('admin-stats').style.display = 'grid';
+      loadUsers();
+      loadStats();
+    }
+  }
+
+  function showLogin() {
+    document.getElementById('portal-screen').classList.remove('active');
+    document.getElementById('login-screen').classList.add('active');
+    document.getElementById('login-btn').disabled = false;
+    document.getElementById('login-btn').textContent = 'Sign In';
+    currentUser = null; currentRole = null;
+  }
+
+  // ── LOAD STATS ──
+  async function loadStats() {
+    const snap = await getDocs(collection(db, 'users'));
+    let students = 0, tutors = 0;
+    snap.forEach(d => {
+      if (d.data().role === 'student') students++;
+      if (d.data().role === 'tutor') tutors++;
+    });
+    document.getElementById('stat-students').textContent = students;
+    document.getElementById('stat-tutors').textContent = tutors;
+  }
+
+  // ── LOAD USERS TABLE ──
+  async function loadUsers() {
+    const snap = await getDocs(collection(db, 'users'));
+    const tbody = document.getElementById('users-tbody');
+    tbody.innerHTML = '';
+    if (snap.empty) {
+      tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="icon">👥</div>No users yet.</div></td></tr>';
+      return;
+    }
+    snap.forEach(d => {
+      const u = d.data();
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${u.name || '—'}</td>
+        <td style="color:rgba(250,250,248,0.55)">${u.email}</td>
+        <td><span class="badge badge-${u.role}">${u.role}</span></td>
+        <td>
+          <button class="action-btn danger" onclick="promptDelete('${d.id}', '${(u.name||u.email).replace(/'/g,"\\'")}')">Remove</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── ADD USER ──
+  window.addUser = async function() {
+    const name = document.getElementById('new-name').value.trim();
+    const email = document.getElementById('new-email').value.trim();
+    const password = document.getElementById('new-password').value;
+    const role = document.getElementById('new-role').value;
+    const btn = document.getElementById('add-user-btn');
+    const msg = document.getElementById('add-user-msg');
+
+    if (!name || !email || !password) {
+      showMsg(msg, 'Please fill in all fields.', 'error'); return;
+    }
+    if (password.length < 6) {
+      showMsg(msg, 'Password must be at least 6 characters.', 'error'); return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Creating...';
+
+    try {
+      // Create a secondary auth instance to avoid signing out current admin
+      const secondaryApp = initializeApp(firebaseConfig, 'secondary-' + Date.now());
+      const secondaryAuth = getAuth(secondaryApp);
+      const cred = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+      const uid = cred.user.uid;
+      await signOut(secondaryAuth);
+
+      // Save to Firestore
+      await setDoc(doc(db, 'users', uid), { name, email, role, createdAt: new Date().toISOString() });
+
+      showMsg(msg, `${capitalize(role)} account created for ${name}!`, 'success');
+      document.getElementById('new-name').value = '';
+      document.getElementById('new-email').value = '';
+      document.getElementById('new-password').value = '';
+      loadUsers();
+      loadStats();
+    } catch (e) {
+      showMsg(msg, friendlyError(e.code), 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Create Account';
+  };
+
+  // ── DELETE USER ──
+  window.promptDelete = function(uid, name) {
+    deleteTargetId = uid;
+    document.getElementById('delete-name').textContent = name;
+    document.getElementById('delete-modal').classList.add('open');
+    document.getElementById('confirm-delete-btn').onclick = async () => {
+      await deleteDoc(doc(db, 'users', deleteTargetId));
+      closeDeleteModal();
+      loadUsers();
+      loadStats();
+    };
+  };
+  window.closeDeleteModal = function() {
+    document.getElementById('delete-modal').classList.remove('open');
+    deleteTargetId = null;
+  };
+
+  // ── PAGE NAV ──
+  window.showPage = function(page, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    if (el) el.classList.add('active');
+    if (page === 'users') loadUsers();
+  };
+
+  // ── HELPERS ──
+  function showMsg(el, text, type) {
+    el.textContent = text;
+    el.className = 'form-msg ' + type;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 4000);
+  }
+
+  function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+  function friendlyError(code) {
+    const map = {
+      'auth/invalid-email': 'Invalid email address.',
+      'auth/user-not-found': 'No account found with that email.',
+      'auth/wrong-password': 'Incorrect password.',
+      'auth/email-already-in-use': 'An account with that email already exists.',
+      'auth/weak-password': 'Password must be at least 6 characters.',
+      'auth/invalid-credential': 'Incorrect email or password.',
+      'auth/too-many-requests': 'Too many attempts. Please try again later.',
+    };
+    return map[code] || 'Something went wrong. Please try again.';
+  }
+
+  // Enter on login
+  document.getElementById('login-password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.doLogin();
+  });
+</script>
+</body>
+</html>
