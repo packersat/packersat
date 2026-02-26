@@ -186,6 +186,20 @@
     .improvement-neg { background: rgba(192,24,43,0.12); border: 1px solid rgba(192,24,43,0.3); color: #ff8a8a; }
     .improvement-neu { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(250,250,248,0.5); }
 
+    /* ── ASSIGNMENTS ── */
+    .assignment-card { background: rgba(26,5,8,0.7); border: 1px solid var(--border); border-radius: 6px; padding: 1.2rem; margin-bottom: 1rem; }
+    .assignment-card.done { opacity: 0.5; border-color: rgba(46,204,113,0.2); }
+    .assignment-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.6rem; }
+    .assignment-title { font-family: "Playfair Display", serif; font-size: 1rem; font-weight: 700; color: var(--white); }
+    .assignment-type-tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 20px; background: rgba(192,24,43,0.15); border: 1px solid rgba(192,24,43,0.3); color: rgba(250,250,248,0.6); white-space: nowrap; }
+    .assignment-desc { font-size: 0.85rem; color: rgba(250,250,248,0.55); line-height: 1.6; margin-bottom: 0.8rem; }
+    .assignment-meta { font-size: 0.75rem; color: rgba(250,250,248,0.3); margin-bottom: 0.8rem; }
+    .assignment-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+    .done-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; font-weight: 600; padding: 0.25rem 0.7rem; border-radius: 20px; background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3); color: #7dffaa; }
+    .pending-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; font-weight: 600; padding: 0.25rem 0.7rem; border-radius: 20px; background: rgba(255,200,0,0.08); border: 1px solid rgba(255,200,0,0.2); color: rgba(255,200,0,0.8); }
+    .submitted-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; font-weight: 600; padding: 0.25rem 0.7rem; border-radius: 20px; background: rgba(100,100,255,0.1); border: 1px solid rgba(100,100,255,0.25); color: rgba(150,150,255,0.9); }
+    textarea.input-field { min-height: 90px; resize: vertical; }
+
     /* ── RESOURCE CARDS ── */
     .resource-card {
       display: flex;
@@ -457,6 +471,40 @@
   </div>
 </div>
 
+<!-- Assignment Modal -->
+<div class="modal-overlay" id="modal-assignment">
+  <div class="modal" style="max-width:560px">
+    <h3>New Assignment</h3>
+    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="assignment-student-name"></strong></p>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Title</div><input class="input-field" type="text" id="assignment-title" placeholder="e.g. Practice Test 3 — Math Section" /></div>
+    </div>
+    <div class="form-row" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Due Date (optional)</div><input class="input-field" type="date" id="assignment-due" /></div>
+      <div><div class="field-label">Type</div>
+        <select class="input-field" id="assignment-type">
+          <option value="practice">Practice Test</option>
+          <option value="worksheet">Worksheet</option>
+          <option value="reading">Reading</option>
+          <option value="review">Review</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Description / Instructions</div><textarea class="input-field" id="assignment-desc" placeholder="What should the student do?"></textarea></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Attach a Link (Google Drive, Khan Academy, etc.)</div><input class="input-field" type="url" id="assignment-link" placeholder="https://..." /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-assignment')">Cancel</button>
+      <button class="btn-red" id="confirm-assignment-btn">Assign</button>
+    </div>
+    <div class="form-msg" id="assignment-msg"></div>
+  </div>
+</div>
+
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -693,6 +741,12 @@
           <div class="card-title">All Announcements <button class="btn-red" onclick="openModal('modal-announce')" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Post</button></div>
           <div id="admin-all-announces"><div class="empty-state"><div class="icon">📢</div>No announcements posted.</div></div>
         </div>
+      </div>
+
+      <!-- STUDENT ASSIGNMENTS -->
+      <div class="page" id="page-student-assignments">
+        <div class="page-header"><h2>Assignments</h2><p>Tasks and practice assigned by your tutor.</p></div>
+        <div id="student-assignments-list"><div class="empty-state"><div class="icon">📋</div>No assignments yet.</div></div>
       </div>
 
       <!-- PREP RESOURCES PAGE -->
@@ -1099,6 +1153,7 @@
       <div class="sidebar-section">My Work</div>
       <div class="sidebar-item" onclick="showPage('tutor-students',this)"><span class="sidebar-icon">👤</span>My Students</div>
       <div class="sidebar-item" onclick="showPage('tutor-sessions',this)"><span class="sidebar-icon">📅</span>Sessions</div>
+      <div class="sidebar-item" onclick="showPage('tutor-assignments',this)"><span class="sidebar-icon">📋</span>Assignments</div>
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
     `;
@@ -1144,6 +1199,18 @@
           <div class="card-title">Upcoming Sessions <button class="btn-red" onclick="openTutorSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Location</th><th>Actions</th></tr></thead><tbody id="tutor-sessions-tbody"></tbody></table></div>
         </div>
+      </div>
+
+      <!-- TUTOR ASSIGNMENTS -->
+      <div class="page" id="page-tutor-assignments">
+        <div class="page-header"><h2>Assignments</h2><p>Create and track assignments for your students.</p></div>
+        <div id="tutor-assignments-list"><div class="empty-state"><div class="icon">📋</div>No assignments yet.</div></div>
+      </div>
+
+      <!-- STUDENT ASSIGNMENTS -->
+      <div class="page" id="page-student-assignments">
+        <div class="page-header"><h2>Assignments</h2><p>Tasks and practice assigned by your tutor.</p></div>
+        <div id="student-assignments-list"><div class="empty-state"><div class="icon">📋</div>No assignments yet.</div></div>
       </div>
 
       <!-- PREP RESOURCES PAGE -->
@@ -1324,6 +1391,7 @@
           <div>
             <button class="action-btn" onclick="openScoreModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Score</button>
             <button class="action-btn" onclick="openNoteModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Note</button>
+            <button class="action-btn" onclick="openAssignmentModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Assign</button>
           </div>
         </div>
         <div class="grid-2">
@@ -1446,6 +1514,7 @@
       <div class="sidebar-item" onclick="showPage('student-scores',this)"><span class="sidebar-icon">📊</span>My Scores</div>
       <div class="sidebar-item" onclick="showPage('student-sessions',this)"><span class="sidebar-icon">📅</span>My Sessions</div>
       <div class="sidebar-item" onclick="showPage('student-notes',this)"><span class="sidebar-icon">📝</span>Tutor Notes</div>
+      <div class="sidebar-item" onclick="showPage('student-assignments',this)"><span class="sidebar-icon">📋</span>Assignments</div>
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
     `;
@@ -1512,6 +1581,12 @@
       <div class="page" id="page-student-notes">
         <div class="page-header"><h2>Tutor Notes</h2><p>Feedback and notes from your tutor.</p></div>
         <div id="student-notes-list"><div class="empty-state"><div class="icon">📝</div>No notes yet.</div></div>
+      </div>
+
+      <!-- STUDENT ASSIGNMENTS -->
+      <div class="page" id="page-student-assignments">
+        <div class="page-header"><h2>Assignments</h2><p>Tasks and practice assigned by your tutor.</p></div>
+        <div id="student-assignments-list"><div class="empty-state"><div class="icon">📋</div>No assignments yet.</div></div>
       </div>
 
       <!-- PREP RESOURCES PAGE -->
@@ -1913,15 +1988,18 @@
     // Load all scores and notes
     const scSnap = await getDocs(collection(db,'scores'));
     const noteSnap = await getDocs(collection(db,'notes'));
-    const scoresByStudent = {}, notesByStudent = {};
+    const assignSnap = await getDocs(collection(db,'assignments'));
+    const scoresByStudent = {}, notesByStudent = {}, assignmentsByStudent = {};
     scSnap.forEach(d=>{ const sd={id:d.id,...d.data()}; if(!scoresByStudent[sd.studentId]) scoresByStudent[sd.studentId]=[]; scoresByStudent[sd.studentId].push(sd); });
     noteSnap.forEach(d=>{ const nd={id:d.id,...d.data()}; if(!notesByStudent[nd.studentId]) notesByStudent[nd.studentId]=[]; notesByStudent[nd.studentId].push(nd); });
+    assignSnap.forEach(d=>{ const ad={id:d.id,...d.data()}; if(!assignmentsByStudent[ad.studentId]) assignmentsByStudent[ad.studentId]=[]; assignmentsByStudent[ad.studentId].push(ad); });
     Object.values(scoresByStudent).forEach(arr=>arr.sort((a,b)=>b.date.localeCompare(a.date)));
     Object.values(notesByStudent).forEach(arr=>arr.sort((a,b)=>b.createdAt.localeCompare(a.createdAt)));
 
     el.innerHTML = students.map(([uid,u])=>{
       const scores = scoresByStudent[uid]||[];
       const notes = notesByStudent[uid]||[];
+      const assignments = assignmentsByStudent[uid]||[];
       const tutor = u.tutorId ? (allUsers[u.tutorId]?.name||'Unknown') : 'Unassigned';
       const first = scores.length ? scores[scores.length-1] : null;
       const latest = scores.length ? scores[0] : null;
@@ -1940,6 +2018,26 @@
             </tr>`).join('')}
           </tbody>
         </table>` : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon">📊</div>No scores yet.</div>';
+
+      const assignmentsHtml = assignments.length ? assignments.map(a=>`
+        <div class="assignment-card ${a.completed?'done':''}">
+          <div class="assignment-header">
+            <div>
+              <div class="assignment-title">${a.title}</div>
+              <div class="assignment-meta">${a.type}${a.due?' · Due '+formatDate(a.due):''}</div>
+            </div>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              ${a.completed?'<span class="done-chip">✓ Done</span>':a.submissionUrl?'<span class="submitted-chip">📤 Submitted</span>':'<span class="pending-chip">⏳ Pending</span>'}
+              <button class="action-btn danger" onclick="adminDeleteAssignment('${a.id}')">✕</button>
+            </div>
+          </div>
+          ${a.desc?`<div class="assignment-desc">${a.desc}</div>`:''}
+          <div class="assignment-actions">
+            ${a.fileUrl?`<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">📎 ${a.fileName||'Attachment'}</a>`:''}
+            ${a.link?`<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">🔗 Link</a>`:''}
+            ${a.submissionUrl?`<a href="${a.submissionUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;border-color:rgba(100,100,255,0.3);color:rgba(150,150,255,0.9)">📤 View Submission</a>`:''}
+          </div>
+        </div>`).join('') : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon">📋</div>No assignments yet.</div>';
 
       const notesHtml = notes.length ? notes.map(n=>`
         <div class="note-item" style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
@@ -1972,6 +2070,10 @@
               ${notesHtml}
             </div>
           </div>
+          <div style="margin-top:1rem">
+            <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem">📋 Assignments (${assignments.length})</div>
+            ${assignmentsHtml}
+          </div>
         </div>`;
     }).join('');
   }
@@ -1989,6 +2091,154 @@
     loadAdminProfiles();
   };
 
+  // ─────────────────────────────────────────
+  // ████  ASSIGNMENTS
+  // ─────────────────────────────────────────
+
+  window.openAssignmentModal = function(studentId, studentName) {
+    studentId = (studentId||'').trim();
+    document.getElementById('assignment-student-name').textContent = studentName;
+    document.getElementById('assignment-title').value = '';
+    document.getElementById('assignment-desc').value = '';
+    document.getElementById('assignment-due').value = '';
+    document.getElementById('assignment-link').value = '';
+
+    openModal('modal-assignment');
+
+    document.getElementById('confirm-assignment-btn').onclick = async function() {
+      const title = document.getElementById('assignment-title').value.trim();
+      const desc = document.getElementById('assignment-desc').value.trim();
+      const due = document.getElementById('assignment-due').value;
+      const type = document.getElementById('assignment-type').value;
+      const link = document.getElementById('assignment-link').value.trim();
+      const msg = document.getElementById('assignment-msg');
+
+      if (!title) { showMsg(msg, 'Please enter a title.', 'error'); return; }
+
+      const btn = document.getElementById('confirm-assignment-btn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      await addDoc(collection(db, 'assignments'), {
+        studentId, tutorId: CU.uid, title, desc, type,
+        due: due || null, link: link || null,
+        fileUrl: null, fileName: null,
+        completed: false, submissionUrl: null, submissionName: null,
+        createdAt: new Date().toISOString()
+      });
+
+      btn.disabled = false; btn.textContent = 'Assign';
+      showMsg(msg, 'Assignment created!', 'success');
+      setTimeout(() => {
+        closeModal('modal-assignment');
+        if (CU.role === 'tutor') loadTutorAssignments();
+      }, 800);
+    };
+  };
+
+  async function loadTutorAssignments() {
+    const el = document.getElementById('tutor-assignments-list');
+    if (!el) return;
+    await cacheAllUsers();
+    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
+    const studentIds = myStudents.map(([uid])=>uid);
+
+    const snap = await getDocs(collection(db,'assignments'));
+    const all = [];
+    snap.forEach(d=>{ const a={id:d.id,...d.data()}; if(studentIds.includes(a.studentId)||a.tutorId===CU.uid) all.push(a); });
+    all.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+
+    if (!all.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">📋</div>No assignments yet. Click a student in My Students and assign them work.</div>';
+      return;
+    }
+
+    el.innerHTML = all.map(a => {
+      const student = allUsers[a.studentId];
+      const statusChip = a.completed ? '<span class="done-chip">✓ Done</span>' :
+        a.submissionUrl ? '<span class="submitted-chip">📤 Submitted</span>' :
+        '<span class="pending-chip">⏳ Pending</span>';
+      const dueStr = a.due ? ` · Due ${formatDate(a.due)}` : '';
+      const fileHtml = a.fileUrl ? `<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">📎 ${a.fileName||'Attachment'}</a>` : '';
+      const linkHtml = a.link ? `<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">🔗 Link</a>` : '';
+      const submissionHtml = a.submissionUrl ? `<a href="${a.submissionUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;border-color:rgba(100,100,255,0.3);color:rgba(150,150,255,0.9)">📤 View Submission</a>` : '';
+      return `
+        <div class="assignment-card ${a.completed?'done':''}">
+          <div class="assignment-header">
+            <div>
+              <div class="assignment-title">${a.title}</div>
+              <div class="assignment-meta">For ${student?.name||'Student'}${dueStr} · ${a.type}</div>
+            </div>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              ${statusChip}
+              <button class="action-btn danger" onclick="adminDeleteAssignment('${a.id}')">✕</button>
+            </div>
+          </div>
+          ${a.desc ? `<div class="assignment-desc">${a.desc}</div>` : ''}
+          <div class="assignment-actions">
+            ${fileHtml}${linkHtml}${submissionHtml}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function loadStudentAssignments() {
+    const el = document.getElementById('student-assignments-list');
+    if (!el) return;
+    const snap = await getDocs(collection(db,'assignments'));
+    const all = [];
+    snap.forEach(d=>{ const a={id:d.id,...d.data()}; if(a.studentId===CU.uid) all.push(a); });
+    all.sort((a,b)=>{
+      if (!a.completed && b.completed) return -1;
+      if (a.completed && !b.completed) return 1;
+      return b.createdAt.localeCompare(a.createdAt);
+    });
+
+    if (!all.length) { el.innerHTML = '<div class="empty-state"><div class="icon">📋</div>No assignments yet.</div>'; return; }
+
+    el.innerHTML = all.map(a => {
+      const dueStr = a.due ? ` · Due ${formatDate(a.due)}` : '';
+      const fileHtml = a.fileUrl ? `<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">📎 ${a.fileName||'Attachment'}</a>` : '';
+      const linkHtml = a.link ? `<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">🔗 Open Link</a>` : '';
+
+      const submittedHtml = a.submissionUrl ?
+        `<span class="submitted-chip">📤 Submitted — <a href="${a.submissionUrl}" target="_blank" style="color:inherit">view</a></span>` : '';
+
+      const completeBtn = !a.completed ? `<button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem" onclick="markAssignmentDone('${a.id}')">✓ Mark as Done</button>` : '<span class="done-chip">✓ Completed</span>';
+
+      const uploadBtn = '';
+
+      return `
+        <div class="assignment-card ${a.completed?'done':''}">
+          <div class="assignment-header">
+            <div>
+              <div class="assignment-title">${a.title}</div>
+              <div class="assignment-meta">${a.type}${dueStr}</div>
+            </div>
+            <span class="assignment-type-tag">${a.completed ? '✓ Done' : a.due && a.due < today() ? '⚠ Overdue' : 'Pending'}</span>
+          </div>
+          ${a.desc ? `<div class="assignment-desc">${a.desc}</div>` : ''}
+          <div class="assignment-actions">
+            ${fileHtml}${linkHtml}${submittedHtml}
+            ${completeBtn}${uploadBtn}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  window.markAssignmentDone = async function(id) {
+    await updateDoc(doc(db,'assignments',id), { completed: true });
+    loadStudentAssignments();
+  };
+
+
+
+  window.adminDeleteAssignment = async function(id) {
+    if (!confirm('Delete this assignment?')) return;
+    await deleteDoc(doc(db,'assignments',id));
+    if (CU.role==='tutor') loadTutorAssignments();
+    else loadAdminProfiles();
+  };
+
   window.showPage = function(pageId, el) {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
@@ -2001,6 +2251,8 @@
     if (pageId==='admin-sessions') loadAdminSessions();
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
+    if (pageId==='student-assignments') loadStudentAssignments();
+    if (pageId==='tutor-assignments') loadTutorAssignments();
     if (pageId==='tutor-dashboard') loadTutorDashboard();
     if (pageId==='tutor-students') loadTutorStudentsPage();
     if (pageId==='tutor-sessions') loadTutorSessionsPage();
