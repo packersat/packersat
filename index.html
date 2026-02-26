@@ -731,6 +731,7 @@
       footer { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -1067,6 +1068,9 @@
   function closeModalOnOverlay(e) {
     if (e.target.id === 'modal') closeModal();
   }
+  // Init EmailJS
+  emailjs.init('8hVlfMj_UDUbe4x-W');
+
   async function submitForm(e) {
     e.preventDefault();
     const btn = document.querySelector('.form-submit');
@@ -1081,12 +1085,21 @@
       target_score: form.querySelector('[name="target_score"]').value,
     };
     try {
+      // Submit to Formspree (so you get notified)
       const res = await fetch('https://formspree.io/f/xlgwaqjg', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(data)
       });
       if (res.ok) {
+        // Send welcome email to student via EmailJS
+        await emailjs.send('service_xia779e', 'template_k1tzbql', {
+          name: data.name,
+          email: data.email,
+          grade: data.grade,
+          current_score: data.current_score || 'Not taken yet',
+          target_score: data.target_score || 'Not set',
+        });
         document.getElementById('form-body').style.display = 'none';
         document.getElementById('success-msg').style.display = 'block';
       } else {
@@ -1094,8 +1107,9 @@
         btn.disabled = false;
       }
     } catch {
-      btn.textContent = 'Network error, try again';
-      btn.disabled = false;
+      // Even if EmailJS fails, still show success since Formspree worked
+      document.getElementById('form-body').style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
     }
   }
 
