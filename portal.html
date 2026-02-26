@@ -165,6 +165,57 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
 
+    /* ── RESOURCE CARDS ── */
+    .resource-card {
+      display: flex;
+      gap: 1rem;
+      background: rgba(26,5,8,0.7);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.3rem;
+      text-decoration: none;
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .resource-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(192,24,43,0.45);
+      background: rgba(107,15,26,0.2);
+    }
+    .resource-icon {
+      width: 48px; height: 48px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      border: 1px solid;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+    .resource-info { flex: 1; min-width: 0; }
+    .resource-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+    .resource-desc {
+      font-size: 0.8rem;
+      color: rgba(250,250,248,0.5);
+      line-height: 1.6;
+      margin-bottom: 0.6rem;
+    }
+    .resource-tag {
+      display: inline-block;
+      background: rgba(192,24,43,0.12);
+      border: 1px solid rgba(192,24,43,0.25);
+      color: rgba(250,250,248,0.6);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.6rem;
+      border-radius: 20px;
+    }
+
     @media (max-width: 900px) {
       .sidebar { display: none; }
       .stats-row, .grid-2, .grid-3, .form-row, .form-row.three { grid-template-columns: 1fr; }
@@ -506,6 +557,8 @@
       <div class="sidebar-item" onclick="showPage('admin-scores',this)"><span class="sidebar-icon">📊</span>Scores</div>
       <div class="sidebar-item" onclick="showPage('admin-sessions',this)"><span class="sidebar-icon">📅</span>Sessions</div>
       <div class="sidebar-item" onclick="showPage('admin-announce',this)"><span class="sidebar-icon">📢</span>Announcements</div>
+      <div class="sidebar-section">Resources</div>
+      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
     `;
 
     document.getElementById('main-content').innerHTML = `
@@ -597,6 +650,126 @@
         <div class="card">
           <div class="card-title">All Announcements <button class="btn-red" onclick="openModal('modal-announce')" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Post</button></div>
           <div id="admin-all-announces"><div class="empty-state"><div class="icon">📢</div>No announcements posted.</div></div>
+        </div>
+      </div>
+
+      <!-- PREP RESOURCES PAGE -->
+      <div class="page" id="page-resources">
+        <div class="page-header">
+          <h2>Prep Resources</h2>
+          <p>The best free SAT prep tools, all in one place.</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
+
+          <a href="https://www.khanacademy.org/SAT" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">🎓</div>
+            <div class="resource-info">
+              <div class="resource-name">Khan Academy SAT Prep</div>
+              <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons. Completely free.</div>
+              <div class="resource-tag">Free · Official Partner</div>
+            </div>
+          </a>
+
+          <a href="https://bluebook.collegeboard.org" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);">📘</div>
+            <div class="resource-info">
+              <div class="resource-name">Bluebook</div>
+              <div class="resource-desc">The official College Board app for taking the Digital SAT. Take full official practice tests in the exact same format as the real exam.</div>
+              <div class="resource-tag">Free · Official App</div>
+            </div>
+          </a>
+
+          <a href="https://www.collegeboard.org/search/sat" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(0,60,130,0.15);border-color:rgba(0,60,130,0.3);">🏛️</div>
+            <div class="resource-info">
+              <div class="resource-name">College Board</div>
+              <div class="resource-desc">Official SAT information, registration, score reporting, test dates, and study resources straight from the source.</div>
+              <div class="resource-tag">Free · Official</div>
+            </div>
+          </a>
+
+          <a href="https://www.desmos.com/scientific" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);">📐</div>
+            <div class="resource-info">
+              <div class="resource-name">Desmos Calculator</div>
+              <div class="resource-desc">The exact graphing and scientific calculator available on the Digital SAT. Practice using it so you're familiar on test day.</div>
+              <div class="resource-tag">Free · On the Real SAT</div>
+            </div>
+          </a>
+
+          <a href="https://oneprep.xyz" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(100,50,150,0.15);border-color:rgba(100,50,150,0.3);">⚡</div>
+            <div class="resource-info">
+              <div class="resource-name">OnePrep</div>
+              <div class="resource-desc">Adaptive Digital SAT practice with detailed explanations. Great for drilling specific question types and building speed.</div>
+              <div class="resource-tag">Free · Adaptive Practice</div>
+            </div>
+          </a>
+
+          <a href="https://www.testinnovators.com/practice-test/sat" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(20,100,80,0.15);border-color:rgba(20,100,80,0.3);">🧪</div>
+            <div class="resource-info">
+              <div class="resource-name">Test Innovators</div>
+              <div class="resource-desc">Full-length Digital SAT practice tests with score reports, detailed analytics, and question-by-question breakdowns.</div>
+              <div class="resource-tag">Free Tier Available</div>
+            </div>
+          </a>
+
+          <a href="https://www.reddit.com/r/Sat/" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(255,70,0,0.1);border-color:rgba(255,70,0,0.2);">💬</div>
+            <div class="resource-info">
+              <div class="resource-name">r/SAT on Reddit</div>
+              <div class="resource-desc">A huge community of SAT takers sharing tips, strategies, practice questions, and score reports. Great for motivation and advice.</div>
+              <div class="resource-tag">Free · Community</div>
+            </div>
+          </a>
+
+          <a href="https://www.prepscholar.com/sat/s/resources" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(192,24,43,0.12);border-color:rgba(192,24,43,0.25);">📚</div>
+            <div class="resource-info">
+              <div class="resource-name">PrepScholar Blog</div>
+              <div class="resource-desc">In-depth guides on every SAT topic, strategy articles, score improvement plans, and breakdowns of every question type.</div>
+              <div class="resource-tag">Free · Strategy Guides</div>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(180,0,0,0.12);border-color:rgba(180,0,0,0.25);">▶️</div>
+            <div class="resource-info">
+              <div class="resource-name">The Organic Chemistry Tutor</div>
+              <div class="resource-desc">Excellent YouTube channel with hundreds of SAT Math videos. Clear, step-by-step explanations of every concept tested.</div>
+              <div class="resource-tag">Free · YouTube</div>
+            </div>
+          </a>
+
+          <a href="https://www.vocabulary.com/lists/194479" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(50,100,180,0.12);border-color:rgba(50,100,180,0.25);">🔤</div>
+            <div class="resource-info">
+              <div class="resource-name">SAT Vocabulary List</div>
+              <div class="resource-desc">Master the most commonly tested SAT vocabulary words with interactive flashcards and adaptive quizzing on Vocabulary.com.</div>
+              <div class="resource-tag">Free · Vocabulary</div>
+            </div>
+          </a>
+
+          <a href="https://www.princetonreview.com/college/sat-information" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.25);">🏫</div>
+            <div class="resource-info">
+              <div class="resource-name">Princeton Review SAT Info</div>
+              <div class="resource-desc">Comprehensive overview of the Digital SAT format, scoring, sections, timing, and free practice resources.</div>
+              <div class="resource-tag">Free Resources</div>
+            </div>
+          </a>
+
+          <a href="https://collegepanda.com" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(0,140,100,0.12);border-color:rgba(0,140,100,0.25);">🐼</div>
+            <div class="resource-info">
+              <div class="resource-name">College Panda</div>
+              <div class="resource-desc">Highly rated SAT Math and Writing workbooks and free online resources. Known for concise, effective explanations.</div>
+              <div class="resource-tag">Free + Paid Books</div>
+            </div>
+          </a>
+
         </div>
       </div>
     `;
@@ -855,6 +1028,8 @@
       <div class="sidebar-section">My Work</div>
       <div class="sidebar-item" onclick="showPage('tutor-students',this)"><span class="sidebar-icon">👤</span>My Students</div>
       <div class="sidebar-item" onclick="showPage('tutor-sessions',this)"><span class="sidebar-icon">📅</span>Sessions</div>
+      <div class="sidebar-section">Resources</div>
+      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
     `;
 
     document.getElementById('main-content').innerHTML = `
@@ -893,6 +1068,126 @@
         <div class="card">
           <div class="card-title">Upcoming Sessions <button class="btn-red" onclick="openSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Location</th><th>Actions</th></tr></thead><tbody id="tutor-sessions-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- PREP RESOURCES PAGE -->
+      <div class="page" id="page-resources">
+        <div class="page-header">
+          <h2>Prep Resources</h2>
+          <p>The best free SAT prep tools, all in one place.</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
+
+          <a href="https://www.khanacademy.org/SAT" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">🎓</div>
+            <div class="resource-info">
+              <div class="resource-name">Khan Academy SAT Prep</div>
+              <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons. Completely free.</div>
+              <div class="resource-tag">Free · Official Partner</div>
+            </div>
+          </a>
+
+          <a href="https://bluebook.collegeboard.org" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);">📘</div>
+            <div class="resource-info">
+              <div class="resource-name">Bluebook</div>
+              <div class="resource-desc">The official College Board app for taking the Digital SAT. Take full official practice tests in the exact same format as the real exam.</div>
+              <div class="resource-tag">Free · Official App</div>
+            </div>
+          </a>
+
+          <a href="https://www.collegeboard.org/search/sat" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(0,60,130,0.15);border-color:rgba(0,60,130,0.3);">🏛️</div>
+            <div class="resource-info">
+              <div class="resource-name">College Board</div>
+              <div class="resource-desc">Official SAT information, registration, score reporting, test dates, and study resources straight from the source.</div>
+              <div class="resource-tag">Free · Official</div>
+            </div>
+          </a>
+
+          <a href="https://www.desmos.com/scientific" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);">📐</div>
+            <div class="resource-info">
+              <div class="resource-name">Desmos Calculator</div>
+              <div class="resource-desc">The exact graphing and scientific calculator available on the Digital SAT. Practice using it so you're familiar on test day.</div>
+              <div class="resource-tag">Free · On the Real SAT</div>
+            </div>
+          </a>
+
+          <a href="https://oneprep.xyz" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(100,50,150,0.15);border-color:rgba(100,50,150,0.3);">⚡</div>
+            <div class="resource-info">
+              <div class="resource-name">OnePrep</div>
+              <div class="resource-desc">Adaptive Digital SAT practice with detailed explanations. Great for drilling specific question types and building speed.</div>
+              <div class="resource-tag">Free · Adaptive Practice</div>
+            </div>
+          </a>
+
+          <a href="https://www.testinnovators.com/practice-test/sat" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(20,100,80,0.15);border-color:rgba(20,100,80,0.3);">🧪</div>
+            <div class="resource-info">
+              <div class="resource-name">Test Innovators</div>
+              <div class="resource-desc">Full-length Digital SAT practice tests with score reports, detailed analytics, and question-by-question breakdowns.</div>
+              <div class="resource-tag">Free Tier Available</div>
+            </div>
+          </a>
+
+          <a href="https://www.reddit.com/r/Sat/" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(255,70,0,0.1);border-color:rgba(255,70,0,0.2);">💬</div>
+            <div class="resource-info">
+              <div class="resource-name">r/SAT on Reddit</div>
+              <div class="resource-desc">A huge community of SAT takers sharing tips, strategies, practice questions, and score reports. Great for motivation and advice.</div>
+              <div class="resource-tag">Free · Community</div>
+            </div>
+          </a>
+
+          <a href="https://www.prepscholar.com/sat/s/resources" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(192,24,43,0.12);border-color:rgba(192,24,43,0.25);">📚</div>
+            <div class="resource-info">
+              <div class="resource-name">PrepScholar Blog</div>
+              <div class="resource-desc">In-depth guides on every SAT topic, strategy articles, score improvement plans, and breakdowns of every question type.</div>
+              <div class="resource-tag">Free · Strategy Guides</div>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(180,0,0,0.12);border-color:rgba(180,0,0,0.25);">▶️</div>
+            <div class="resource-info">
+              <div class="resource-name">The Organic Chemistry Tutor</div>
+              <div class="resource-desc">Excellent YouTube channel with hundreds of SAT Math videos. Clear, step-by-step explanations of every concept tested.</div>
+              <div class="resource-tag">Free · YouTube</div>
+            </div>
+          </a>
+
+          <a href="https://www.vocabulary.com/lists/194479" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(50,100,180,0.12);border-color:rgba(50,100,180,0.25);">🔤</div>
+            <div class="resource-info">
+              <div class="resource-name">SAT Vocabulary List</div>
+              <div class="resource-desc">Master the most commonly tested SAT vocabulary words with interactive flashcards and adaptive quizzing on Vocabulary.com.</div>
+              <div class="resource-tag">Free · Vocabulary</div>
+            </div>
+          </a>
+
+          <a href="https://www.princetonreview.com/college/sat-information" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.25);">🏫</div>
+            <div class="resource-info">
+              <div class="resource-name">Princeton Review SAT Info</div>
+              <div class="resource-desc">Comprehensive overview of the Digital SAT format, scoring, sections, timing, and free practice resources.</div>
+              <div class="resource-tag">Free Resources</div>
+            </div>
+          </a>
+
+          <a href="https://collegepanda.com" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(0,140,100,0.12);border-color:rgba(0,140,100,0.25);">🐼</div>
+            <div class="resource-info">
+              <div class="resource-name">College Panda</div>
+              <div class="resource-desc">Highly rated SAT Math and Writing workbooks and free online resources. Known for concise, effective explanations.</div>
+              <div class="resource-tag">Free + Paid Books</div>
+            </div>
+          </a>
+
         </div>
       </div>
     `;
@@ -1068,6 +1363,8 @@
       <div class="sidebar-item" onclick="showPage('student-scores',this)"><span class="sidebar-icon">📊</span>My Scores</div>
       <div class="sidebar-item" onclick="showPage('student-sessions',this)"><span class="sidebar-icon">📅</span>My Sessions</div>
       <div class="sidebar-item" onclick="showPage('student-notes',this)"><span class="sidebar-icon">📝</span>Tutor Notes</div>
+      <div class="sidebar-section">Resources</div>
+      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
     `;
 
     const tutorName = CU.tutorId ? (allUsers[CU.tutorId]?.name || 'Assigned') : null;
@@ -1121,6 +1418,126 @@
       <div class="page" id="page-student-notes">
         <div class="page-header"><h2>Tutor Notes</h2><p>Feedback and notes from your tutor.</p></div>
         <div id="student-notes-list"><div class="empty-state"><div class="icon">📝</div>No notes yet.</div></div>
+      </div>
+
+      <!-- PREP RESOURCES PAGE -->
+      <div class="page" id="page-resources">
+        <div class="page-header">
+          <h2>Prep Resources</h2>
+          <p>The best free SAT prep tools, all in one place.</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
+
+          <a href="https://www.khanacademy.org/SAT" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">🎓</div>
+            <div class="resource-info">
+              <div class="resource-name">Khan Academy SAT Prep</div>
+              <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons. Completely free.</div>
+              <div class="resource-tag">Free · Official Partner</div>
+            </div>
+          </a>
+
+          <a href="https://bluebook.collegeboard.org" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);">📘</div>
+            <div class="resource-info">
+              <div class="resource-name">Bluebook</div>
+              <div class="resource-desc">The official College Board app for taking the Digital SAT. Take full official practice tests in the exact same format as the real exam.</div>
+              <div class="resource-tag">Free · Official App</div>
+            </div>
+          </a>
+
+          <a href="https://www.collegeboard.org/search/sat" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(0,60,130,0.15);border-color:rgba(0,60,130,0.3);">🏛️</div>
+            <div class="resource-info">
+              <div class="resource-name">College Board</div>
+              <div class="resource-desc">Official SAT information, registration, score reporting, test dates, and study resources straight from the source.</div>
+              <div class="resource-tag">Free · Official</div>
+            </div>
+          </a>
+
+          <a href="https://www.desmos.com/scientific" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);">📐</div>
+            <div class="resource-info">
+              <div class="resource-name">Desmos Calculator</div>
+              <div class="resource-desc">The exact graphing and scientific calculator available on the Digital SAT. Practice using it so you're familiar on test day.</div>
+              <div class="resource-tag">Free · On the Real SAT</div>
+            </div>
+          </a>
+
+          <a href="https://oneprep.xyz" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(100,50,150,0.15);border-color:rgba(100,50,150,0.3);">⚡</div>
+            <div class="resource-info">
+              <div class="resource-name">OnePrep</div>
+              <div class="resource-desc">Adaptive Digital SAT practice with detailed explanations. Great for drilling specific question types and building speed.</div>
+              <div class="resource-tag">Free · Adaptive Practice</div>
+            </div>
+          </a>
+
+          <a href="https://www.testinnovators.com/practice-test/sat" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(20,100,80,0.15);border-color:rgba(20,100,80,0.3);">🧪</div>
+            <div class="resource-info">
+              <div class="resource-name">Test Innovators</div>
+              <div class="resource-desc">Full-length Digital SAT practice tests with score reports, detailed analytics, and question-by-question breakdowns.</div>
+              <div class="resource-tag">Free Tier Available</div>
+            </div>
+          </a>
+
+          <a href="https://www.reddit.com/r/Sat/" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(255,70,0,0.1);border-color:rgba(255,70,0,0.2);">💬</div>
+            <div class="resource-info">
+              <div class="resource-name">r/SAT on Reddit</div>
+              <div class="resource-desc">A huge community of SAT takers sharing tips, strategies, practice questions, and score reports. Great for motivation and advice.</div>
+              <div class="resource-tag">Free · Community</div>
+            </div>
+          </a>
+
+          <a href="https://www.prepscholar.com/sat/s/resources" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(192,24,43,0.12);border-color:rgba(192,24,43,0.25);">📚</div>
+            <div class="resource-info">
+              <div class="resource-name">PrepScholar Blog</div>
+              <div class="resource-desc">In-depth guides on every SAT topic, strategy articles, score improvement plans, and breakdowns of every question type.</div>
+              <div class="resource-tag">Free · Strategy Guides</div>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(180,0,0,0.12);border-color:rgba(180,0,0,0.25);">▶️</div>
+            <div class="resource-info">
+              <div class="resource-name">The Organic Chemistry Tutor</div>
+              <div class="resource-desc">Excellent YouTube channel with hundreds of SAT Math videos. Clear, step-by-step explanations of every concept tested.</div>
+              <div class="resource-tag">Free · YouTube</div>
+            </div>
+          </a>
+
+          <a href="https://www.vocabulary.com/lists/194479" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(50,100,180,0.12);border-color:rgba(50,100,180,0.25);">🔤</div>
+            <div class="resource-info">
+              <div class="resource-name">SAT Vocabulary List</div>
+              <div class="resource-desc">Master the most commonly tested SAT vocabulary words with interactive flashcards and adaptive quizzing on Vocabulary.com.</div>
+              <div class="resource-tag">Free · Vocabulary</div>
+            </div>
+          </a>
+
+          <a href="https://www.princetonreview.com/college/sat-information" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.25);">🏫</div>
+            <div class="resource-info">
+              <div class="resource-name">Princeton Review SAT Info</div>
+              <div class="resource-desc">Comprehensive overview of the Digital SAT format, scoring, sections, timing, and free practice resources.</div>
+              <div class="resource-tag">Free Resources</div>
+            </div>
+          </a>
+
+          <a href="https://collegepanda.com" target="_blank" class="resource-card">
+            <div class="resource-icon" style="background:rgba(0,140,100,0.12);border-color:rgba(0,140,100,0.25);">🐼</div>
+            <div class="resource-info">
+              <div class="resource-name">College Panda</div>
+              <div class="resource-desc">Highly rated SAT Math and Writing workbooks and free online resources. Known for concise, effective explanations.</div>
+              <div class="resource-tag">Free + Paid Books</div>
+            </div>
+          </a>
+
+        </div>
       </div>
     `;
 
@@ -1244,6 +1661,7 @@
     if (pageId==='tutor-dashboard') loadTutorDashboard();
     if (pageId==='tutor-students') loadTutorStudentsPage();
     if (pageId==='tutor-sessions') loadTutorSessionsPage();
+    // resources page needs no data loading
   };
 
   window.openModal = function(id) { document.getElementById(id).classList.add('open'); };
