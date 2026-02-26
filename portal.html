@@ -670,7 +670,7 @@
       <div class="page" id="page-admin-sessions">
         <div class="page-header"><h2>Sessions</h2><p>Schedule and manage tutoring sessions.</p></div>
         <div class="card">
-          <div class="card-title">All Sessions <button class="btn-red" onclick="openSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
+          <div class="card-title">All Sessions <button class="btn-red" onclick="openAdminSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th><th>Actions</th></tr></thead><tbody id="admin-sessions-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon">📅</div>No sessions yet.</div></td></tr></tbody></table></div>
         </div>
       </div>
@@ -955,7 +955,7 @@
       </div>`).join('');
   }
 
-  window.openSessionModal = function() {
+  window.openAdminSessionModal = function() {
     // Populate students
     const ssel = document.getElementById('session-student');
     ssel.innerHTML = '<option value="">Select student</option>';
@@ -1116,7 +1116,7 @@
       <div class="page" id="page-tutor-sessions">
         <div class="page-header"><h2>Sessions</h2><p>Your scheduled tutoring sessions.</p></div>
         <div class="card">
-          <div class="card-title">Upcoming Sessions <button class="btn-red" onclick="openSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
+          <div class="card-title">Upcoming Sessions <button class="btn-red" onclick="openTutorSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Location</th><th>Actions</th></tr></thead><tbody id="tutor-sessions-tbody"></tbody></table></div>
         </div>
       </div>
@@ -1383,7 +1383,7 @@
   };
 
   // Tutor session modal
-  window.openSessionModal = function() {
+  window.openTutorSessionModal = function() {
     const sel = document.getElementById('session-student');
     sel.innerHTML = '<option value="">Select student</option>';
     const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
