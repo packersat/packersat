@@ -373,6 +373,12 @@
         <select class="input-field" id="session-student"></select>
       </div>
     </div>
+    <div class="form-row full" style="margin-bottom:1rem" id="session-tutor-row">
+      <div>
+        <div class="field-label">Tutor</div>
+        <select class="input-field" id="session-tutor"></select>
+      </div>
+    </div>
     <div class="form-row full">
       <div>
         <div class="field-label">Location / Notes</div>
@@ -950,11 +956,25 @@
   }
 
   window.openSessionModal = function() {
-    const sel = document.getElementById('session-student');
-    sel.innerHTML = '<option value="">Select student</option>';
+    // Populate students
+    const ssel = document.getElementById('session-student');
+    ssel.innerHTML = '<option value="">Select student</option>';
     Object.entries(allUsers).filter(([,u])=>u.role==='student').forEach(([uid,u])=>{
-      sel.innerHTML += `<option value="${uid}">${u.name||u.email}</option>`;
+      ssel.innerHTML += `<option value="${uid}">${u.name||u.email}</option>`;
     });
+    // Populate tutors (admin can pick any tutor)
+    const trow = document.getElementById('session-tutor-row');
+    const tsel = document.getElementById('session-tutor');
+    trow.style.display = 'block';
+    tsel.innerHTML = '<option value="">Select tutor</option>';
+    Object.entries(allUsers).filter(([,u])=>u.role==='tutor').forEach(([uid,u])=>{
+      tsel.innerHTML += `<option value="${uid}">${u.name||u.email}</option>`;
+    });
+    // When student is selected, auto-select their assigned tutor
+    ssel.onchange = function() {
+      const student = allUsers[ssel.value];
+      if (student?.tutorId) tsel.value = student.tutorId;
+    };
     openModal('modal-session');
     document.getElementById('confirm-session-btn').onclick = saveSession;
   };
@@ -964,10 +984,10 @@
     const time = document.getElementById('session-time').value;
     const studentId = document.getElementById('session-student').value;
     const location = document.getElementById('session-location').value;
+    const tutorId = document.getElementById('session-tutor').value;
     const msg = document.getElementById('session-msg');
     if (!date||!studentId) { showMsg(msg,'Date and student are required.','error'); return; }
-    const student = allUsers[studentId];
-    const tutorId = student?.tutorId || CU.uid;
+    if (!tutorId) { showMsg(msg,'Please select a tutor.','error'); return; }
     await addDoc(collection(db,'sessions'), { date, time, studentId, tutorId, location, createdAt: new Date().toISOString() });
     sendSessionEmail(studentId, tutorId, date, time, location);
     showMsg(msg,'Session scheduled! Confirmation email sent.','success');
@@ -1368,6 +1388,11 @@
     sel.innerHTML = '<option value="">Select student</option>';
     const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
     myStudents.forEach(([uid,u])=>{ sel.innerHTML += `<option value="${uid}">${u.name||u.email}</option>`; });
+    // Hide tutor row for tutors — they can only schedule for themselves
+    const trow = document.getElementById('session-tutor-row');
+    trow.style.display = 'none';
+    document.getElementById('session-tutor').innerHTML = `<option value="${CU.uid}">${CU.name||CU.email}</option>`;
+    document.getElementById('session-tutor').value = CU.uid;
     openModal('modal-session');
     document.getElementById('confirm-session-btn').onclick = async function() {
       const date = document.getElementById('session-date').value;
