@@ -366,7 +366,7 @@
       </div>
       <div>
         <div class="field-label">Time</div>
-        <input class="input-field" type="time" id="session-time" />
+        <input class="input-field" type="text" id="session-time" placeholder="e.g. 3:30 PM" />
       </div>
     </div>
     <div class="form-row full" style="margin-bottom:1rem">
@@ -1876,13 +1876,7 @@
       const calLink = buildCalendarLink(date, time, student.name, tutor?.name, location);
       const [y,m,d] = date.split('-');
       const formattedDate = new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-      let formattedTime = 'TBD';
-      if (time && time.includes(':')) {
-        const [h, m] = time.split(':').map(Number);
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        const hour = h % 12 || 12;
-        formattedTime = `${hour}:${String(m).padStart(2,'0')} ${ampm}`;
-      }
+      const formattedTime = time && time.trim() ? time.trim() : 'TBD';
       await emailjs.send('service_xia779e', 'template_dz0o5vq', {
         student_name: student.name || student.email,
         student_email: student.email,
