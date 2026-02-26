@@ -589,6 +589,8 @@
       <div class="sidebar-item" onclick="showPage('admin-announce',this)"><span class="sidebar-icon">📢</span>Announcements</div>
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
+      <div class="sidebar-section">Students</div>
+      <div class="sidebar-item" onclick="showPage('admin-profiles',this)"><span class="sidebar-icon">🎓</span>Student Profiles</div>
     `;
 
     document.getElementById('main-content').innerHTML = `
@@ -676,6 +678,12 @@
           <div class="card-title">All Sessions <button class="btn-red" onclick="openAdminSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th><th>Actions</th></tr></thead><tbody id="admin-sessions-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon">📅</div>No sessions yet.</div></td></tr></tbody></table></div>
         </div>
+      </div>
+
+      <!-- ADMIN STUDENT PROFILES -->
+      <div class="page" id="page-admin-profiles">
+        <div class="page-header"><h2>Student Profiles</h2><p>View full details, scores, and notes for each student.</p></div>
+        <div id="admin-profiles-list"><div class="empty-state"><div class="icon">🎓</div>No students yet.</div></div>
       </div>
 
       <!-- ADMIN ANNOUNCEMENTS -->
@@ -1895,6 +1903,92 @@
     }
   }
 
+  async function loadAdminProfiles() {
+    const el = document.getElementById('admin-profiles-list');
+    if (!el) return;
+    await cacheAllUsers();
+    const students = Object.entries(allUsers).filter(([,u])=>u.role==='student');
+    if (!students.length) { el.innerHTML = '<div class="empty-state"><div class="icon">🎓</div>No students yet.</div>'; return; }
+
+    // Load all scores and notes
+    const scSnap = await getDocs(collection(db,'scores'));
+    const noteSnap = await getDocs(collection(db,'notes'));
+    const scoresByStudent = {}, notesByStudent = {};
+    scSnap.forEach(d=>{ const sd={id:d.id,...d.data()}; if(!scoresByStudent[sd.studentId]) scoresByStudent[sd.studentId]=[]; scoresByStudent[sd.studentId].push(sd); });
+    noteSnap.forEach(d=>{ const nd={id:d.id,...d.data()}; if(!notesByStudent[nd.studentId]) notesByStudent[nd.studentId]=[]; notesByStudent[nd.studentId].push(nd); });
+    Object.values(scoresByStudent).forEach(arr=>arr.sort((a,b)=>b.date.localeCompare(a.date)));
+    Object.values(notesByStudent).forEach(arr=>arr.sort((a,b)=>b.createdAt.localeCompare(a.createdAt)));
+
+    el.innerHTML = students.map(([uid,u])=>{
+      const scores = scoresByStudent[uid]||[];
+      const notes = notesByStudent[uid]||[];
+      const tutor = u.tutorId ? (allUsers[u.tutorId]?.name||'Unknown') : 'Unassigned';
+      const first = scores.length ? scores[scores.length-1] : null;
+      const latest = scores.length ? scores[0] : null;
+      const improvement = (first&&latest) ? latest.total - first.total : null;
+
+      const scoresHtml = scores.length ? `
+        <table style="width:100%">
+          <thead><tr><th>Date</th><th>Math</th><th>R&W</th><th>Total</th><th>Notes</th><th></th></tr></thead>
+          <tbody>${scores.map(s=>`
+            <tr>
+              <td>${formatDate(s.date)}</td>
+              <td>${s.math}</td><td>${s.rw}</td>
+              <td><span class="score-pill">${s.total}</span></td>
+              <td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${s.notes||'—'}</td>
+              <td><button class="action-btn danger" onclick="adminDeleteScore('${s.id}','${uid}')">✕</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>` : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon">📊</div>No scores yet.</div>';
+
+      const notesHtml = notes.length ? notes.map(n=>`
+        <div class="note-item" style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+          <div style="flex:1">
+            <p style="font-size:0.88rem;line-height:1.6;margin:0">${n.text}</p>
+            <div class="note-meta">From ${allUsers[n.tutorId]?.name||'Tutor'} · ${new Date(n.createdAt).toLocaleDateString()}</div>
+          </div>
+          <button class="action-btn danger" style="flex-shrink:0" onclick="adminDeleteNote('${n.id}','${uid}')">✕</button>
+        </div>`).join('') : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon">📝</div>No notes yet.</div>';
+
+      const improvementHtml = improvement !== null ? `<span class="improvement-chip ${improvement>=0?'improvement-pos':'improvement-neg'}">${improvement>=0?'↑ +':'↓ '}${improvement} pts overall</span>` : '';
+
+      return `
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card-title" style="flex-wrap:wrap;gap:0.5rem">
+            <span>🎓 ${u.name||u.email}</span>
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+              <span class="tutor-chip" style="font-size:0.75rem">👤 ${tutor}</span>
+              ${latest ? `<span class="score-pill">Latest: ${latest.total}</span>` : ''}
+              ${improvementHtml}
+            </div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem">📊 Scores (${scores.length})</div>
+              ${scoresHtml}
+            </div>
+            <div>
+              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem">📝 Notes (${notes.length})</div>
+              ${notesHtml}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  window.adminDeleteScore = async function(scoreId, studentId) {
+    if (!confirm('Delete this score? This cannot be undone.')) return;
+    await deleteDoc(doc(db,'scores',scoreId));
+    loadAdminProfiles();
+    loadAllScores();
+  };
+
+  window.adminDeleteNote = async function(noteId, studentId) {
+    if (!confirm('Delete this note? This cannot be undone.')) return;
+    await deleteDoc(doc(db,'notes',noteId));
+    loadAdminProfiles();
+  };
+
   window.showPage = function(pageId, el) {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
@@ -1902,6 +1996,7 @@
     if (pg) pg.classList.add('active');
     if (el) el.classList.add('active');
     if (pageId==='admin-users') loadUsersTable();
+    if (pageId==='admin-profiles') loadAdminProfiles();
     if (pageId==='admin-scores') { loadAllScores(); populateAdminScoreStudents(); }
     if (pageId==='admin-sessions') loadAdminSessions();
     if (pageId==='admin-announce') loadAdminAnnouncements();
