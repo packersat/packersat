@@ -1364,6 +1364,7 @@
 
   // Score modal (tutor)
   window.openScoreModal = function(studentId, studentName) {
+    studentId = (studentId||'').trim();
     document.getElementById('score-student-name').textContent = studentName;
     document.getElementById('score-date').value = today();
     openModal('modal-score');
@@ -1385,6 +1386,7 @@
 
   // Note modal
   window.openNoteModal = function(studentId, studentName) {
+    studentId = (studentId||'').trim();
     document.getElementById('note-student-name').textContent = studentName;
     document.getElementById('note-text').value = '';
     openModal('modal-note');
@@ -1421,7 +1423,7 @@
       await addDoc(collection(db,'sessions'), { date, time, studentId, tutorId: CU.uid, location, createdAt: new Date().toISOString() });
       sendSessionEmail(studentId, CU.uid, date, time, location);
       showMsg(msg,'Session scheduled! Confirmation email sent.','success');
-      setTimeout(async()=>{ closeModal('modal-session'); await loadTutorDashboard(); }, 800);
+      setTimeout(async()=>{ closeModal('modal-session'); await loadTutorDashboard(); await loadTutorSessionsPage(); }, 800);
     };
   };
 
