@@ -848,7 +848,7 @@
         <td style="color:rgba(250,250,248,0.5)">${u.email}</td>
         <td><span class="badge badge-${u.role}">${u.role}</span></td>
         <td>${u.role==='student' ? `<button class="action-btn" onclick="openAssignModal('${uid.trim()}','${(u.name||'').replace(/'/g,"\\'")}')">📎 ${assignedTutor}</button>` : '—'}</td>
-        <td>${u.email === 'Jackroseblue@gmail.com' ? '<span style="font-size:0.72rem;color:rgba(250,250,248,0.25);letter-spacing:0.05em">Master Account</span>' : `<button class="action-btn danger" onclick="promptDelete('${uid}','${(u.name||u.email).replace(/'/g,"\\'")}')">Remove</button>`}</td>`;
+        <td>${(u.email||'').toLowerCase() === 'jackroseblue@gmail.com' ? '<span style="font-size:0.72rem;color:rgba(250,250,248,0.25);letter-spacing:0.05em">Master Account</span>' : `<button class="action-btn danger" onclick="promptDelete('${uid}','${(u.name||u.email).replace(/'/g,"\\'")}')">Remove</button>`}</td>`;
       tbody.appendChild(tr);
     });
   }
@@ -1067,7 +1067,7 @@
   // Delete user
   window.promptDelete = function(uid, name) {
     const u = allUsers[uid];
-    if (u?.email === 'Jackroseblue@gmail.com') {
+    if ((u?.email||'').toLowerCase() === 'jackroseblue@gmail.com') {
       alert('This is the master account and cannot be removed.');
       return;
     }
