@@ -476,6 +476,7 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  emailjs.init('8hVlfMj_UDUbe4x-W');
   let CU = null; // current user object
   let allUsers = {}; // uid -> user data cache
   const googleProvider = new GoogleAuthProvider();
