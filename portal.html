@@ -983,14 +983,23 @@
   };
 
   async function saveSession() {
-    const date = document.getElementById('session-date').value;
-    const time = document.getElementById('session-time').value;
-    const studentId = document.getElementById('session-student').value;
-    const location = document.getElementById('session-location').value;
-    const tutorId = document.getElementById('session-tutor').value;
+    const dateEl = document.getElementById('session-date');
+    const timeEl = document.getElementById('session-time');
+    const studentEl = document.getElementById('session-student');
+    const locationEl = document.getElementById('session-location');
+    const tutorEl = document.getElementById('session-tutor');
     const msg = document.getElementById('session-msg');
-    if (!date||!studentId) { showMsg(msg,'Date and student are required.','error'); return; }
+
+    const date = dateEl ? dateEl.value.trim() : '';
+    const time = timeEl ? timeEl.value.trim() : '';
+    const studentId = studentEl ? studentEl.value.trim() : '';
+    const location = locationEl ? locationEl.value.trim() : '';
+    const tutorId = tutorEl ? tutorEl.value.trim() : '';
+
+    if (!date) { showMsg(msg,'Please select a date.','error'); return; }
+    if (!studentId) { showMsg(msg,'Please select a student.','error'); return; }
     if (!tutorId) { showMsg(msg,'Please select a tutor.','error'); return; }
+
     await addDoc(collection(db,'sessions'), { date, time, studentId, tutorId, location, createdAt: new Date().toISOString() });
     sendSessionEmail(studentId, tutorId, date, time, location);
     showMsg(msg,'Session scheduled! Confirmation email sent.','success');
