@@ -1867,7 +1867,13 @@
       const calLink = buildCalendarLink(date, time, student.name, tutor?.name, location);
       const [y,m,d] = date.split('-');
       const formattedDate = new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-      const formattedTime = time ? new Date('2000-01-01T'+time).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) : 'TBD';
+      let formattedTime = 'TBD';
+      if (time && time.includes(':')) {
+        const [h, m] = time.split(':').map(Number);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const hour = h % 12 || 12;
+        formattedTime = `${hour}:${String(m).padStart(2,'0')} ${ampm}`;
+      }
       await emailjs.send('service_xia779e', 'template_dz0o5vq', {
         student_name: student.name || student.email,
         student_email: student.email,
