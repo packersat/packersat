@@ -969,7 +969,8 @@
     const student = allUsers[studentId];
     const tutorId = student?.tutorId || CU.uid;
     await addDoc(collection(db,'sessions'), { date, time, studentId, tutorId, location, createdAt: new Date().toISOString() });
-    showMsg(msg,'Session scheduled!','success');
+    sendSessionEmail(studentId, tutorId, date, time, location);
+    showMsg(msg,'Session scheduled! Confirmation email sent.','success');
     setTimeout(()=>{ closeModal('modal-session'); loadAdminSessions(); loadAdminSessionsPreview(); loadAdminStats(); }, 1000);
   }
 
@@ -1376,7 +1377,8 @@
       const msg = document.getElementById('session-msg');
       if (!date||!studentId) { showMsg(msg,'Date and student required.','error'); return; }
       await addDoc(collection(db,'sessions'), { date, time, studentId, tutorId: CU.uid, location, createdAt: new Date().toISOString() });
-      showMsg(msg,'Session scheduled!','success');
+      sendSessionEmail(studentId, CU.uid, date, time, location);
+      showMsg(msg,'Session scheduled! Confirmation email sent.','success');
       setTimeout(async()=>{ closeModal('modal-session'); await loadTutorDashboard(); }, 800);
     };
   };
@@ -1815,6 +1817,41 @@
           <span class="improvement-chip ${chipClass}">${improvement>=0?'↑':'↓'} ${improvement>=0?'+':''}${improvement} pts</span>
         </div>`;
     }).join('') + '</div>';
+  }
+
+  function buildCalendarLink(date, time, studentName, tutorName, location) {
+    // date = YYYY-MM-DD, time = HH:MM
+    const start = date.replace(/-/g,'') + 'T' + (time||'').replace(':','') + '00';
+    const endHour = time ? String(parseInt(time.split(':')[0])+1).padStart(2,'0') : '01';
+    const endMin = time ? time.split(':')[1] : '00';
+    const end = date.replace(/-/g,'') + 'T' + endHour + endMin + '00';
+    const title = encodeURIComponent('SAT Tutoring Session');
+    const details = encodeURIComponent('SAT tutoring session at Packer Collegiate Institute.');
+    const loc = encodeURIComponent(location||'Packer Collegiate Institute');
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${loc}`;
+  }
+
+  async function sendSessionEmail(studentId, tutorId, date, time, location) {
+    try {
+      const student = allUsers[studentId];
+      const tutor = allUsers[tutorId];
+      if (!student?.email) return;
+      const calLink = buildCalendarLink(date, time, student.name, tutor?.name, location);
+      const [y,m,d] = date.split('-');
+      const formattedDate = new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+      const formattedTime = time ? new Date('2000-01-01T'+time).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) : 'TBD';
+      await emailjs.send('service_xia779e', 'template_dz0o5vq', {
+        student_name: student.name || student.email,
+        student_email: student.email,
+        tutor_name: tutor?.name || 'Your Tutor',
+        session_date: formattedDate,
+        session_time: formattedTime,
+        session_location: location || 'TBD',
+        calendar_link: calLink
+      });
+    } catch(e) {
+      console.log('Session email failed (non-critical):', e);
+    }
   }
 
   window.showPage = function(pageId, el) {
