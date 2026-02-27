@@ -282,6 +282,9 @@
         <input type="password" id="login-password" placeholder="••••••••" />
       </div>
       <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In</button>
+      <div style="text-align:right;margin-top:0.5rem">
+        <button onclick="doForgotPassword()" style="background:none;border:none;color:rgba(250,250,248,0.35);font-family:DM Sans,sans-serif;font-size:0.8rem;cursor:pointer;padding:0;transition:color 0.2s" onmouseover="this.style.color='rgba(250,250,248,0.7)'" onmouseout="this.style.color='rgba(250,250,248,0.35)'">Forgot password?</button>
+      </div>
       <div style="display:flex;align-items:center;gap:0.8rem;margin:1.2rem 0">
         <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
         <span style="font-size:0.75rem;color:rgba(250,250,248,0.3);letter-spacing:0.05em">or</span>
@@ -305,7 +308,7 @@
         <span id="nav-username"></span>
         <span class="role-pill" id="nav-role"></span>
       </div>
-      <a href="index.html" class="logout-btn" style="text-decoration:none">Home</a>
+      <a href="index.html" class="logout-btn" style="text-decoration:none">🏠 Home</a>
       <button class="logout-btn" onclick="doLogout()">Sign Out</button>
     </div>
   </nav>
@@ -509,7 +512,7 @@
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup }
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, addDoc, updateDoc, deleteDoc, collection, getDocs, query, where, orderBy }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -563,6 +566,30 @@
       err.textContent = friendlyError(e.code);
       err.style.display = 'block';
       btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  };
+
+  window.doForgotPassword = async function() {
+    const email = document.getElementById('login-email').value.trim();
+    const err = document.getElementById('login-error');
+    if (!email) {
+      err.textContent = 'Enter your email above first, then click Forgot password.';
+      err.style.display = 'block';
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      err.style.background = 'rgba(46,204,113,0.1)';
+      err.style.borderColor = 'rgba(46,204,113,0.3)';
+      err.style.color = '#7dffaa';
+      err.textContent = 'Password reset email sent! Check your inbox.';
+      err.style.display = 'block';
+    } catch(e) {
+      err.style.background = '';
+      err.style.borderColor = '';
+      err.style.color = '';
+      err.textContent = 'Could not send reset email. Make sure your email is correct.';
+      err.style.display = 'block';
     }
   };
 
