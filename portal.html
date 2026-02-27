@@ -309,6 +309,7 @@
         <span class="role-pill" id="nav-role"></span>
       </div>
       <a href="index.html" class="logout-btn" style="text-decoration:none">🏠 Home</a>
+      <button class="logout-btn" onclick="openModal('modal-change-email')">✉️ Change Email</button>
       <button class="logout-btn" onclick="doLogout()">Sign Out</button>
     </div>
   </nav>
@@ -509,10 +510,29 @@
   </div>
 </div>
 
+<!-- Change Email Modal -->
+<div class="modal-overlay" id="modal-change-email">
+  <div class="modal" style="max-width:440px">
+    <h3>Change Email Address</h3>
+    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem;line-height:1.6">Enter your new email address below. Firebase will send a verification link to the new address — it won't change until you click that link.</p>
+    <div class="form-row full" style="margin-bottom:1rem">
+      <div>
+        <div class="field-label">New Email Address</div>
+        <input class="input-field" type="email" id="change-email-input" placeholder="new@example.com" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-change-email')">Cancel</button>
+      <button class="btn-red" onclick="doChangeEmail()">Send Verification Link</button>
+    </div>
+    <div class="form-msg" id="change-email-msg"></div>
+  </div>
+</div>
+
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail }
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, verifyBeforeUpdateEmail }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, addDoc, updateDoc, deleteDoc, collection, getDocs, query, where, orderBy }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -590,6 +610,24 @@
       err.style.color = '';
       err.textContent = 'Could not send reset email. Make sure your email is correct.';
       err.style.display = 'block';
+    }
+  };
+
+  window.doChangeEmail = async function() {
+    const newEmail = document.getElementById('change-email-input').value.trim();
+    const msg = document.getElementById('change-email-msg');
+    if (!newEmail) { showMsg(msg, 'Please enter a new email address.', 'error'); return; }
+    try {
+      const user = auth.currentUser;
+      await verifyBeforeUpdateEmail(user, newEmail);
+      showMsg(msg, 'Verification email sent to ' + newEmail + '! Click the link in that email to confirm the change.', 'success');
+      document.getElementById('change-email-input').value = '';
+    } catch(e) {
+      if (e.code === 'auth/requires-recent-login') {
+        showMsg(msg, 'For security, please sign out and sign back in before changing your email.', 'error');
+      } else {
+        showMsg(msg, 'Could not send verification email. Please try again.', 'error');
+      }
     }
   };
 
