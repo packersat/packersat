@@ -2689,5 +2689,34 @@ Date,Time,Tutor,Location
 
   document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') window.doLogin(); });
 </script>
+<script>
+  // Global bridge — exposes module functions to inline onclick handlers
+  function doLogin() { window.doLogin && window.doLogin(); }
+  function doGoogleLogin() { window.doGoogleLogin && window.doGoogleLogin(); }
+  function doLogout() { window.doLogout && window.doLogout(); }
+  function doForgotPassword() { window.doForgotPassword && window.doForgotPassword(); }
+  function doChangeEmail() { window.doChangeEmail && window.doChangeEmail(); }
+  function addUser() { window.addUser && window.addUser(); }
+  function adminLogScore() { window.adminLogScore && window.adminLogScore(); }
+  function openModal(id) { window.openModal && window.openModal(id); }
+  function closeModal(id) { window.closeModal && window.closeModal(id); }
+  function showPage(p, el) { window.showPage && window.showPage(p, el); }
+  function promptDelete(uid, name) { window.promptDelete && window.promptDelete(uid, name); }
+  function adminDeleteScore(id, sid) { window.adminDeleteScore && window.adminDeleteScore(id, sid); }
+  function adminDeleteNote(id, sid) { window.adminDeleteNote && window.adminDeleteNote(id, sid); }
+  function adminDeleteAssignment(id) { window.adminDeleteAssignment && window.adminDeleteAssignment(id); }
+  function openAssignmentModal(sid, sname) { window.openAssignmentModal && window.openAssignmentModal(sid, sname); }
+  function openNoteModal(sid, sname) { window.openNoteModal && window.openNoteModal(sid, sname); }
+  function openScoreModal(sid, sname) { window.openScoreModal && window.openScoreModal(sid, sname); }
+  function openAdminSessionModal() { window.openAdminSessionModal && window.openAdminSessionModal(); }
+  function openTutorSessionModal() { window.openTutorSessionModal && window.openTutorSessionModal(); }
+  function markAssignmentDone(id) { window.markAssignmentDone && window.markAssignmentDone(id); }
+  function adminSendDM() { window.adminSendDM && window.adminSendDM(); }
+  function userSendDM() { window.userSendDM && window.userSendDM(); }
+  function adminExportCSV() { window.adminExportCSV && window.adminExportCSV(); }
+  function exportStudentSessions(sid, sname) { window.exportStudentSessions && window.exportStudentSessions(sid, sname); }
+  function deleteSession(id) { window.deleteSession && window.deleteSession(id); }
+  function assignTutor(uid, tid) { window.assignTutor && window.assignTutor(uid, tid); }
+</script>
 </body>
 </html>
