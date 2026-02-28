@@ -281,16 +281,16 @@
         <label>Password</label>
         <input type="password" id="login-password" placeholder="••••••••" />
       </div>
-      <button class="login-btn" id="login-btn">Sign In</button>
+      <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In</button>
       <div style="text-align:right;margin-top:0.5rem">
-        <button id="forgot-btn" style="background:none;border:none;color:rgba(250,250,248,0.35);font-family:DM Sans,sans-serif;font-size:0.8rem;cursor:pointer;padding:0;transition:color 0.2s" onmouseover="this.style.color='rgba(250,250,248,0.7)'" onmouseout="this.style.color='rgba(250,250,248,0.35)'">Forgot password?</button>
+        <button onclick="doForgotPassword()" style="background:none;border:none;color:rgba(250,250,248,0.35);font-family:DM Sans,sans-serif;font-size:0.8rem;cursor:pointer;padding:0;transition:color 0.2s" onmouseover="this.style.color='rgba(250,250,248,0.7)'" onmouseout="this.style.color='rgba(250,250,248,0.35)'">Forgot password?</button>
       </div>
       <div style="display:flex;align-items:center;gap:0.8rem;margin:1.2rem 0">
         <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
         <span style="font-size:0.75rem;color:rgba(250,250,248,0.3);letter-spacing:0.05em">or</span>
         <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
       </div>
-      <button class="google-btn" id="google-btn">
+      <button class="google-btn" id="google-btn" onclick="doGoogleLogin()">
         <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
         Sign in with Google
       </button>
@@ -308,7 +308,7 @@
         <span id="nav-username"></span>
         <span class="role-pill" id="nav-role"></span>
       </div>
-      <a href="../index.html" class="logout-btn" style="text-decoration:none">🏠 Home</a>
+      <a href="index.html" class="logout-btn" style="text-decoration:none">🏠 Home</a>
       <button class="logout-btn" onclick="openModal('modal-change-email')">✉️ Change Email</button>
       <button class="logout-btn" onclick="doLogout()">Sign Out</button>
     </div>
@@ -473,21 +473,6 @@
       <button class="btn-red" id="confirm-announce-btn">Post</button>
     </div>
     <div class="form-msg" id="announce-msg"></div>
-  </div>
-</div>
-
-<!-- DM Modal (for tutors/students to message admin) -->
-<div class="modal-overlay" id="modal-dm">
-  <div class="modal" style="max-width:480px">
-    <h3>Message Admin</h3>
-    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">Send a private message to the program administrator.</p>
-    <div style="margin-bottom:0.8rem"><div class="field-label">Subject</div><input class="input-field" type="text" id="user-dm-subject" placeholder="e.g. Question about my session" /></div>
-    <div style="margin-bottom:0.8rem"><div class="field-label">Message</div><textarea class="input-field" id="user-dm-body" placeholder="Write your message..." style="min-height:110px;resize:vertical"></textarea></div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal('modal-dm')">Cancel</button>
-      <button class="btn-red" onclick="userSendDM()">Send</button>
-    </div>
-    <div class="form-msg" id="user-dm-msg"></div>
   </div>
 </div>
 
@@ -720,10 +705,6 @@
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
       <div class="sidebar-section">Students</div>
       <div class="sidebar-item" onclick="showPage('admin-profiles',this)"><span class="sidebar-icon">🎓</span>Student Profiles</div>
-      <div class="sidebar-section">Tools</div>
-      <div class="sidebar-item" onclick="showPage('admin-messages',this)"><span class="sidebar-icon">💬</span>Direct Messages <span id="admin-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
-      <div class="sidebar-item" onclick="showPage('admin-analytics',this)"><span class="sidebar-icon">📈</span>Analytics</div>
-      <div class="sidebar-item" onclick="adminExportCSV()"><span class="sidebar-icon">⬇️</span>Export Data</div>
     `;
 
     document.getElementById('main-content').innerHTML = `
@@ -799,7 +780,7 @@
           <div class="form-msg" id="admin-score-msg"></div>
         </div>
         <div class="card">
-          <div class="card-title">📊 All Scores <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">⬇️ Export CSV</button></div>
+          <div class="card-title">📊 All Scores</div>
           <div class="table-wrap"><table><thead><tr><th>Student</th><th>Date</th><th>Math</th><th>R&W</th><th>Total</th><th>Notes</th></tr></thead><tbody id="admin-scores-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon">📊</div>No scores logged yet.</div></td></tr></tbody></table></div>
         </div>
       </div>
@@ -808,7 +789,7 @@
       <div class="page" id="page-admin-sessions">
         <div class="page-header"><h2>Sessions</h2><p>Schedule and manage tutoring sessions.</p></div>
         <div class="card">
-          <div class="card-title">All Sessions <button class="btn-red" onclick="openAdminSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button> <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">⬇️ Export CSV</button></div>
+          <div class="card-title">All Sessions <button class="btn-red" onclick="openAdminSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th><th>Actions</th></tr></thead><tbody id="admin-sessions-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon">📅</div>No sessions yet.</div></td></tr></tbody></table></div>
         </div>
       </div>
@@ -817,48 +798,6 @@
       <div class="page" id="page-admin-profiles">
         <div class="page-header"><h2>Student Profiles</h2><p>View full details, scores, and notes for each student.</p></div>
         <div id="admin-profiles-list"><div class="empty-state"><div class="icon">🎓</div>No students yet.</div></div>
-      </div>
-
-      <!-- ADMIN DIRECT MESSAGES -->
-      <div class="page" id="page-admin-messages">
-        <div class="page-header"><h2>Direct Messages</h2><p>Send private messages to any user.</p></div>
-        <div class="grid-2" style="align-items:flex-start">
-          <div class="card">
-            <div class="card-title">💬 Send a Message</div>
-            <div style="margin-bottom:0.8rem"><div class="field-label">To</div><select class="input-field" id="dm-recipient"></select></div>
-            <div style="margin-bottom:0.8rem"><div class="field-label">Subject</div><input class="input-field" type="text" id="dm-subject" placeholder="e.g. Session reminder" /></div>
-            <div style="margin-bottom:0.8rem"><div class="field-label">Message</div><textarea class="input-field" id="dm-body" placeholder="Write your message..." style="min-height:120px;resize:vertical"></textarea></div>
-            <button class="btn-red" onclick="adminSendDM()">Send Message</button>
-            <div class="form-msg" id="dm-msg"></div>
-          </div>
-          <div class="card">
-            <div class="card-title">📨 Message History</div>
-            <div id="dm-history-list"><div class="empty-state"><div class="icon">💬</div>No messages sent yet.</div></div>
-          </div>
-        </div>
-        <div class="card" style="margin-top:1.5rem">
-          <div class="card-title">📬 Inbox (Messages to Admin)</div>
-          <div id="dm-inbox-list"><div class="empty-state"><div class="icon">📬</div>No messages received yet.</div></div>
-        </div>
-      </div>
-
-      <!-- ADMIN ANALYTICS -->
-      <div class="page" id="page-admin-analytics">
-        <div class="page-header"><h2>Analytics</h2><p>Program-wide score trends and insights.</p></div>
-        <div class="card" style="margin-bottom:1.5rem">
-          <div class="card-title">📈 Score Trends Over Time</div>
-          <div class="chart-wrap" style="height:340px"><canvas id="analytics-chart"></canvas></div>
-        </div>
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">🏆 Top Improvers</div>
-            <div id="analytics-improvers"><div class="empty-state"><div class="icon">🏆</div>Not enough data yet.</div></div>
-          </div>
-          <div class="card">
-            <div class="card-title">📊 Program Averages</div>
-            <div id="analytics-averages"><div class="empty-state"><div class="icon">📊</div>Not enough data yet.</div></div>
-          </div>
-        </div>
       </div>
 
       <!-- ADMIN ANNOUNCEMENTS -->
@@ -998,14 +937,6 @@
     `;
 
     loadAdminStats();
-    // Check for unread messages badge
-    setTimeout(async () => {
-      const snap = await getDocs(collection(db,'messages'));
-      let unread = 0;
-      snap.forEach(d => { const m=d.data(); if(m.toId===CU.uid&&!m.read) unread++; });
-      const badge = document.getElementById('admin-msg-badge');
-      if (badge && unread > 0) { badge.textContent = unread; badge.style.display='inline'; }
-    }, 800);
     loadAdminAnnouncements();
     loadAdminSessionsPreview();
     loadUsersTable();
@@ -1289,8 +1220,6 @@
       <div class="sidebar-item" onclick="showPage('tutor-students',this)"><span class="sidebar-icon">👤</span>My Students</div>
       <div class="sidebar-item" onclick="showPage('tutor-sessions',this)"><span class="sidebar-icon">📅</span>Sessions</div>
       <div class="sidebar-item" onclick="showPage('tutor-assignments',this)"><span class="sidebar-icon">📋</span>Assignments</div>
-      <div class="sidebar-section">Support</div>
-      <div class="sidebar-item" onclick="openModal('modal-dm')"><span class="sidebar-icon">💬</span>Message Admin</div>
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
     `;
@@ -1652,8 +1581,6 @@
       <div class="sidebar-item" onclick="showPage('student-sessions',this)"><span class="sidebar-icon">📅</span>My Sessions</div>
       <div class="sidebar-item" onclick="showPage('student-notes',this)"><span class="sidebar-icon">📝</span>Tutor Notes</div>
       <div class="sidebar-item" onclick="showPage('student-assignments',this)"><span class="sidebar-icon">📋</span>Assignments</div>
-      <div class="sidebar-section">Support</div>
-      <div class="sidebar-item" onclick="openModal('modal-dm')"><span class="sidebar-icon">💬</span>Message Admin</div>
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
     `;
@@ -2378,276 +2305,6 @@
     else loadAdminProfiles();
   };
 
-  // ─────────────────────────────────────────
-  // ████  DIRECT MESSAGES
-  // ─────────────────────────────────────────
-
-  // Admin sends DM to a user
-  window.adminSendDM = async function() {
-    const recipientId = document.getElementById('dm-recipient').value;
-    const subject = document.getElementById('dm-subject').value.trim();
-    const body = document.getElementById('dm-body').value.trim();
-    const msg = document.getElementById('dm-msg');
-    if (!recipientId) { showMsg(msg, 'Please select a recipient.', 'error'); return; }
-    if (!body) { showMsg(msg, 'Message cannot be empty.', 'error'); return; }
-    await addDoc(collection(db, 'messages'), {
-      fromId: CU.uid, fromName: CU.name || CU.email, fromRole: 'admin',
-      toId: recipientId, toName: allUsers[recipientId]?.name || allUsers[recipientId]?.email || 'User',
-      subject: subject || '(No subject)', body,
-      read: false, createdAt: new Date().toISOString()
-    });
-    showMsg(msg, 'Message sent!', 'success');
-    document.getElementById('dm-subject').value = '';
-    document.getElementById('dm-body').value = '';
-    setTimeout(() => loadDMHistory(), 600);
-  };
-
-  // Non-admin sends message to admin
-  window.userSendDM = async function() {
-    const subject = document.getElementById('user-dm-subject').value.trim();
-    const body = document.getElementById('user-dm-body').value.trim();
-    const msg = document.getElementById('user-dm-msg');
-    if (!body) { showMsg(msg, 'Message cannot be empty.', 'error'); return; }
-    // Find admin to send to (use master account or first admin)
-    const admins = Object.entries(allUsers).filter(([,u]) => u.role === 'admin');
-    const adminId = admins.find(([,u]) => (u.email||'').toLowerCase() === 'jackroseblue@gmail.com')?.[0] || admins[0]?.[0];
-    if (!adminId) { showMsg(msg, 'Could not find admin. Please try again.', 'error'); return; }
-    await addDoc(collection(db, 'messages'), {
-      fromId: CU.uid, fromName: CU.name || CU.email, fromRole: CU.role,
-      toId: adminId, toName: 'Admin',
-      subject: subject || '(No subject)', body,
-      read: false, createdAt: new Date().toISOString()
-    });
-    showMsg(msg, 'Message sent to admin!', 'success');
-    document.getElementById('user-dm-subject').value = '';
-    document.getElementById('user-dm-body').value = '';
-    setTimeout(() => closeModal('modal-dm'), 1000);
-  };
-
-  async function loadDMHistory() {
-    const el = document.getElementById('dm-history-list');
-    if (!el) return;
-    const snap = await getDocs(collection(db, 'messages'));
-    const sent = [];
-    snap.forEach(d => { const m = {id:d.id,...d.data()}; if (m.fromId === CU.uid) sent.push(m); });
-    sent.sort((a,b) => b.createdAt.localeCompare(a.createdAt));
-    if (!sent.length) { el.innerHTML = '<div class="empty-state"><div class="icon">💬</div>No messages sent yet.</div>'; return; }
-    el.innerHTML = sent.map(m => `
-      <div style="padding:0.9rem;border-bottom:1px solid rgba(192,24,43,0.15)">
-        <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
-          <span style="font-size:0.85rem;font-weight:600;color:#fafaf8">To: ${m.toName}</span>
-          <span style="font-size:0.72rem;color:rgba(250,250,248,0.3)">${new Date(m.createdAt).toLocaleDateString()}</span>
-        </div>
-        <div style="font-size:0.8rem;color:rgba(250,250,248,0.5);margin-bottom:0.3rem">${m.subject}</div>
-        <div style="font-size:0.83rem;color:rgba(250,250,248,0.6);line-height:1.5">${m.body}</div>
-      </div>`).join('');
-  }
-
-  async function loadDMInbox() {
-    const el = document.getElementById('dm-inbox-list');
-    if (!el) return;
-    const snap = await getDocs(collection(db, 'messages'));
-    const inbox = [];
-    snap.forEach(d => { const m = {id:d.id,...d.data()}; if (m.toId === CU.uid) inbox.push(m); });
-    inbox.sort((a,b) => b.createdAt.localeCompare(a.createdAt));
-
-    // Update badge count
-    const unread = inbox.filter(m => !m.read).length;
-    const badge = document.getElementById('admin-msg-badge');
-    if (badge) { badge.textContent = unread; badge.style.display = unread > 0 ? 'inline' : 'none'; }
-
-    if (!inbox.length) { el.innerHTML = '<div class="empty-state"><div class="icon">📬</div>No messages received yet.</div>'; return; }
-    el.innerHTML = inbox.map(m => `
-      <div style="padding:0.9rem;border-bottom:1px solid rgba(192,24,43,0.15);background:${m.read?'transparent':'rgba(192,24,43,0.06)'}">
-        <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
-          <span style="font-size:0.85rem;font-weight:600;color:#fafaf8">From: ${m.fromName} <span style="font-size:0.7rem;color:rgba(250,250,248,0.3)">(${m.fromRole})</span>${!m.read?'<span style="margin-left:0.5rem;font-size:0.65rem;background:#c0182b;color:#fff;padding:0.1rem 0.4rem;border-radius:10px">NEW</span>':''}</span>
-          <span style="font-size:0.72rem;color:rgba(250,250,248,0.3)">${new Date(m.createdAt).toLocaleDateString()}</span>
-        </div>
-        <div style="font-size:0.8rem;color:rgba(250,250,248,0.5);margin-bottom:0.3rem">${m.subject}</div>
-        <div style="font-size:0.83rem;color:rgba(250,250,248,0.6);line-height:1.5">${m.body}</div>
-      </div>`).join('');
-
-    // Mark all as read
-    inbox.filter(m => !m.read).forEach(async m => {
-      await updateDoc(doc(db, 'messages', m.id), { read: true });
-    });
-    if (badge) badge.style.display = 'none';
-  }
-
-  function populateDMRecipients() {
-    const sel = document.getElementById('dm-recipient');
-    if (!sel) return;
-    sel.innerHTML = '<option value="">Select recipient</option>';
-    Object.entries(allUsers).filter(([uid]) => uid !== CU.uid).forEach(([uid, u]) => {
-      sel.innerHTML += `<option value="${uid}">[${u.role}] ${u.name || u.email}</option>`;
-    });
-  }
-
-  // ─────────────────────────────────────────
-  // ████  ANALYTICS
-  // ─────────────────────────────────────────
-
-  let analyticsChartInstance = null;
-
-  async function loadAnalytics() {
-    await cacheAllUsers();
-    const snap = await getDocs(collection(db, 'scores'));
-    const allScores = [];
-    snap.forEach(d => allScores.push({id:d.id,...d.data()}));
-    allScores.sort((a,b) => a.date.localeCompare(b.date));
-
-    if (allScores.length < 2) {
-      document.getElementById('analytics-chart').parentElement.innerHTML = '<div class="empty-state"><div class="icon">📈</div>Log at least 2 scores to see trends.</div>';
-      return;
-    }
-
-    // Group by date — average total across all students
-    const byDate = {};
-    allScores.forEach(s => {
-      if (!byDate[s.date]) byDate[s.date] = { totals:[], maths:[], rws:[] };
-      byDate[s.date].totals.push(s.total);
-      byDate[s.date].maths.push(s.math);
-      byDate[s.date].rws.push(s.rw);
-    });
-    const dates = Object.keys(byDate).sort();
-    const avg = arr => Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
-    const avgTotals = dates.map(d => avg(byDate[d].totals));
-    const avgMaths = dates.map(d => avg(byDate[d].maths));
-    const avgRws = dates.map(d => avg(byDate[d].rws));
-
-    const ctx = document.getElementById('analytics-chart');
-    if (!ctx) return;
-    if (analyticsChartInstance) analyticsChartInstance.destroy();
-    analyticsChartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: dates.map(d => formatDate(d)),
-        datasets: [
-          { label: 'Avg Total', data: avgTotals, borderColor: '#c0182b', backgroundColor: 'rgba(192,24,43,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#c0182b' },
-          { label: 'Avg Math', data: avgMaths, borderColor: '#C8A96E', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointBackgroundColor: '#C8A96E' },
-          { label: 'Avg R&W', data: avgRws, borderColor: 'rgba(250,250,248,0.4)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointBackgroundColor: 'rgba(250,250,248,0.4)' }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: {
-          y: { min: 200, max: 1600, ticks: { color: 'rgba(250,250,248,0.4)', font:{size:11} }, grid: { color: 'rgba(255,255,255,0.05)' } },
-          x: { ticks: { color: 'rgba(250,250,248,0.4)', font:{size:11} }, grid: { color: 'rgba(255,255,255,0.05)' } }
-        },
-        plugins: { legend: { labels: { color: 'rgba(250,250,248,0.6)', font:{size:12} } } }
-      }
-    });
-
-    // Top improvers
-    const studentScores = {};
-    allScores.forEach(s => { if (!studentScores[s.studentId]) studentScores[s.studentId]=[]; studentScores[s.studentId].push(s); });
-    const improvers = Object.entries(studentScores)
-      .filter(([,sc]) => sc.length >= 2)
-      .map(([uid, sc]) => {
-        const sorted = [...sc].sort((a,b)=>a.date.localeCompare(b.date));
-        return { name: allUsers[uid]?.name||'Unknown', improvement: sorted[sorted.length-1].total - sorted[0].total, latest: sorted[sorted.length-1].total };
-      })
-      .sort((a,b) => b.improvement - a.improvement);
-
-    const impEl = document.getElementById('analytics-improvers');
-    if (impEl) {
-      if (!improvers.length) { impEl.innerHTML = '<div class="empty-state"><div class="icon">🏆</div>Not enough data yet.</div>'; }
-      else impEl.innerHTML = improvers.slice(0,5).map((s,i) => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid rgba(192,24,43,0.12)">
-          <div style="display:flex;align-items:center;gap:0.8rem">
-            <span style="font-size:1.1rem">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}</span>
-            <span style="font-size:0.9rem;color:#fafaf8">${s.name}</span>
-          </div>
-          <div style="text-align:right">
-            <span class="improvement-chip ${s.improvement>=0?'improvement-pos':'improvement-neg'}">${s.improvement>=0?'↑ +':'↓ '}${s.improvement} pts</span>
-            <div style="font-size:0.72rem;color:rgba(250,250,248,0.3);margin-top:0.2rem">Latest: ${s.latest}</div>
-          </div>
-        </div>`).join('');
-    }
-
-    // Program averages
-    const avgEl = document.getElementById('analytics-averages');
-    if (avgEl && allScores.length) {
-      const overallAvgTotal = avg(allScores.map(s=>s.total));
-      const overallAvgMath = avg(allScores.map(s=>s.math));
-      const overallAvgRw = avg(allScores.map(s=>s.rw));
-      const students = Object.keys(studentScores).length;
-      avgEl.innerHTML = `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
-          <div style="text-align:center;padding:1rem;background:rgba(192,24,43,0.1);border-radius:6px;border:1px solid rgba(192,24,43,0.2)">
-            <div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;color:#fafaf8">${overallAvgTotal}</div>
-            <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em">Avg Total</div>
-          </div>
-          <div style="text-align:center;padding:1rem;background:rgba(192,24,43,0.1);border-radius:6px;border:1px solid rgba(192,24,43,0.2)">
-            <div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;color:#C8A96E">${students}</div>
-            <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em">Students Tracked</div>
-          </div>
-        </div>
-        <div style="font-size:0.82rem;color:rgba(250,250,248,0.5)">Avg Math: <strong style="color:#fafaf8">${overallAvgMath}</strong> &nbsp;·&nbsp; Avg R&W: <strong style="color:#fafaf8">${overallAvgRw}</strong> &nbsp;·&nbsp; Total scores logged: <strong style="color:#fafaf8">${allScores.length}</strong></div>`;
-    }
-  }
-
-  // ─────────────────────────────────────────
-  // ████  EXPORT
-  // ─────────────────────────────────────────
-
-  window.adminExportCSV = async function() {
-    await cacheAllUsers();
-    const scSnap = await getDocs(collection(db,'scores'));
-    const sesSnap = await getDocs(collection(db,'sessions'));
-    const scores = [], sessions = [];
-    scSnap.forEach(d => scores.push({id:d.id,...d.data()}));
-    sesSnap.forEach(d => sessions.push({id:d.id,...d.data()}));
-
-    // Build scores CSV
-    let csv = 'Student,Email,Date,Math,R&W,Total,Notes
-';
-    scores.sort((a,b)=>a.date.localeCompare(b.date)).forEach(s => {
-      const u = allUsers[s.studentId];
-      csv += `"${u?.name||'Unknown'}","${u?.email||''}","${s.date}","${s.math}","${s.rw}","${s.total}","${(s.notes||'').replace(/"/g,"'")}"
-`;
-    });
-
-    // Build sessions CSV
-    let csv2 = '
-SESSIONS
-Date,Time,Student,Tutor,Location
-';
-    sessions.sort((a,b)=>a.date.localeCompare(b.date)).forEach(s => {
-      const student = allUsers[s.studentId];
-      const tutor = allUsers[s.tutorId];
-      csv2 += `"${s.date}","${s.time||'TBD'}","${student?.name||'Unknown'}","${tutor?.name||'Unknown'}","${s.location||''}"
-`;
-    });
-
-    const blob = new Blob([csv + csv2], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'packer-sat-data.csv';
-    a.click(); URL.revokeObjectURL(url);
-  };
-
-  // Export session history as CSV for a specific student
-  window.exportStudentSessions = async function(studentId, studentName) {
-    const snap = await getDocs(collection(db,'sessions'));
-    const sessions = [];
-    snap.forEach(d => { const s={id:d.id,...d.data()}; if(s.studentId===studentId) sessions.push(s); });
-    sessions.sort((a,b)=>a.date.localeCompare(b.date));
-    let csv = `Session History for ${studentName}
-Date,Time,Tutor,Location
-`;
-    sessions.forEach(s => {
-      const tutor = allUsers[s.tutorId];
-      csv += `"${s.date}","${s.time||'TBD'}","${tutor?.name||'Unknown'}","${s.location||''}"
-`;
-    });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `sessions-${studentName.replace(/\s+/g,'-').toLowerCase()}.csv`;
-    a.click(); URL.revokeObjectURL(url);
-  };
-
   window.showPage = function(pageId, el) {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
@@ -2656,8 +2313,6 @@ Date,Time,Tutor,Location
     if (el) el.classList.add('active');
     if (pageId==='admin-users') loadUsersTable();
     if (pageId==='admin-profiles') loadAdminProfiles();
-    if (pageId==='admin-analytics') loadAnalytics();
-    if (pageId==='admin-messages') { populateDMRecipients(); loadDMHistory(); loadDMInbox(); }
     if (pageId==='admin-scores') { loadAllScores(); populateAdminScoreStudents(); }
     if (pageId==='admin-sessions') loadAdminSessions();
     if (pageId==='admin-announce') loadAdminAnnouncements();
@@ -2688,39 +2343,6 @@ Date,Time,Tutor,Location
   }
 
   document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') window.doLogin(); });
-  document.getElementById('login-btn').addEventListener('click', () => window.doLogin());
-  document.getElementById('google-btn').addEventListener('click', () => window.doGoogleLogin());
-  const forgotBtn = document.getElementById('forgot-btn');
-  if (forgotBtn) forgotBtn.addEventListener('click', () => window.doForgotPassword());
-</script>
-<script>
-  // Global bridge — exposes module functions to inline onclick handlers
-  function doLogin() { window.doLogin && window.doLogin(); }
-  function doGoogleLogin() { window.doGoogleLogin && window.doGoogleLogin(); }
-  function doLogout() { window.doLogout && window.doLogout(); }
-  function doForgotPassword() { window.doForgotPassword && window.doForgotPassword(); }
-  function doChangeEmail() { window.doChangeEmail && window.doChangeEmail(); }
-  function addUser() { window.addUser && window.addUser(); }
-  function adminLogScore() { window.adminLogScore && window.adminLogScore(); }
-  function openModal(id) { window.openModal && window.openModal(id); }
-  function closeModal(id) { window.closeModal && window.closeModal(id); }
-  function showPage(p, el) { window.showPage && window.showPage(p, el); }
-  function promptDelete(uid, name) { window.promptDelete && window.promptDelete(uid, name); }
-  function adminDeleteScore(id, sid) { window.adminDeleteScore && window.adminDeleteScore(id, sid); }
-  function adminDeleteNote(id, sid) { window.adminDeleteNote && window.adminDeleteNote(id, sid); }
-  function adminDeleteAssignment(id) { window.adminDeleteAssignment && window.adminDeleteAssignment(id); }
-  function openAssignmentModal(sid, sname) { window.openAssignmentModal && window.openAssignmentModal(sid, sname); }
-  function openNoteModal(sid, sname) { window.openNoteModal && window.openNoteModal(sid, sname); }
-  function openScoreModal(sid, sname) { window.openScoreModal && window.openScoreModal(sid, sname); }
-  function openAdminSessionModal() { window.openAdminSessionModal && window.openAdminSessionModal(); }
-  function openTutorSessionModal() { window.openTutorSessionModal && window.openTutorSessionModal(); }
-  function markAssignmentDone(id) { window.markAssignmentDone && window.markAssignmentDone(id); }
-  function adminSendDM() { window.adminSendDM && window.adminSendDM(); }
-  function userSendDM() { window.userSendDM && window.userSendDM(); }
-  function adminExportCSV() { window.adminExportCSV && window.adminExportCSV(); }
-  function exportStudentSessions(sid, sname) { window.exportStudentSessions && window.exportStudentSessions(sid, sname); }
-  function deleteSession(id) { window.deleteSession && window.deleteSession(id); }
-  function assignTutor(uid, tid) { window.assignTutor && window.assignTutor(uid, tid); }
 </script>
 </body>
 </html>
