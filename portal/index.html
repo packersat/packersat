@@ -1138,7 +1138,21 @@
       await signOut(secAuth);
       await setDoc(doc(db,'users',uid), { name, email, role, createdAt: new Date().toISOString() });
       allUsers[uid] = { name, email, role };
-      showMsg(msg, `${cap(role)} account created for ${name}!`, 'success');
+
+      // Send welcome email via Brevo
+      try {
+        await sendBrevoEmail({
+          to_email: email,
+          to_name: name,
+          subject: 'Your Packer SAT Tutoring Portal Account',
+          html_content: newAccountEmailHTML(name, email, password, role)
+        });
+        showMsg(msg, `${cap(role)} account created for ${name} — welcome email sent!`, 'success');
+      } catch(emailErr) {
+        console.warn('Email failed (non-critical):', emailErr);
+        showMsg(msg, `${cap(role)} account created for ${name}! (Email failed to send)`, 'success');
+      }
+
       document.getElementById('new-name').value = '';
       document.getElementById('new-email').value = '';
       document.getElementById('new-password').value = '';
@@ -2897,6 +2911,79 @@
           <button class="btn-ghost" style="font-size:0.72rem;padding:0.25rem 0.7rem" onclick="removeFromWaitlist('${s.id}')">Remove</button>
         </td>
       </tr>`).join('');
+  }
+
+  // ─────────────────────────────────────────
+  // BREVO EMAIL
+  // ─────────────────────────────────────────
+
+  async function sendBrevoEmail({ to_email, to_name, subject, html_content }) {
+    const res = await fetch('https://packersat.vercel.app/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to_email, to_name, subject, html_content })
+    });
+    if (!res.ok) throw new Error('Brevo API error');
+  }
+
+  function newAccountEmailHTML(name, email, password, role) {
+    return `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#1A0508;font-family:'Helvetica Neue',Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+        <!-- Header -->
+        <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:40px 40px 30px;border-radius:8px 8px 0 0;text-align:center">
+          <h1 style="margin:0;font-family:Georgia,serif;font-size:28px;font-weight:700;color:#FAFAF8;letter-spacing:0.02em">Packer <span style="color:#C8A96E">SAT</span> Prep</h1>
+          <p style="margin:8px 0 0;color:rgba(250,250,248,0.7);font-size:13px;letter-spacing:0.1em;text-transform:uppercase">Student Portal Access</p>
+        </td></tr>
+        <!-- Body -->
+        <tr><td style="background:#2A0A10;padding:40px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
+          <p style="margin:0 0 20px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi <strong>${name}</strong>,</p>
+          <p style="margin:0 0 24px;color:rgba(250,250,248,0.75);font-size:15px;line-height:1.7">Your Packer SAT Tutoring portal account has been created. You can now log in and access your dashboard, sessions, scores, and resources.</p>
+
+          <!-- Credentials box -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(192,24,43,0.12);border:1px solid rgba(192,24,43,0.3);border-radius:6px;margin-bottom:28px">
+            <tr><td style="padding:24px 28px">
+              <p style="margin:0 0 14px;color:#C8A96E;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase">Your Login Details</p>
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="color:rgba(250,250,248,0.5);font-size:13px;padding:4px 16px 4px 0;white-space:nowrap">Email</td>
+                  <td style="color:#FAFAF8;font-size:14px;font-weight:600;padding:4px 0">${email}</td>
+                </tr>
+                <tr>
+                  <td style="color:rgba(250,250,248,0.5);font-size:13px;padding:4px 16px 4px 0;white-space:nowrap">Password</td>
+                  <td style="color:#FAFAF8;font-size:14px;font-weight:600;padding:4px 0;font-family:monospace">${password}</td>
+                </tr>
+                <tr>
+                  <td style="color:rgba(250,250,248,0.5);font-size:13px;padding:4px 16px 4px 0;white-space:nowrap">Role</td>
+                  <td style="color:#FAFAF8;font-size:14px;font-weight:600;padding:4px 0;text-transform:capitalize">${role}</td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
+
+          <!-- CTA button -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px">
+            <tr><td align="center">
+              <a href="https://www.packersat.org/portal" style="display:inline-block;background:#C0182B;color:#FAFAF8;text-decoration:none;font-size:15px;font-weight:600;padding:14px 36px;border-radius:3px;letter-spacing:0.04em">Log In to Portal</a>
+            </td></tr>
+          </table>
+
+          <p style="margin:0;color:rgba(250,250,248,0.45);font-size:13px;line-height:1.6">We recommend changing your password after your first login. If you have any questions, reply to this email or message an admin through the portal.</p>
+        </td></tr>
+        <!-- Footer -->
+        <tr><td style="background:#0F0305;padding:24px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
+          <p style="margin:0;color:rgba(250,250,248,0.25);font-size:12px">Packer SAT Tutoring &middot; The Packer Collegiate Institute &middot; Brooklyn, NY</p>
+          <p style="margin:6px 0 0;color:rgba(250,250,248,0.2);font-size:11px">Free. Always.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
   }
 
   window.showPage = function(pageId, el) {
