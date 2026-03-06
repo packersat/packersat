@@ -2923,7 +2923,11 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ to_email, to_name, subject, html_content })
     });
-    if (!res.ok) throw new Error('Brevo API error');
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      console.error('Brevo error response:', res.status, errData);
+      throw new Error('Brevo API error: ' + JSON.stringify(errData));
+    }
   }
 
   function newAccountEmailHTML(name, email, password, role) {
@@ -2972,7 +2976,8 @@
             </td></tr>
           </table>
 
-          <p style="margin:0;color:rgba(250,250,248,0.45);font-size:13px;line-height:1.6">We recommend changing your password after your first login. If you have any questions, reply to this email or message an admin through the portal.</p>
+          <p style="margin:0 0 16px;color:rgba(250,250,248,0.45);font-size:13px;line-height:1.6">We recommend changing your password after your first login.</p>
+          <p style="margin:0;color:rgba(250,250,248,0.45);font-size:13px;line-height:1.6">If you'd like to reset your password, you can click the <strong style="color:rgba(250,250,248,0.6)">Forgot Password</strong> button on the login page, or reach out to an admin directly using the <strong style="color:rgba(250,250,248,0.6)">Message Admin</strong> button inside the portal.</p>
         </td></tr>
         <!-- Footer -->
         <tr><td style="background:#0F0305;padding:24px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
