@@ -308,8 +308,8 @@
         <span id="nav-username"></span>
         <span class="role-pill" id="nav-role"></span>
       </div>
-      <a href="https://www.packersat.org" class="logout-btn" style="text-decoration:none">🏠 Home</a>
-      <button class="logout-btn" onclick="openModal('modal-change-email')">✉️ Change Email</button>
+      <a href="https://www.packersat.org" class="logout-btn" style="text-decoration:none"> Home</a>
+      <button class="logout-btn" onclick="openModal('modal-change-email')">️ Change Email</button>
       <button class="logout-btn" onclick="doLogout()">Sign Out</button>
     </div>
   </nav>
@@ -710,20 +710,20 @@
   function buildAdminPortal() {
     document.getElementById('sidebar').innerHTML = `
       <div class="sidebar-section">Main</div>
-      <div class="sidebar-item active" onclick="showPage('admin-dashboard',this)"><span class="sidebar-icon">🏠</span>Dashboard</div>
+      <div class="sidebar-item active" onclick="showPage('admin-dashboard',this)"><span class="sidebar-icon"></span>Dashboard</div>
       <div class="sidebar-section">Management</div>
-      <div class="sidebar-item" onclick="showPage('admin-users',this)"><span class="sidebar-icon">👥</span>Manage Users</div>
-      <div class="sidebar-item" onclick="showPage('admin-scores',this)"><span class="sidebar-icon">📊</span>Scores</div>
-      <div class="sidebar-item" onclick="showPage('admin-sessions',this)"><span class="sidebar-icon">📅</span>Sessions</div>
-      <div class="sidebar-item" onclick="showPage('admin-announce',this)"><span class="sidebar-icon">📢</span>Announcements</div>
+      <div class="sidebar-item" onclick="showPage('admin-users',this)"><span class="sidebar-icon"></span>Manage Users</div>
+      <div class="sidebar-item" onclick="showPage('admin-scores',this)"><span class="sidebar-icon"></span>Scores</div>
+      <div class="sidebar-item" onclick="showPage('admin-sessions',this)"><span class="sidebar-icon"></span>Sessions</div>
+      <div class="sidebar-item" onclick="showPage('admin-announce',this)"><span class="sidebar-icon"></span>Announcements</div>
       <div class="sidebar-section">Resources</div>
-      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
+      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
       <div class="sidebar-section">Students</div>
-      <div class="sidebar-item" onclick="showPage('admin-profiles',this)"><span class="sidebar-icon">🎓</span>Student Profiles</div>
+      <div class="sidebar-item" onclick="showPage('admin-profiles',this)"><span class="sidebar-icon"></span>Student Profiles</div>
       <div class="sidebar-section">Tools</div>
-      <div class="sidebar-item" onclick="showPage('admin-messages',this)"><span class="sidebar-icon">💬</span>Direct Messages <span id="admin-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
-      <div class="sidebar-item" onclick="showPage('admin-analytics',this)"><span class="sidebar-icon">📈</span>Analytics</div>
-      <div class="sidebar-item" onclick="adminExportCSV()"><span class="sidebar-icon">⬇️</span>Export Data</div>
+      <div class="sidebar-item" onclick="showPage('admin-messages',this)"><span class="sidebar-icon"></span>Direct Messages <span id="admin-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
+      <div class="sidebar-item" onclick="showPage('admin-analytics',this)"><span class="sidebar-icon"></span>Analytics</div>
+      <div class="sidebar-item" onclick="adminExportCSV()"><span class="sidebar-icon">️</span>Export Data</div>
     `;
 
     document.getElementById('main-content').innerHTML = `
@@ -741,17 +741,17 @@
         </div>
         <div class="grid-2" style="margin-bottom:1.5rem">
           <div class="card">
-            <div class="card-title">📢 Announcements <button class="btn-red" onclick="openModal('modal-announce')" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Post</button></div>
-            <div id="admin-announces-list"><div class="empty-state"><div class="icon">📢</div>No announcements yet.</div></div>
+            <div class="card-title"> Announcements <button class="btn-red" onclick="openModal('modal-announce')" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Post</button></div>
+            <div id="admin-announces-list"><div class="empty-state"><div class="icon"></div>No announcements yet.</div></div>
           </div>
           <div class="card">
-            <div class="card-title">📅 Upcoming Sessions</div>
-            <div id="admin-sessions-preview"><div class="empty-state"><div class="icon">📅</div>No sessions scheduled.</div></div>
+            <div class="card-title"> Upcoming Sessions</div>
+            <div id="admin-sessions-preview"><div class="empty-state"><div class="icon"></div>No sessions scheduled.</div></div>
           </div>
         </div>
         <div class="card">
-          <div class="card-title">🎯 Student Progress Summary</div>
-          <div id="admin-progress-summary"><div class="empty-state"><div class="icon">🎯</div>No student data yet.</div></div>
+          <div class="card-title"> Student Progress Summary</div>
+          <div id="admin-progress-summary"><div class="empty-state"><div class="icon"></div>No student data yet.</div></div>
         </div>
       </div>
 
@@ -760,14 +760,14 @@
         <div class="page-header"><h2>Manage Users</h2><p>Create accounts and assign tutors to students.</p></div>
         <div class="grid-2" style="margin-bottom:1.5rem">
           <div class="card">
-            <div class="card-title">➕ Add New User</div>
+            <div class="card-title"> Add New User</div>
             <div class="form-row"><div><div class="field-label">Full Name</div><input class="input-field" type="text" id="new-name" placeholder="Full name" /></div><div><div class="field-label">Email</div><input class="input-field" type="email" id="new-email" placeholder="Email" /></div></div>
             <div class="form-row"><div><div class="field-label">Password</div><input class="input-field" type="password" id="new-password" placeholder="Min 6 chars" /></div><div><div class="field-label">Role</div><select class="input-field" id="new-role"><option value="student">Student</option><option value="tutor">Tutor</option><option value="admin">Admin</option></select></div></div>
             <button class="btn-red" id="add-user-btn" onclick="addUser()">Create Account</button>
             <div class="form-msg" id="add-user-msg"></div>
           </div>
           <div class="card">
-            <div class="card-title">💡 Tips</div>
+            <div class="card-title"> Tips</div>
             <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.9">
               • Assign tutors to students from the students table below.<br>
               • Scores can be logged from the Scores page.<br>
@@ -776,8 +776,8 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-title">👥 All Users</div>
-          <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Tutor Assigned</th><th>Actions</th></tr></thead><tbody id="users-tbody"><tr><td colspan="5"><div class="empty-state"><div class="icon">👥</div>No users yet.</div></td></tr></tbody></table></div>
+          <div class="card-title"> All Users</div>
+          <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Tutor Assigned</th><th>Actions</th></tr></thead><tbody id="users-tbody"><tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No users yet.</div></td></tr></tbody></table></div>
         </div>
       </div>
 
@@ -799,8 +799,8 @@
           <div class="form-msg" id="admin-score-msg"></div>
         </div>
         <div class="card">
-          <div class="card-title">📊 All Scores <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">⬇️ Export CSV</button></div>
-          <div class="table-wrap"><table><thead><tr><th>Student</th><th>Date</th><th>Math</th><th>R&W</th><th>Total</th><th>Notes</th></tr></thead><tbody id="admin-scores-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon">📊</div>No scores logged yet.</div></td></tr></tbody></table></div>
+          <div class="card-title"> All Scores <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">️ Export CSV</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Student</th><th>Date</th><th>Math</th><th>R&W</th><th>Total</th><th>Notes</th></tr></thead><tbody id="admin-scores-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No scores logged yet.</div></td></tr></tbody></table></div>
         </div>
       </div>
 
@@ -808,15 +808,15 @@
       <div class="page" id="page-admin-sessions">
         <div class="page-header"><h2>Sessions</h2><p>Schedule and manage tutoring sessions.</p></div>
         <div class="card">
-          <div class="card-title">All Sessions <button class="btn-red" onclick="openAdminSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button> <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">⬇️ Export CSV</button></div>
-          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th><th>Actions</th></tr></thead><tbody id="admin-sessions-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon">📅</div>No sessions yet.</div></td></tr></tbody></table></div>
+          <div class="card-title">All Sessions <button class="btn-red" onclick="openAdminSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button> <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">️ Export CSV</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th><th>Actions</th></tr></thead><tbody id="admin-sessions-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No sessions yet.</div></td></tr></tbody></table></div>
         </div>
       </div>
 
       <!-- ADMIN STUDENT PROFILES -->
       <div class="page" id="page-admin-profiles">
         <div class="page-header"><h2>Student Profiles</h2><p>View full details, scores, and notes for each student.</p></div>
-        <div id="admin-profiles-list"><div class="empty-state"><div class="icon">🎓</div>No students yet.</div></div>
+        <div id="admin-profiles-list"><div class="empty-state"><div class="icon"></div>No students yet.</div></div>
       </div>
 
       <!-- ADMIN DIRECT MESSAGES -->
@@ -824,7 +824,7 @@
         <div class="page-header"><h2>Direct Messages</h2><p>Send private messages to any user.</p></div>
         <div class="grid-2" style="align-items:flex-start">
           <div class="card">
-            <div class="card-title">💬 Send a Message</div>
+            <div class="card-title"> Send a Message</div>
             <div style="margin-bottom:0.8rem"><div class="field-label">To</div><select class="input-field" id="dm-recipient"></select></div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Subject</div><input class="input-field" type="text" id="dm-subject" placeholder="e.g. Session reminder" /></div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Message</div><textarea class="input-field" id="dm-body" placeholder="Write your message..." style="min-height:120px;resize:vertical"></textarea></div>
@@ -832,13 +832,13 @@
             <div class="form-msg" id="dm-msg"></div>
           </div>
           <div class="card">
-            <div class="card-title">📨 Message History</div>
-            <div id="dm-history-list"><div class="empty-state"><div class="icon">💬</div>No messages sent yet.</div></div>
+            <div class="card-title"> Message History</div>
+            <div id="dm-history-list"><div class="empty-state"><div class="icon"></div>No messages sent yet.</div></div>
           </div>
         </div>
         <div class="card" style="margin-top:1.5rem">
-          <div class="card-title">📬 Inbox (Messages to Admin)</div>
-          <div id="dm-inbox-list"><div class="empty-state"><div class="icon">📬</div>No messages received yet.</div></div>
+          <div class="card-title"> Inbox (Messages to Admin)</div>
+          <div id="dm-inbox-list"><div class="empty-state"><div class="icon"></div>No messages received yet.</div></div>
         </div>
       </div>
 
@@ -846,17 +846,17 @@
       <div class="page" id="page-admin-analytics">
         <div class="page-header"><h2>Analytics</h2><p>Program-wide score trends and insights.</p></div>
         <div class="card" style="margin-bottom:1.5rem">
-          <div class="card-title">📈 Score Trends Over Time</div>
+          <div class="card-title"> Score Trends Over Time</div>
           <div class="chart-wrap" style="height:340px"><canvas id="analytics-chart"></canvas></div>
         </div>
         <div class="grid-2">
           <div class="card">
-            <div class="card-title">🏆 Top Improvers</div>
-            <div id="analytics-improvers"><div class="empty-state"><div class="icon">🏆</div>Not enough data yet.</div></div>
+            <div class="card-title"> Top Improvers</div>
+            <div id="analytics-improvers"><div class="empty-state"><div class="icon"></div>Not enough data yet.</div></div>
           </div>
           <div class="card">
-            <div class="card-title">📊 Program Averages</div>
-            <div id="analytics-averages"><div class="empty-state"><div class="icon">📊</div>Not enough data yet.</div></div>
+            <div class="card-title"> Program Averages</div>
+            <div id="analytics-averages"><div class="empty-state"><div class="icon"></div>Not enough data yet.</div></div>
           </div>
         </div>
       </div>
@@ -866,7 +866,7 @@
         <div class="page-header"><h2>Announcements</h2><p>Post updates visible to all users.</p></div>
         <div class="card">
           <div class="card-title">All Announcements <button class="btn-red" onclick="openModal('modal-announce')" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Post</button></div>
-          <div id="admin-all-announces"><div class="empty-state"><div class="icon">📢</div>No announcements posted.</div></div>
+          <div id="admin-all-announces"><div class="empty-state"><div class="icon"></div>No announcements posted.</div></div>
         </div>
       </div>
 
@@ -875,15 +875,15 @@
         <div class="page-header"><h2>Messages</h2><p>Send and receive messages with the admin.</p></div>
         <div class="grid-2" style="align-items:flex-start">
           <div class="card">
-            <div class="card-title">💬 Send a Message</div>
+            <div class="card-title"> Send a Message</div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Subject</div><input class="input-field" type="text" id="student-dm-subject" placeholder="e.g. Question about my sessions" /></div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Message</div><textarea class="input-field" id="student-dm-body" placeholder="Write your message..." style="min-height:120px;resize:vertical"></textarea></div>
             <button class="btn-red" onclick="studentSendDM()">Send Message</button>
             <div class="form-msg" id="student-dm-msg"></div>
           </div>
           <div class="card">
-            <div class="card-title">📨 My Messages</div>
-            <div id="student-dm-thread"><div class="empty-state"><div class="icon">💬</div>No messages yet.</div></div>
+            <div class="card-title"> My Messages</div>
+            <div id="student-dm-thread"><div class="empty-state"><div class="icon"></div>No messages yet.</div></div>
           </div>
         </div>
       </div>
@@ -891,7 +891,7 @@
       <!-- STUDENT ASSIGNMENTS -->
       <div class="page" id="page-student-assignments">
         <div class="page-header"><h2>Assignments</h2><p>Tasks and practice assigned by your tutor.</p></div>
-        <div id="student-assignments-list"><div class="empty-state"><div class="icon">📋</div>No assignments yet.</div></div>
+        <div id="student-assignments-list"><div class="empty-state"><div class="icon"></div>No assignments yet.</div></div>
       </div>
 
       <!-- PREP RESOURCES PAGE -->
@@ -904,7 +904,7 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
 
           <a href="https://www.khanacademy.org/test-prep" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">🎓</div>
+            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Khan Academy SAT Prep</div>
               <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons. Completely free.</div>
@@ -913,7 +913,7 @@
           </a>
 
           <a href="https://bluebook.collegeboard.org" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);">📘</div>
+            <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Bluebook</div>
               <div class="resource-desc">The official College Board app for taking the Digital SAT. Take full official practice tests in the exact same format as the real exam.</div>
@@ -922,7 +922,7 @@
           </a>
 
           <a href="https://www.collegeboard.org" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(0,60,130,0.15);border-color:rgba(0,60,130,0.3);">🏛️</div>
+            <div class="resource-icon" style="background:rgba(0,60,130,0.15);border-color:rgba(0,60,130,0.3);">️</div>
             <div class="resource-info">
               <div class="resource-name">College Board</div>
               <div class="resource-desc">Official SAT information, registration, score reporting, test dates, and study resources straight from the source.</div>
@@ -931,7 +931,7 @@
           </a>
 
           <a href="https://www.desmos.com/calculator" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);">📐</div>
+            <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Desmos Calculator</div>
               <div class="resource-desc">The exact graphing and scientific calculator available on the Digital SAT. Practice using it so you're familiar on test day.</div>
@@ -940,7 +940,7 @@
           </a>
 
           <a href="https://oneprep.xyz" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(100,50,150,0.15);border-color:rgba(100,50,150,0.3);">⚡</div>
+            <div class="resource-icon" style="background:rgba(100,50,150,0.15);border-color:rgba(100,50,150,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">OnePrep</div>
               <div class="resource-desc">Adaptive Digital SAT practice with detailed explanations. Great for drilling specific question types and building speed.</div>
@@ -949,7 +949,7 @@
           </a>
 
           <a href="https://www.testinnovators.com/practice-test/sat" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(20,100,80,0.15);border-color:rgba(20,100,80,0.3);">🧪</div>
+            <div class="resource-icon" style="background:rgba(20,100,80,0.15);border-color:rgba(20,100,80,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Test Innovators</div>
               <div class="resource-desc">Full-length Digital SAT practice tests with score reports, detailed analytics, and question-by-question breakdowns.</div>
@@ -958,7 +958,7 @@
           </a>
 
           <a href="https://www.reddit.com/r/Sat/" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(255,70,0,0.1);border-color:rgba(255,70,0,0.2);">💬</div>
+            <div class="resource-icon" style="background:rgba(255,70,0,0.1);border-color:rgba(255,70,0,0.2);"></div>
             <div class="resource-info">
               <div class="resource-name">r/SAT on Reddit</div>
               <div class="resource-desc">A huge community of SAT takers sharing tips, strategies, practice questions, and score reports. Great for motivation and advice.</div>
@@ -967,7 +967,7 @@
           </a>
 
           <a href="https://www.prepscholar.com/sat/s/resources" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(192,24,43,0.12);border-color:rgba(192,24,43,0.25);">📚</div>
+            <div class="resource-icon" style="background:rgba(192,24,43,0.12);border-color:rgba(192,24,43,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">PrepScholar Blog</div>
               <div class="resource-desc">In-depth guides on every SAT topic, strategy articles, score improvement plans, and breakdowns of every question type.</div>
@@ -976,7 +976,7 @@
           </a>
 
           <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(180,0,0,0.12);border-color:rgba(180,0,0,0.25);">▶️</div>
+            <div class="resource-icon" style="background:rgba(180,0,0,0.12);border-color:rgba(180,0,0,0.25);">️</div>
             <div class="resource-info">
               <div class="resource-name">The Organic Chemistry Tutor</div>
               <div class="resource-desc">Excellent YouTube channel with hundreds of SAT Math videos. Clear, step-by-step explanations of every concept tested.</div>
@@ -985,7 +985,7 @@
           </a>
 
           <a href="https://www.vocabulary.com/lists/194479" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(50,100,180,0.12);border-color:rgba(50,100,180,0.25);">🔤</div>
+            <div class="resource-icon" style="background:rgba(50,100,180,0.12);border-color:rgba(50,100,180,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">SAT Vocabulary List</div>
               <div class="resource-desc">Master the most commonly tested SAT vocabulary words with interactive flashcards and adaptive quizzing on Vocabulary.com.</div>
@@ -994,7 +994,7 @@
           </a>
 
           <a href="https://www.princetonreview.com/college/sat-information" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.25);">🏫</div>
+            <div class="resource-icon" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">Princeton Review SAT Info</div>
               <div class="resource-desc">Comprehensive overview of the Digital SAT format, scoring, sections, timing, and free practice resources.</div>
@@ -1003,13 +1003,14 @@
           </a>
 
           <a href="https://collegepanda.com" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(0,140,100,0.12);border-color:rgba(0,140,100,0.25);">🐼</div>
+            <div class="resource-icon" style="background:rgba(0,140,100,0.12);border-color:rgba(0,140,100,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">College Panda</div>
               <div class="resource-desc">Highly rated SAT Math and Writing workbooks and free online resources. Known for concise, effective explanations.</div>
               <div class="resource-tag">Free + Paid Books</div>
             </div>
           </a>
+
 
         </div>
       </div>
@@ -1052,7 +1053,7 @@
     const tutors = Object.entries(allUsers).filter(([,u]) => u.role === 'tutor');
     const entries = Object.entries(allUsers);
     if (!entries.length) {
-      tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">👥</div>No users yet.</div></td></tr>'; return;
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No users yet.</div></td></tr>'; return;
     }
     entries.forEach(([uid, u]) => {
       const assignedTutor = u.tutorId ? (allUsers[u.tutorId]?.name || 'Unknown') : '—';
@@ -1062,7 +1063,7 @@
         <td>${u.name||'—'}</td>
         <td style="color:rgba(250,250,248,0.5)">${u.email}</td>
         <td><span class="badge badge-${u.role}">${u.role}</span></td>
-        <td>${u.role==='student' ? `<button class="action-btn" onclick="openAssignModal('${uid.trim()}','${(u.name||'').replace(/'/g,"\\'")}')">📎 ${assignedTutor}</button>` : '—'}</td>
+        <td>${u.role==='student' ? `<button class="action-btn" onclick="openAssignModal('${uid.trim()}','${(u.name||'').replace(/'/g,"\\'")}')"> ${assignedTutor}</button>` : '—'}</td>
         <td>${(u.email||'').toLowerCase() === 'jackroseblue@gmail.com' ? '<span style="font-size:0.72rem;color:rgba(250,250,248,0.25);letter-spacing:0.05em">Master Account</span>' : `<button class="action-btn danger" onclick="promptDelete('${uid}','${(u.name||u.email).replace(/'/g,"\\'")}')">Remove</button>`}</td>`;
       tbody.appendChild(tr);
     });
@@ -1124,7 +1125,7 @@
     const tbody = document.getElementById('admin-scores-tbody');
     if (!tbody) return;
     const snap = await getDocs(collection(db,'scores'));
-    if (snap.empty) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">📊</div>No scores yet.</div></td></tr>'; return; }
+    if (snap.empty) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No scores yet.</div></td></tr>'; return; }
     const rows = [];
     snap.forEach(d => rows.push({id:d.id,...d.data()}));
     rows.sort((a,b)=>b.date.localeCompare(a.date));
@@ -1143,7 +1144,7 @@
     const tbody = document.getElementById('admin-sessions-tbody');
     if (!tbody) return;
     const snap = await getDocs(collection(db,'sessions'));
-    if (snap.empty) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">📅</div>No sessions yet.</div></td></tr>'; return; }
+    if (snap.empty) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No sessions yet.</div></td></tr>'; return; }
     const rows = [];
     snap.forEach(d => rows.push({id:d.id,...d.data()}));
     rows.sort((a,b)=>a.date.localeCompare(b.date));
@@ -1162,7 +1163,7 @@
     const el = document.getElementById('admin-sessions-preview');
     if (!el) return;
     const snap = await getDocs(collection(db,'sessions'));
-    if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="icon">📅</div>No sessions scheduled.</div>'; return; }
+    if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No sessions scheduled.</div>'; return; }
     const rows = [];
     snap.forEach(d=>rows.push(d.data()));
     rows.sort((a,b)=>a.date.localeCompare(b.date));
@@ -1231,7 +1232,7 @@
     const list1 = document.getElementById('admin-announces-list');
     const list2 = document.getElementById('admin-all-announces');
     if (snap.empty) {
-      const empty = '<div class="empty-state"><div class="icon">📢</div>No announcements.</div>';
+      const empty = '<div class="empty-state"><div class="icon"></div>No announcements.</div>';
       if (list1) list1.innerHTML = empty;
       if (list2) list2.innerHTML = empty;
       return;
@@ -1302,15 +1303,15 @@
   function buildTutorPortal() {
     document.getElementById('sidebar').innerHTML = `
       <div class="sidebar-section">Main</div>
-      <div class="sidebar-item active" onclick="showPage('tutor-dashboard',this)"><span class="sidebar-icon">🏠</span>Dashboard</div>
+      <div class="sidebar-item active" onclick="showPage('tutor-dashboard',this)"><span class="sidebar-icon"></span>Dashboard</div>
       <div class="sidebar-section">My Work</div>
-      <div class="sidebar-item" onclick="showPage('tutor-students',this)"><span class="sidebar-icon">👤</span>My Students</div>
-      <div class="sidebar-item" onclick="showPage('tutor-sessions',this)"><span class="sidebar-icon">📅</span>Sessions</div>
-      <div class="sidebar-item" onclick="showPage('tutor-assignments',this)"><span class="sidebar-icon">📋</span>Assignments</div>
+      <div class="sidebar-item" onclick="showPage('tutor-students',this)"><span class="sidebar-icon"></span>My Students</div>
+      <div class="sidebar-item" onclick="showPage('tutor-sessions',this)"><span class="sidebar-icon"></span>Sessions</div>
+      <div class="sidebar-item" onclick="showPage('tutor-assignments',this)"><span class="sidebar-icon"></span>Assignments</div>
       <div class="sidebar-section">Support</div>
-      <div class="sidebar-item" onclick="showPage('tutor-messages',this)"><span class="sidebar-icon">💬</span>Messages <span id="tutor-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
+      <div class="sidebar-item" onclick="showPage('tutor-messages',this)"><span class="sidebar-icon"></span>Messages <span id="tutor-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-section">Resources</div>
-      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
+      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
     `;
 
     document.getElementById('main-content').innerHTML = `
@@ -1327,24 +1328,24 @@
         </div>
         <div class="grid-2">
           <div class="card">
-            <div class="card-title">📅 Upcoming Sessions</div>
-            <div id="tutor-sessions-preview"><div class="empty-state"><div class="icon">📅</div>No upcoming sessions.</div></div>
+            <div class="card-title"> Upcoming Sessions</div>
+            <div id="tutor-sessions-preview"><div class="empty-state"><div class="icon"></div>No upcoming sessions.</div></div>
           </div>
           <div class="card">
-            <div class="card-title">📢 Announcements</div>
-            <div id="tutor-announces"><div class="empty-state"><div class="icon">📢</div>No announcements.</div></div>
+            <div class="card-title"> Announcements</div>
+            <div id="tutor-announces"><div class="empty-state"><div class="icon"></div>No announcements.</div></div>
           </div>
         </div>
         <div class="card">
-          <div class="card-title">🎯 My Students Progress</div>
-          <div id="tutor-progress-summary"><div class="empty-state"><div class="icon">🎯</div>No student data yet.</div></div>
+          <div class="card-title"> My Students Progress</div>
+          <div id="tutor-progress-summary"><div class="empty-state"><div class="icon"></div>No student data yet.</div></div>
         </div>
       </div>
 
       <!-- TUTOR STUDENTS -->
       <div class="page" id="page-tutor-students">
         <div class="page-header"><h2>My Students</h2><p>View scores, add notes, and schedule sessions.</p></div>
-        <div id="tutor-students-list"><div class="empty-state"><div class="icon">👤</div>No students assigned yet.</div></div>
+        <div id="tutor-students-list"><div class="empty-state"><div class="icon"></div>No students assigned yet.</div></div>
       </div>
 
       <!-- TUTOR SESSIONS -->
@@ -1361,15 +1362,15 @@
         <div class="page-header"><h2>Messages</h2><p>Send and receive messages with the admin.</p></div>
         <div class="grid-2" style="align-items:flex-start">
           <div class="card">
-            <div class="card-title">💬 Send a Message</div>
+            <div class="card-title"> Send a Message</div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Subject</div><input class="input-field" type="text" id="tutor-dm-subject" placeholder="e.g. Question about my student" /></div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Message</div><textarea class="input-field" id="tutor-dm-body" placeholder="Write your message..." style="min-height:120px;resize:vertical"></textarea></div>
             <button class="btn-red" onclick="tutorSendDM()">Send Message</button>
             <div class="form-msg" id="tutor-dm-msg"></div>
           </div>
           <div class="card">
-            <div class="card-title">📨 My Messages</div>
-            <div id="tutor-dm-thread"><div class="empty-state"><div class="icon">💬</div>No messages yet.</div></div>
+            <div class="card-title"> My Messages</div>
+            <div id="tutor-dm-thread"><div class="empty-state"><div class="icon"></div>No messages yet.</div></div>
           </div>
         </div>
       </div>
@@ -1377,7 +1378,7 @@
       <!-- TUTOR ASSIGNMENTS -->
       <div class="page" id="page-tutor-assignments">
         <div class="page-header"><h2>Assignments</h2><p>Create and track assignments for your students.</p></div>
-        <div id="tutor-assignments-list"><div class="empty-state"><div class="icon">📋</div>No assignments yet.</div></div>
+        <div id="tutor-assignments-list"><div class="empty-state"><div class="icon"></div>No assignments yet.</div></div>
       </div>
 
       <!-- STUDENT MESSAGES -->
@@ -1385,15 +1386,15 @@
         <div class="page-header"><h2>Messages</h2><p>Send and receive messages with the admin.</p></div>
         <div class="grid-2" style="align-items:flex-start">
           <div class="card">
-            <div class="card-title">💬 Send a Message</div>
+            <div class="card-title"> Send a Message</div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Subject</div><input class="input-field" type="text" id="student-dm-subject" placeholder="e.g. Question about my sessions" /></div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Message</div><textarea class="input-field" id="student-dm-body" placeholder="Write your message..." style="min-height:120px;resize:vertical"></textarea></div>
             <button class="btn-red" onclick="studentSendDM()">Send Message</button>
             <div class="form-msg" id="student-dm-msg"></div>
           </div>
           <div class="card">
-            <div class="card-title">📨 My Messages</div>
-            <div id="student-dm-thread"><div class="empty-state"><div class="icon">💬</div>No messages yet.</div></div>
+            <div class="card-title"> My Messages</div>
+            <div id="student-dm-thread"><div class="empty-state"><div class="icon"></div>No messages yet.</div></div>
           </div>
         </div>
       </div>
@@ -1401,7 +1402,7 @@
       <!-- STUDENT ASSIGNMENTS -->
       <div class="page" id="page-student-assignments">
         <div class="page-header"><h2>Assignments</h2><p>Tasks and practice assigned by your tutor.</p></div>
-        <div id="student-assignments-list"><div class="empty-state"><div class="icon">📋</div>No assignments yet.</div></div>
+        <div id="student-assignments-list"><div class="empty-state"><div class="icon"></div>No assignments yet.</div></div>
       </div>
 
       <!-- PREP RESOURCES PAGE -->
@@ -1414,7 +1415,7 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
 
           <a href="https://www.khanacademy.org/test-prep" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">🎓</div>
+            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Khan Academy SAT Prep</div>
               <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons. Completely free.</div>
@@ -1423,7 +1424,7 @@
           </a>
 
           <a href="https://bluebook.collegeboard.org" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);">📘</div>
+            <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Bluebook</div>
               <div class="resource-desc">The official College Board app for taking the Digital SAT. Take full official practice tests in the exact same format as the real exam.</div>
@@ -1432,7 +1433,7 @@
           </a>
 
           <a href="https://www.collegeboard.org" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(0,60,130,0.15);border-color:rgba(0,60,130,0.3);">🏛️</div>
+            <div class="resource-icon" style="background:rgba(0,60,130,0.15);border-color:rgba(0,60,130,0.3);">️</div>
             <div class="resource-info">
               <div class="resource-name">College Board</div>
               <div class="resource-desc">Official SAT information, registration, score reporting, test dates, and study resources straight from the source.</div>
@@ -1441,7 +1442,7 @@
           </a>
 
           <a href="https://www.desmos.com/calculator" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);">📐</div>
+            <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Desmos Calculator</div>
               <div class="resource-desc">The exact graphing and scientific calculator available on the Digital SAT. Practice using it so you're familiar on test day.</div>
@@ -1450,7 +1451,7 @@
           </a>
 
           <a href="https://oneprep.xyz" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(100,50,150,0.15);border-color:rgba(100,50,150,0.3);">⚡</div>
+            <div class="resource-icon" style="background:rgba(100,50,150,0.15);border-color:rgba(100,50,150,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">OnePrep</div>
               <div class="resource-desc">Adaptive Digital SAT practice with detailed explanations. Great for drilling specific question types and building speed.</div>
@@ -1459,7 +1460,7 @@
           </a>
 
           <a href="https://www.testinnovators.com/practice-test/sat" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(20,100,80,0.15);border-color:rgba(20,100,80,0.3);">🧪</div>
+            <div class="resource-icon" style="background:rgba(20,100,80,0.15);border-color:rgba(20,100,80,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Test Innovators</div>
               <div class="resource-desc">Full-length Digital SAT practice tests with score reports, detailed analytics, and question-by-question breakdowns.</div>
@@ -1468,7 +1469,7 @@
           </a>
 
           <a href="https://www.reddit.com/r/Sat/" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(255,70,0,0.1);border-color:rgba(255,70,0,0.2);">💬</div>
+            <div class="resource-icon" style="background:rgba(255,70,0,0.1);border-color:rgba(255,70,0,0.2);"></div>
             <div class="resource-info">
               <div class="resource-name">r/SAT on Reddit</div>
               <div class="resource-desc">A huge community of SAT takers sharing tips, strategies, practice questions, and score reports. Great for motivation and advice.</div>
@@ -1477,7 +1478,7 @@
           </a>
 
           <a href="https://www.prepscholar.com/sat/s/resources" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(192,24,43,0.12);border-color:rgba(192,24,43,0.25);">📚</div>
+            <div class="resource-icon" style="background:rgba(192,24,43,0.12);border-color:rgba(192,24,43,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">PrepScholar Blog</div>
               <div class="resource-desc">In-depth guides on every SAT topic, strategy articles, score improvement plans, and breakdowns of every question type.</div>
@@ -1486,7 +1487,7 @@
           </a>
 
           <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(180,0,0,0.12);border-color:rgba(180,0,0,0.25);">▶️</div>
+            <div class="resource-icon" style="background:rgba(180,0,0,0.12);border-color:rgba(180,0,0,0.25);">️</div>
             <div class="resource-info">
               <div class="resource-name">The Organic Chemistry Tutor</div>
               <div class="resource-desc">Excellent YouTube channel with hundreds of SAT Math videos. Clear, step-by-step explanations of every concept tested.</div>
@@ -1495,7 +1496,7 @@
           </a>
 
           <a href="https://www.vocabulary.com/lists/194479" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(50,100,180,0.12);border-color:rgba(50,100,180,0.25);">🔤</div>
+            <div class="resource-icon" style="background:rgba(50,100,180,0.12);border-color:rgba(50,100,180,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">SAT Vocabulary List</div>
               <div class="resource-desc">Master the most commonly tested SAT vocabulary words with interactive flashcards and adaptive quizzing on Vocabulary.com.</div>
@@ -1504,7 +1505,7 @@
           </a>
 
           <a href="https://www.princetonreview.com/college/sat-information" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.25);">🏫</div>
+            <div class="resource-icon" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">Princeton Review SAT Info</div>
               <div class="resource-desc">Comprehensive overview of the Digital SAT format, scoring, sections, timing, and free practice resources.</div>
@@ -1513,13 +1514,14 @@
           </a>
 
           <a href="https://collegepanda.com" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(0,140,100,0.12);border-color:rgba(0,140,100,0.25);">🐼</div>
+            <div class="resource-icon" style="background:rgba(0,140,100,0.12);border-color:rgba(0,140,100,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">College Panda</div>
               <div class="resource-desc">Highly rated SAT Math and Writing workbooks and free online resources. Known for concise, effective explanations.</div>
               <div class="resource-tag">Free + Paid Books</div>
             </div>
           </a>
+
 
         </div>
       </div>
@@ -1550,7 +1552,7 @@
     // Sessions preview
     const preview = document.getElementById('tutor-sessions-preview');
     const upcoming = mySessions.filter(s=>s.date>=today()).sort((a,b)=>a.date.localeCompare(b.date));
-    if (!upcoming.length) { preview.innerHTML = '<div class="empty-state"><div class="icon">📅</div>No upcoming sessions.</div>'; }
+    if (!upcoming.length) { preview.innerHTML = '<div class="empty-state"><div class="icon"></div>No upcoming sessions.</div>'; }
     else preview.innerHTML = upcoming.slice(0,4).map(s=>`
       <div style="display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid rgba(192,24,43,0.1);font-size:0.85rem">
         <span>${allUsers[s.studentId]?.name||'?'}</span>
@@ -1560,7 +1562,7 @@
     // Announcements
     const annSnap = await getDocs(collection(db,'announcements'));
     const annEl = document.getElementById('tutor-announces');
-    if (annSnap.empty) { annEl.innerHTML = '<div class="empty-state"><div class="icon">📢</div>No announcements.</div>'; }
+    if (annSnap.empty) { annEl.innerHTML = '<div class="empty-state"><div class="icon"></div>No announcements.</div>'; }
     else {
       const anns = []; annSnap.forEach(d=>anns.push(d.data()));
       anns.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
@@ -1575,7 +1577,7 @@
   function loadTutorStudentsList(myStudents) {
     const el = document.getElementById('tutor-students-list');
     if (!el) return;
-    if (!myStudents.length) { el.innerHTML = '<div class="empty-state"><div class="icon">👤</div>No students assigned yet. Contact your admin.</div>'; return; }
+    if (!myStudents.length) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No students assigned yet. Contact your admin.</div>'; return; }
     el.innerHTML = myStudents.map(([uid,u])=>`
       <div class="card" style="margin-bottom:1rem">
         <div class="card-title">${u.name||u.email}
@@ -1588,11 +1590,11 @@
         <div class="grid-2">
           <div>
             <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em">Practice Scores</div>
-            <div id="scores-${uid}"><div class="empty-state" style="padding:1rem 0"><div class="icon">📊</div>No scores yet.</div></div>
+            <div id="scores-${uid}"><div class="empty-state" style="padding:1rem 0"><div class="icon"></div>No scores yet.</div></div>
           </div>
           <div>
             <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em">Notes</div>
-            <div id="notes-${uid}"><div class="empty-state" style="padding:1rem 0"><div class="icon">📝</div>No notes yet.</div></div>
+            <div id="notes-${uid}"><div class="empty-state" style="padding:1rem 0"><div class="icon"></div>No notes yet.</div></div>
           </div>
         </div>
       </div>`).join('');
@@ -1618,7 +1620,7 @@
     const tbody = document.getElementById('tutor-sessions-tbody');
     if (!tbody) return;
     const sorted = sessions.sort((a,b)=>a.date.localeCompare(b.date));
-    if (!sorted.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">📅</div>No sessions.</div></td></tr>'; return; }
+    if (!sorted.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No sessions.</div></td></tr>'; return; }
     tbody.innerHTML = sorted.map(s=>`
       <tr>
         <td>${formatDate(s.date)}</td>
@@ -1700,16 +1702,16 @@
   function buildStudentPortal() {
     document.getElementById('sidebar').innerHTML = `
       <div class="sidebar-section">Main</div>
-      <div class="sidebar-item active" onclick="showPage('student-dashboard',this)"><span class="sidebar-icon">🏠</span>Dashboard</div>
+      <div class="sidebar-item active" onclick="showPage('student-dashboard',this)"><span class="sidebar-icon"></span>Dashboard</div>
       <div class="sidebar-section">My Info</div>
-      <div class="sidebar-item" onclick="showPage('student-scores',this)"><span class="sidebar-icon">📊</span>My Scores</div>
-      <div class="sidebar-item" onclick="showPage('student-sessions',this)"><span class="sidebar-icon">📅</span>My Sessions</div>
-      <div class="sidebar-item" onclick="showPage('student-notes',this)"><span class="sidebar-icon">📝</span>Tutor Notes</div>
-      <div class="sidebar-item" onclick="showPage('student-assignments',this)"><span class="sidebar-icon">📋</span>Assignments</div>
+      <div class="sidebar-item" onclick="showPage('student-scores',this)"><span class="sidebar-icon"></span>My Scores</div>
+      <div class="sidebar-item" onclick="showPage('student-sessions',this)"><span class="sidebar-icon"></span>My Sessions</div>
+      <div class="sidebar-item" onclick="showPage('student-notes',this)"><span class="sidebar-icon"></span>Tutor Notes</div>
+      <div class="sidebar-item" onclick="showPage('student-assignments',this)"><span class="sidebar-icon"></span>Assignments</div>
       <div class="sidebar-section">Support</div>
-      <div class="sidebar-item" onclick="showPage('student-messages',this)"><span class="sidebar-icon">💬</span>Messages <span id="student-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
+      <div class="sidebar-item" onclick="showPage('student-messages',this)"><span class="sidebar-icon"></span>Messages <span id="student-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-section">Resources</div>
-      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon">📖</span>Prep Resources</div>
+      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
     `;
 
     const tutorName = CU.tutorId ? (allUsers[CU.tutorId]?.name || 'Assigned') : null;
@@ -1724,33 +1726,33 @@
         ${tutorName ? `<div class="card" style="margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
           <div>
             <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem">Your Tutor</div>
-            <span class="tutor-chip">👤 ${tutorName}</span>
+            <span class="tutor-chip"> ${tutorName}</span>
           </div>
         </div>` : `<div class="card" style="margin-bottom:1.5rem"><p style="color:rgba(250,250,248,0.4);font-size:0.88rem">No tutor assigned yet. Your admin will assign one soon.</p></div>`}
         <div id="student-countdown"></div>
         <div class="grid-2" style="margin-bottom:1.5rem">
           <div class="card">
-            <div class="card-title">📈 Score Progress</div>
-            <div id="student-chart-wrap"><div class="empty-state"><div class="icon">📊</div>No scores yet.</div></div>
+            <div class="card-title"> Score Progress</div>
+            <div id="student-chart-wrap"><div class="empty-state"><div class="icon"></div>No scores yet.</div></div>
           </div>
           <div class="card">
-            <div class="card-title">🎯 Progress Summary</div>
-            <div id="student-progress-summary"><div class="empty-state"><div class="icon">🎯</div>No scores logged yet.</div></div>
+            <div class="card-title"> Progress Summary</div>
+            <div id="student-progress-summary"><div class="empty-state"><div class="icon"></div>No scores logged yet.</div></div>
           </div>
         </div>
         <div class="grid-2">
           <div class="card">
-            <div class="card-title">📊 Recent Scores</div>
-            <div id="student-scores-preview"><div class="empty-state"><div class="icon">📊</div>No scores logged yet.</div></div>
+            <div class="card-title"> Recent Scores</div>
+            <div id="student-scores-preview"><div class="empty-state"><div class="icon"></div>No scores logged yet.</div></div>
           </div>
           <div class="card">
-            <div class="card-title">📅 Upcoming Sessions</div>
-            <div id="student-sessions-preview"><div class="empty-state"><div class="icon">📅</div>No upcoming sessions.</div></div>
+            <div class="card-title"> Upcoming Sessions</div>
+            <div id="student-sessions-preview"><div class="empty-state"><div class="icon"></div>No upcoming sessions.</div></div>
           </div>
         </div>
         <div class="card">
-          <div class="card-title">📢 Announcements</div>
-          <div id="student-announces"><div class="empty-state"><div class="icon">📢</div>No announcements.</div></div>
+          <div class="card-title"> Announcements</div>
+          <div id="student-announces"><div class="empty-state"><div class="icon"></div>No announcements.</div></div>
         </div>
       </div>
 
@@ -1773,7 +1775,7 @@
       <!-- STUDENT NOTES -->
       <div class="page" id="page-student-notes">
         <div class="page-header"><h2>Tutor Notes</h2><p>Feedback and notes from your tutor.</p></div>
-        <div id="student-notes-list"><div class="empty-state"><div class="icon">📝</div>No notes yet.</div></div>
+        <div id="student-notes-list"><div class="empty-state"><div class="icon"></div>No notes yet.</div></div>
       </div>
 
       <!-- STUDENT MESSAGES -->
@@ -1781,15 +1783,15 @@
         <div class="page-header"><h2>Messages</h2><p>Send and receive messages with the admin.</p></div>
         <div class="grid-2" style="align-items:flex-start">
           <div class="card">
-            <div class="card-title">💬 Send a Message</div>
+            <div class="card-title"> Send a Message</div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Subject</div><input class="input-field" type="text" id="student-dm-subject" placeholder="e.g. Question about my sessions" /></div>
             <div style="margin-bottom:0.8rem"><div class="field-label">Message</div><textarea class="input-field" id="student-dm-body" placeholder="Write your message..." style="min-height:120px;resize:vertical"></textarea></div>
             <button class="btn-red" onclick="studentSendDM()">Send Message</button>
             <div class="form-msg" id="student-dm-msg"></div>
           </div>
           <div class="card">
-            <div class="card-title">📨 My Messages</div>
-            <div id="student-dm-thread"><div class="empty-state"><div class="icon">💬</div>No messages yet.</div></div>
+            <div class="card-title"> My Messages</div>
+            <div id="student-dm-thread"><div class="empty-state"><div class="icon"></div>No messages yet.</div></div>
           </div>
         </div>
       </div>
@@ -1797,7 +1799,7 @@
       <!-- STUDENT ASSIGNMENTS -->
       <div class="page" id="page-student-assignments">
         <div class="page-header"><h2>Assignments</h2><p>Tasks and practice assigned by your tutor.</p></div>
-        <div id="student-assignments-list"><div class="empty-state"><div class="icon">📋</div>No assignments yet.</div></div>
+        <div id="student-assignments-list"><div class="empty-state"><div class="icon"></div>No assignments yet.</div></div>
       </div>
 
       <!-- PREP RESOURCES PAGE -->
@@ -1810,7 +1812,7 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
 
           <a href="https://www.khanacademy.org/test-prep" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">🎓</div>
+            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Khan Academy SAT Prep</div>
               <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons. Completely free.</div>
@@ -1819,7 +1821,7 @@
           </a>
 
           <a href="https://bluebook.collegeboard.org" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);">📘</div>
+            <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Bluebook</div>
               <div class="resource-desc">The official College Board app for taking the Digital SAT. Take full official practice tests in the exact same format as the real exam.</div>
@@ -1828,7 +1830,7 @@
           </a>
 
           <a href="https://www.collegeboard.org" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(0,60,130,0.15);border-color:rgba(0,60,130,0.3);">🏛️</div>
+            <div class="resource-icon" style="background:rgba(0,60,130,0.15);border-color:rgba(0,60,130,0.3);">️</div>
             <div class="resource-info">
               <div class="resource-name">College Board</div>
               <div class="resource-desc">Official SAT information, registration, score reporting, test dates, and study resources straight from the source.</div>
@@ -1837,7 +1839,7 @@
           </a>
 
           <a href="https://www.desmos.com/calculator" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);">📐</div>
+            <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Desmos Calculator</div>
               <div class="resource-desc">The exact graphing and scientific calculator available on the Digital SAT. Practice using it so you're familiar on test day.</div>
@@ -1846,7 +1848,7 @@
           </a>
 
           <a href="https://oneprep.xyz" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(100,50,150,0.15);border-color:rgba(100,50,150,0.3);">⚡</div>
+            <div class="resource-icon" style="background:rgba(100,50,150,0.15);border-color:rgba(100,50,150,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">OnePrep</div>
               <div class="resource-desc">Adaptive Digital SAT practice with detailed explanations. Great for drilling specific question types and building speed.</div>
@@ -1855,7 +1857,7 @@
           </a>
 
           <a href="https://www.testinnovators.com/practice-test/sat" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(20,100,80,0.15);border-color:rgba(20,100,80,0.3);">🧪</div>
+            <div class="resource-icon" style="background:rgba(20,100,80,0.15);border-color:rgba(20,100,80,0.3);"></div>
             <div class="resource-info">
               <div class="resource-name">Test Innovators</div>
               <div class="resource-desc">Full-length Digital SAT practice tests with score reports, detailed analytics, and question-by-question breakdowns.</div>
@@ -1864,7 +1866,7 @@
           </a>
 
           <a href="https://www.reddit.com/r/Sat/" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(255,70,0,0.1);border-color:rgba(255,70,0,0.2);">💬</div>
+            <div class="resource-icon" style="background:rgba(255,70,0,0.1);border-color:rgba(255,70,0,0.2);"></div>
             <div class="resource-info">
               <div class="resource-name">r/SAT on Reddit</div>
               <div class="resource-desc">A huge community of SAT takers sharing tips, strategies, practice questions, and score reports. Great for motivation and advice.</div>
@@ -1873,7 +1875,7 @@
           </a>
 
           <a href="https://www.prepscholar.com/sat/s/resources" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(192,24,43,0.12);border-color:rgba(192,24,43,0.25);">📚</div>
+            <div class="resource-icon" style="background:rgba(192,24,43,0.12);border-color:rgba(192,24,43,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">PrepScholar Blog</div>
               <div class="resource-desc">In-depth guides on every SAT topic, strategy articles, score improvement plans, and breakdowns of every question type.</div>
@@ -1882,7 +1884,7 @@
           </a>
 
           <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(180,0,0,0.12);border-color:rgba(180,0,0,0.25);">▶️</div>
+            <div class="resource-icon" style="background:rgba(180,0,0,0.12);border-color:rgba(180,0,0,0.25);">️</div>
             <div class="resource-info">
               <div class="resource-name">The Organic Chemistry Tutor</div>
               <div class="resource-desc">Excellent YouTube channel with hundreds of SAT Math videos. Clear, step-by-step explanations of every concept tested.</div>
@@ -1891,7 +1893,7 @@
           </a>
 
           <a href="https://www.vocabulary.com/lists/194479" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(50,100,180,0.12);border-color:rgba(50,100,180,0.25);">🔤</div>
+            <div class="resource-icon" style="background:rgba(50,100,180,0.12);border-color:rgba(50,100,180,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">SAT Vocabulary List</div>
               <div class="resource-desc">Master the most commonly tested SAT vocabulary words with interactive flashcards and adaptive quizzing on Vocabulary.com.</div>
@@ -1900,7 +1902,7 @@
           </a>
 
           <a href="https://www.princetonreview.com/college/sat-information" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.25);">🏫</div>
+            <div class="resource-icon" style="background:rgba(180,30,30,0.12);border-color:rgba(180,30,30,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">Princeton Review SAT Info</div>
               <div class="resource-desc">Comprehensive overview of the Digital SAT format, scoring, sections, timing, and free practice resources.</div>
@@ -1909,13 +1911,14 @@
           </a>
 
           <a href="https://collegepanda.com" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(0,140,100,0.12);border-color:rgba(0,140,100,0.25);">🐼</div>
+            <div class="resource-icon" style="background:rgba(0,140,100,0.12);border-color:rgba(0,140,100,0.25);"></div>
             <div class="resource-info">
               <div class="resource-name">College Panda</div>
               <div class="resource-desc">Highly rated SAT Math and Writing workbooks and free online resources. Known for concise, effective explanations.</div>
               <div class="resource-tag">Free + Paid Books</div>
             </div>
           </a>
+
 
         </div>
       </div>
@@ -1932,7 +1935,7 @@
     myScores.sort((a,b)=>b.date.localeCompare(a.date));
 
     const preview = document.getElementById('student-scores-preview');
-    if (!myScores.length) { preview.innerHTML = '<div class="empty-state"><div class="icon">📊</div>No scores logged yet.</div>'; }
+    if (!myScores.length) { preview.innerHTML = '<div class="empty-state"><div class="icon"></div>No scores logged yet.</div>'; }
     else preview.innerHTML = myScores.slice(0,3).map(s=>`
       <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid rgba(192,24,43,0.08);font-size:0.85rem">
         <span>${formatDate(s.date)}</span>
@@ -1942,7 +1945,7 @@
     // Full scores table
     const tbody = document.getElementById('student-scores-tbody');
     if (tbody) {
-      if (!myScores.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">📊</div>No scores yet.</div></td></tr>'; }
+      if (!myScores.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No scores yet.</div></td></tr>'; }
       else tbody.innerHTML = myScores.map((s,i)=>{
         const prev = myScores[i+1];
         const change = prev ? s.total - prev.total : null;
@@ -1959,7 +1962,7 @@
     const upcoming = mySessions.filter(s=>s.date>=today());
 
     const sessPreview = document.getElementById('student-sessions-preview');
-    if (!upcoming.length) { sessPreview.innerHTML = '<div class="empty-state"><div class="icon">📅</div>No upcoming sessions.</div>'; }
+    if (!upcoming.length) { sessPreview.innerHTML = '<div class="empty-state"><div class="icon"></div>No upcoming sessions.</div>'; }
     else sessPreview.innerHTML = upcoming.slice(0,4).map(s=>`
       <div style="display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid rgba(192,24,43,0.1);font-size:0.85rem">
         <span>${allUsers[s.tutorId]?.name||'Tutor'} — ${s.location||'TBD'}</span>
@@ -1968,7 +1971,7 @@
 
     const sessTbody = document.getElementById('student-sessions-tbody');
     if (sessTbody) {
-      if (!mySessions.length) { sessTbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="icon">📅</div>No sessions yet.</div></td></tr>'; }
+      if (!mySessions.length) { sessTbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="icon"></div>No sessions yet.</div></td></tr>'; }
       else sessTbody.innerHTML = mySessions.map(s=>`
         <tr><td>${formatDate(s.date)}</td><td>${s.time||'—'}</td><td>${allUsers[s.tutorId]?.name||'—'}</td><td>${s.location||'—'}</td></tr>`).join('');
     }
@@ -1981,7 +1984,7 @@
 
     const notesList = document.getElementById('student-notes-list');
     if (notesList) {
-      if (!myNotes.length) { notesList.innerHTML = '<div class="empty-state"><div class="icon">📝</div>No notes from your tutor yet.</div>'; }
+      if (!myNotes.length) { notesList.innerHTML = '<div class="empty-state"><div class="icon"></div>No notes from your tutor yet.</div>'; }
       else notesList.innerHTML = myNotes.map(n=>`
         <div class="note-item">
           <p style="font-size:0.9rem;line-height:1.7">${n.text}</p>
@@ -1993,7 +1996,7 @@
     const chartWrap = document.getElementById('student-chart-wrap');
     if (chartWrap) {
       if (myScores.length < 2) {
-        chartWrap.innerHTML = '<div class="empty-state"><div class="icon">📊</div>Log at least 2 scores to see your chart.</div>';
+        chartWrap.innerHTML = '<div class="empty-state"><div class="icon"></div>Log at least 2 scores to see your chart.</div>';
       } else {
         const sorted = [...myScores].reverse();
         chartWrap.innerHTML = '<div class="chart-wrap"><canvas id="score-chart"></canvas></div>';
@@ -2024,7 +2027,7 @@
     const progEl = document.getElementById('student-progress-summary');
     if (progEl) {
       if (!myScores.length) {
-        progEl.innerHTML = '<div class="empty-state"><div class="icon">🎯</div>No scores logged yet.</div>';
+        progEl.innerHTML = '<div class="empty-state"><div class="icon"></div>No scores logged yet.</div>';
       } else {
         const latest = myScores[0];
         const first = myScores[myScores.length - 1];
@@ -2060,7 +2063,7 @@
       const label = diffDays === 0 ? 'Today!' : diffDays === 1 ? 'Tomorrow!' : `${diffDays} days away`;
       countdownEl.innerHTML = `
         <div class="countdown-box">
-          <div class="countdown-days">${diffDays === 0 ? '🎉' : diffDays}<span>${diffDays > 1 ? 'days' : ''}</span></div>
+          <div class="countdown-days">${diffDays === 0 ? '' : diffDays}<span>${diffDays > 1 ? 'days' : ''}</span></div>
           <div class="countdown-info">
             <div class="ci-label">Next Session</div>
             <div class="ci-detail">${label}</div>
@@ -2075,7 +2078,7 @@
     // Announcements
     const annSnap = await getDocs(collection(db,'announcements'));
     const annEl = document.getElementById('student-announces');
-    if (annSnap.empty) { annEl.innerHTML = '<div class="empty-state"><div class="icon">📢</div>No announcements.</div>'; }
+    if (annSnap.empty) { annEl.innerHTML = '<div class="empty-state"><div class="icon"></div>No announcements.</div>'; }
     else {
       const anns = []; annSnap.forEach(d=>anns.push(d.data()));
       anns.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
@@ -2093,7 +2096,7 @@
     const rows = [];
     snap.forEach(d=>{ if(d.data().studentId===uid) rows.push(d.data()); });
     rows.sort((a,b)=>b.date.localeCompare(a.date));
-    if (!rows.length) { el.innerHTML = '<div class="empty-state" style="padding:0.8rem 0"><div class="icon">📊</div>No scores yet.</div>'; return; }
+    if (!rows.length) { el.innerHTML = '<div class="empty-state" style="padding:0.8rem 0"><div class="icon"></div>No scores yet.</div>'; return; }
     el.innerHTML = `<table style="width:100%"><thead><tr><th>Date</th><th>Math</th><th>R&W</th><th>Total</th></tr></thead><tbody>${
       rows.map(r=>`<tr><td>${formatDate(r.date)}</td><td>${r.math}</td><td>${r.rw}</td><td><span class="score-pill">${r.total}</span></td></tr>`).join('')
     }</tbody></table>`;
@@ -2106,7 +2109,7 @@
     const rows = [];
     snap.forEach(d=>{ if(d.data().studentId===uid) rows.push(d.data()); });
     rows.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
-    if (!rows.length) { el.innerHTML = '<div class="empty-state" style="padding:0.8rem 0"><div class="icon">📝</div>No notes yet.</div>'; return; }
+    if (!rows.length) { el.innerHTML = '<div class="empty-state" style="padding:0.8rem 0"><div class="icon"></div>No notes yet.</div>'; return; }
     el.innerHTML = rows.map(n=>`<div class="note-item"><p style="font-size:0.85rem;line-height:1.6">${n.text}</p><div class="note-meta">${new Date(n.createdAt).toLocaleDateString()}</div></div>`).join('');
   }
 
@@ -2119,7 +2122,7 @@
       if (filterUids) return filterUids.includes(uid);
       return true;
     });
-    if (!students.length) { el.innerHTML = '<div class="empty-state"><div class="icon">🎯</div>No students yet.</div>'; return; }
+    if (!students.length) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No students yet.</div>'; return; }
 
     const scSnap = await getDocs(collection(db,'scores'));
     const scoresByStudent = {};
@@ -2194,7 +2197,7 @@
     if (!el) return;
     await cacheAllUsers();
     const students = Object.entries(allUsers).filter(([,u])=>u.role==='student');
-    if (!students.length) { el.innerHTML = '<div class="empty-state"><div class="icon">🎓</div>No students yet.</div>'; return; }
+    if (!students.length) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No students yet.</div>'; return; }
 
     // Load all scores and notes
     const scSnap = await getDocs(collection(db,'scores'));
@@ -2225,10 +2228,10 @@
               <td>${s.math}</td><td>${s.rw}</td>
               <td><span class="score-pill">${s.total}</span></td>
               <td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${s.notes||'—'}</td>
-              <td><button class="action-btn danger" onclick="adminDeleteScore('${s.id}','${uid}')">✕</button></td>
+              <td><button class="action-btn danger" onclick="adminDeleteScore('${s.id}','${uid}')"></button></td>
             </tr>`).join('')}
           </tbody>
-        </table>` : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon">📊</div>No scores yet.</div>';
+        </table>` : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon"></div>No scores yet.</div>';
 
       const assignmentsHtml = assignments.length ? assignments.map(a=>`
         <div class="assignment-card ${a.completed?'done':''}">
@@ -2238,17 +2241,17 @@
               <div class="assignment-meta">${a.type}${a.due?' · Due '+formatDate(a.due):''}</div>
             </div>
             <div style="display:flex;gap:0.5rem;align-items:center">
-              ${a.completed?'<span class="done-chip">✓ Done</span>':a.submissionUrl?'<span class="submitted-chip">📤 Submitted</span>':'<span class="pending-chip">⏳ Pending</span>'}
-              <button class="action-btn danger" onclick="adminDeleteAssignment('${a.id}')">✕</button>
+              ${a.completed?'<span class="done-chip"> Done</span>':a.submissionUrl?'<span class="submitted-chip"> Submitted</span>':'<span class="pending-chip"> Pending</span>'}
+              <button class="action-btn danger" onclick="adminDeleteAssignment('${a.id}')"></button>
             </div>
           </div>
           ${a.desc?`<div class="assignment-desc">${a.desc}</div>`:''}
           <div class="assignment-actions">
-            ${a.fileUrl?`<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">📎 ${a.fileName||'Attachment'}</a>`:''}
-            ${a.link?`<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">🔗 Link</a>`:''}
-            ${a.submissionUrl?`<a href="${a.submissionUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;border-color:rgba(100,100,255,0.3);color:rgba(150,150,255,0.9)">📤 View Submission</a>`:''}
+            ${a.fileUrl?`<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none"> ${a.fileName||'Attachment'}</a>`:''}
+            ${a.link?`<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none"> Link</a>`:''}
+            ${a.submissionUrl?`<a href="${a.submissionUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;border-color:rgba(100,100,255,0.3);color:rgba(150,150,255,0.9)"> View Submission</a>`:''}
           </div>
-        </div>`).join('') : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon">📋</div>No assignments yet.</div>';
+        </div>`).join('') : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon"></div>No assignments yet.</div>';
 
       const notesHtml = notes.length ? notes.map(n=>`
         <div class="note-item" style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
@@ -2256,33 +2259,33 @@
             <p style="font-size:0.88rem;line-height:1.6;margin:0">${n.text}</p>
             <div class="note-meta">From ${allUsers[n.tutorId]?.name||'Tutor'} · ${new Date(n.createdAt).toLocaleDateString()}</div>
           </div>
-          <button class="action-btn danger" style="flex-shrink:0" onclick="adminDeleteNote('${n.id}','${uid}')">✕</button>
-        </div>`).join('') : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon">📝</div>No notes yet.</div>';
+          <button class="action-btn danger" style="flex-shrink:0" onclick="adminDeleteNote('${n.id}','${uid}')"></button>
+        </div>`).join('') : '<div class="empty-state" style="padding:0.8rem 0"><div class="icon"></div>No notes yet.</div>';
 
       const improvementHtml = improvement !== null ? `<span class="improvement-chip ${improvement>=0?'improvement-pos':'improvement-neg'}">${improvement>=0?'↑ +':'↓ '}${improvement} pts overall</span>` : '';
 
       return `
         <div class="card" style="margin-bottom:1.5rem">
           <div class="card-title" style="flex-wrap:wrap;gap:0.5rem">
-            <span>🎓 ${u.name||u.email}</span>
+            <span> ${u.name||u.email}</span>
             <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
-              <span class="tutor-chip" style="font-size:0.75rem">👤 ${tutor}</span>
+              <span class="tutor-chip" style="font-size:0.75rem"> ${tutor}</span>
               ${latest ? `<span class="score-pill">Latest: ${latest.total}</span>` : ''}
               ${improvementHtml}
             </div>
           </div>
           <div class="grid-2">
             <div>
-              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem">📊 Scores (${scores.length})</div>
+              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Scores (${scores.length})</div>
               ${scoresHtml}
             </div>
             <div>
-              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem">📝 Notes (${notes.length})</div>
+              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Notes (${notes.length})</div>
               ${notesHtml}
             </div>
           </div>
           <div style="margin-top:1rem">
-            <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem">📋 Assignments (${assignments.length})</div>
+            <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Assignments (${assignments.length})</div>
             ${assignmentsHtml}
           </div>
         </div>`;
@@ -2359,19 +2362,19 @@
     all.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
 
     if (!all.length) {
-      el.innerHTML = '<div class="empty-state"><div class="icon">📋</div>No assignments yet. Click a student in My Students and assign them work.</div>';
+      el.innerHTML = '<div class="empty-state"><div class="icon"></div>No assignments yet. Click a student in My Students and assign them work.</div>';
       return;
     }
 
     el.innerHTML = all.map(a => {
       const student = allUsers[a.studentId];
-      const statusChip = a.completed ? '<span class="done-chip">✓ Done</span>' :
-        a.submissionUrl ? '<span class="submitted-chip">📤 Submitted</span>' :
-        '<span class="pending-chip">⏳ Pending</span>';
+      const statusChip = a.completed ? '<span class="done-chip"> Done</span>' :
+        a.submissionUrl ? '<span class="submitted-chip"> Submitted</span>' :
+        '<span class="pending-chip"> Pending</span>';
       const dueStr = a.due ? ` · Due ${formatDate(a.due)}` : '';
-      const fileHtml = a.fileUrl ? `<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">📎 ${a.fileName||'Attachment'}</a>` : '';
-      const linkHtml = a.link ? `<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">🔗 Link</a>` : '';
-      const submissionHtml = a.submissionUrl ? `<a href="${a.submissionUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;border-color:rgba(100,100,255,0.3);color:rgba(150,150,255,0.9)">📤 View Submission</a>` : '';
+      const fileHtml = a.fileUrl ? `<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none"> ${a.fileName||'Attachment'}</a>` : '';
+      const linkHtml = a.link ? `<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none"> Link</a>` : '';
+      const submissionHtml = a.submissionUrl ? `<a href="${a.submissionUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;border-color:rgba(100,100,255,0.3);color:rgba(150,150,255,0.9)"> View Submission</a>` : '';
       return `
         <div class="assignment-card ${a.completed?'done':''}">
           <div class="assignment-header">
@@ -2381,7 +2384,7 @@
             </div>
             <div style="display:flex;gap:0.5rem;align-items:center">
               ${statusChip}
-              <button class="action-btn danger" onclick="adminDeleteAssignment('${a.id}')">✕</button>
+              <button class="action-btn danger" onclick="adminDeleteAssignment('${a.id}')"></button>
             </div>
           </div>
           ${a.desc ? `<div class="assignment-desc">${a.desc}</div>` : ''}
@@ -2404,17 +2407,17 @@
       return b.createdAt.localeCompare(a.createdAt);
     });
 
-    if (!all.length) { el.innerHTML = '<div class="empty-state"><div class="icon">📋</div>No assignments yet.</div>'; return; }
+    if (!all.length) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No assignments yet.</div>'; return; }
 
     el.innerHTML = all.map(a => {
       const dueStr = a.due ? ` · Due ${formatDate(a.due)}` : '';
-      const fileHtml = a.fileUrl ? `<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">📎 ${a.fileName||'Attachment'}</a>` : '';
-      const linkHtml = a.link ? `<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none">🔗 Open Link</a>` : '';
+      const fileHtml = a.fileUrl ? `<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none"> ${a.fileName||'Attachment'}</a>` : '';
+      const linkHtml = a.link ? `<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none"> Open Link</a>` : '';
 
       const submittedHtml = a.submissionUrl ?
-        `<span class="submitted-chip">📤 Submitted — <a href="${a.submissionUrl}" target="_blank" style="color:inherit">view</a></span>` : '';
+        `<span class="submitted-chip"> Submitted — <a href="${a.submissionUrl}" target="_blank" style="color:inherit">view</a></span>` : '';
 
-      const completeBtn = !a.completed ? `<button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem" onclick="markAssignmentDone('${a.id}')">✓ Mark as Done</button>` : '<span class="done-chip">✓ Completed</span>';
+      const completeBtn = !a.completed ? `<button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem" onclick="markAssignmentDone('${a.id}')"> Mark as Done</button>` : '<span class="done-chip"> Completed</span>';
 
       const uploadBtn = '';
 
@@ -2425,7 +2428,7 @@
               <div class="assignment-title">${a.title}</div>
               <div class="assignment-meta">${a.type}${dueStr}</div>
             </div>
-            <span class="assignment-type-tag">${a.completed ? '✓ Done' : a.due && a.due < today() ? '⚠ Overdue' : 'Pending'}</span>
+            <span class="assignment-type-tag">${a.completed ? ' Done' : a.due && a.due < today() ? ' Overdue' : 'Pending'}</span>
           </div>
           ${a.desc ? `<div class="assignment-desc">${a.desc}</div>` : ''}
           <div class="assignment-actions">
@@ -2503,7 +2506,7 @@
     const sent = [];
     snap.forEach(d => { const m = {id:d.id,...d.data()}; if (m.fromId === CU.uid) sent.push(m); });
     sent.sort((a,b) => b.createdAt.localeCompare(a.createdAt));
-    if (!sent.length) { el.innerHTML = '<div class="empty-state"><div class="icon">💬</div>No messages sent yet.</div>'; return; }
+    if (!sent.length) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No messages sent yet.</div>'; return; }
     el.innerHTML = sent.map(m => `
       <div style="padding:0.9rem;border-bottom:1px solid rgba(192,24,43,0.15)">
         <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
@@ -2528,7 +2531,7 @@
     const badge = document.getElementById('admin-msg-badge');
     if (badge) { badge.textContent = unread; badge.style.display = unread > 0 ? 'inline' : 'none'; }
 
-    if (!inbox.length) { el.innerHTML = '<div class="empty-state"><div class="icon">📬</div>No messages received yet.</div>'; return; }
+    if (!inbox.length) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No messages received yet.</div>'; return; }
     el.innerHTML = inbox.map(m => `
       <div style="padding:0.9rem;border-bottom:1px solid rgba(192,24,43,0.15);background:${m.read?'transparent':'rgba(192,24,43,0.06)'}">
         <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
@@ -2569,7 +2572,7 @@
     allScores.sort((a,b) => a.date.localeCompare(b.date));
 
     if (allScores.length < 2) {
-      document.getElementById('analytics-chart').parentElement.innerHTML = '<div class="empty-state"><div class="icon">📈</div>Log at least 2 scores to see trends.</div>';
+      document.getElementById('analytics-chart').parentElement.innerHTML = '<div class="empty-state"><div class="icon"></div>Log at least 2 scores to see trends.</div>';
       return;
     }
 
@@ -2623,11 +2626,11 @@
 
     const impEl = document.getElementById('analytics-improvers');
     if (impEl) {
-      if (!improvers.length) { impEl.innerHTML = '<div class="empty-state"><div class="icon">🏆</div>Not enough data yet.</div>'; }
+      if (!improvers.length) { impEl.innerHTML = '<div class="empty-state"><div class="icon"></div>Not enough data yet.</div>'; }
       else impEl.innerHTML = improvers.slice(0,5).map((s,i) => `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid rgba(192,24,43,0.12)">
           <div style="display:flex;align-items:center;gap:0.8rem">
-            <span style="font-size:1.1rem">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}</span>
+            <span style="font-size:1.1rem">${['','','','4️⃣','5️⃣'][i]}</span>
             <span style="font-size:0.9rem;color:#fafaf8">${s.name}</span>
           </div>
           <div style="text-align:right">
@@ -2755,7 +2758,7 @@
     const unread = thread.filter(m=>m.toId===CU.uid&&!m.read).length;
     const badge = document.getElementById(badgeId);
     if (badge) { badge.textContent=unread; badge.style.display=unread>0?'inline':'none'; }
-    if (!thread.length) { el.innerHTML='<div class="empty-state"><div class="icon">💬</div>No messages yet.</div>'; return; }
+    if (!thread.length) { el.innerHTML='<div class="empty-state"><div class="icon"></div>No messages yet.</div>'; return; }
     el.innerHTML = thread.map(m=>{
       const isMe = m.fromId===CU.uid;
       return '<div style="margin-bottom:0.8rem;display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start')+'">'
