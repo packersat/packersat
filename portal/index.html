@@ -453,6 +453,28 @@
 </div>
 
 <!-- Announce -->
+<!-- Waitlist Add Modal -->
+<div class="modal-overlay" id="modal-waitlist-add">
+  <div class="modal" style="max-width:480px">
+    <h3>Add to Waitlist</h3>
+    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">Manually add a student to the waitlist.</p>
+    <div class="form-row">
+      <div><div class="field-label">Full Name</div><input class="input-field" type="text" id="wl-name" placeholder="Full name" /></div>
+      <div><div class="field-label">Email</div><input class="input-field" type="email" id="wl-email" placeholder="Email" /></div>
+    </div>
+    <div class="form-row three">
+      <div><div class="field-label">Grade</div><select class="input-field" id="wl-grade"><option value="">Grade</option><option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option></select></div>
+      <div><div class="field-label">Current Score</div><input class="input-field" type="text" id="wl-current" placeholder="e.g. 1200" /></div>
+      <div><div class="field-label">Target Score</div><input class="input-field" type="text" id="wl-target" placeholder="e.g. 1500" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-waitlist-add')">Cancel</button>
+      <button class="btn-red" onclick="addToWaitlist()">Add to Waitlist</button>
+    </div>
+    <div class="form-msg" id="wl-msg"></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-announce">
   <div class="modal">
     <h3>Post Announcement</h3>
@@ -720,6 +742,7 @@
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
       <div class="sidebar-section">Students</div>
       <div class="sidebar-item" onclick="showPage('admin-profiles',this)"><span class="sidebar-icon"></span>Student Profiles</div>
+      <div class="sidebar-item" onclick="showPage('admin-waitlist',this)"><span class="sidebar-icon"></span>Waitlist <span id="waitlist-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-section">Tools</div>
       <div class="sidebar-item" onclick="showPage('admin-messages',this)"><span class="sidebar-icon"></span>Direct Messages <span id="admin-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-item" onclick="showPage('admin-analytics',this)"><span class="sidebar-icon"></span>Analytics</div>
@@ -857,6 +880,28 @@
           <div class="card">
             <div class="card-title"> Program Averages</div>
             <div id="analytics-averages"><div class="empty-state"><div class="icon"></div>Not enough data yet.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN WAITLIST -->
+      <div class="page" id="page-admin-waitlist">
+        <div class="page-header"><h2>Waitlist</h2><p>Students who signed up on the homepage and are waiting to be assigned a tutor.</p></div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card-title">Add to Waitlist Manually
+            <button class="btn-red" onclick="openModal('modal-waitlist-add')" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.5rem">+ Add</button>
+          </div>
+          <p style="color:rgba(250,250,248,0.4);font-size:0.83rem">Students who fill out the homepage signup form are automatically added here. You can also add them manually.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Pending Students
+            <span id="waitlist-count" style="font-size:0.75rem;color:rgba(250,250,248,0.4);margin-left:0.5rem"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Grade</th><th>Current Score</th><th>Target Score</th><th>Date Added</th><th>Actions</th></tr></thead>
+              <tbody id="waitlist-tbody"><tr><td colspan="7"><div class="empty-state"><div class="icon"></div>No students on the waitlist.</div></td></tr></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1017,6 +1062,12 @@
     `;
 
     loadAdminStats();
+    // Load waitlist badge
+    setTimeout(async () => {
+      const wlSnap = await getDocs(collection(db,'waitlist'));
+      const badge = document.getElementById('waitlist-badge');
+      if (badge && wlSnap.size > 0) { badge.textContent = wlSnap.size; badge.style.display='inline'; }
+    }, 600);
     // Check for unread messages badge
     setTimeout(async () => {
       const snap = await getDocs(collection(db,'messages'));
@@ -2773,6 +2824,81 @@
     if (badge) badge.style.display='none';
   }
 
+  // ─────────────────────────────────────────
+  // WAITLIST
+  // ─────────────────────────────────────────
+
+  window.addToWaitlist = async function() {
+    const name = document.getElementById('wl-name').value.trim();
+    const email = document.getElementById('wl-email').value.trim();
+    const grade = document.getElementById('wl-grade').value;
+    const current = document.getElementById('wl-current').value.trim();
+    const target = document.getElementById('wl-target').value.trim();
+    const msg = document.getElementById('wl-msg');
+    if (!name || !email) { showMsg(msg, 'Name and email are required.', 'error'); return; }
+    await addDoc(collection(db, 'waitlist'), {
+      name, email, grade: grade || '—',
+      currentScore: current || '—', targetScore: target || '—',
+      createdAt: new Date().toISOString(), status: 'pending'
+    });
+    showMsg(msg, 'Added to waitlist!', 'success');
+    document.getElementById('wl-name').value = '';
+    document.getElementById('wl-email').value = '';
+    document.getElementById('wl-grade').value = '';
+    document.getElementById('wl-current').value = '';
+    document.getElementById('wl-target').value = '';
+    setTimeout(() => { closeModal('modal-waitlist-add'); loadWaitlist(); }, 800);
+  };
+
+  window.removeFromWaitlist = async function(id) {
+    if (!confirm('Remove this student from the waitlist?')) return;
+    await deleteDoc(doc(db, 'waitlist', id));
+    loadWaitlist();
+  };
+
+  window.convertWaitlistToUser = function(name, email) {
+    // Pre-fill the add user form and switch to that page
+    showPage('admin-users', document.querySelector('.sidebar-item[onclick*="admin-users"]'));
+    setTimeout(() => {
+      const nameEl = document.getElementById('new-name');
+      const emailEl = document.getElementById('new-email');
+      if (nameEl) nameEl.value = name;
+      if (emailEl) emailEl.value = email;
+    }, 100);
+  };
+
+  async function loadWaitlist() {
+    const tbody = document.getElementById('waitlist-tbody');
+    const badge = document.getElementById('waitlist-badge');
+    const countEl = document.getElementById('waitlist-count');
+    if (!tbody) return;
+    const snap = await getDocs(collection(db, 'waitlist'));
+    const list = [];
+    snap.forEach(d => list.push({id: d.id, ...d.data()}));
+    list.sort((a,b) => b.createdAt.localeCompare(a.createdAt));
+
+    if (badge) { badge.textContent = list.length; badge.style.display = list.length > 0 ? 'inline' : 'none'; }
+    if (countEl) countEl.textContent = list.length + ' student' + (list.length !== 1 ? 's' : '');
+
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon"></div>No students on the waitlist.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(s => `
+      <tr>
+        <td>${s.name}</td>
+        <td>${s.email}</td>
+        <td>${s.grade}</td>
+        <td>${s.currentScore}</td>
+        <td>${s.targetScore}</td>
+        <td>${formatDate(s.createdAt.split('T')[0])}</td>
+        <td>
+          <button class="btn-red" style="font-size:0.72rem;padding:0.25rem 0.7rem;margin-right:0.3rem" onclick="convertWaitlistToUser('${s.name.replace(/'/g,"\'")}','${s.email}')">Create Account</button>
+          <button class="btn-ghost" style="font-size:0.72rem;padding:0.25rem 0.7rem" onclick="removeFromWaitlist('${s.id}')">Remove</button>
+        </td>
+      </tr>`).join('');
+  }
+
   window.showPage = function(pageId, el) {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
@@ -2783,6 +2909,7 @@
     if (pageId==='admin-profiles') loadAdminProfiles();
     if (pageId==='admin-analytics') loadAnalytics();
     if (pageId==='admin-messages') { populateDMRecipients(); loadDMHistory(); loadDMInbox(); }
+    if (pageId==='admin-waitlist') loadWaitlist();
     if (pageId==='admin-scores') { loadAllScores(); populateAdminScoreStudents(); }
     if (pageId==='admin-sessions') loadAdminSessions();
     if (pageId==='admin-announce') loadAdminAnnouncements();
@@ -2848,6 +2975,9 @@
   function exportStudentSessions(sid, sname) { window.exportStudentSessions && window.exportStudentSessions(sid, sname); }
   function deleteSession(id) { window.deleteSession && window.deleteSession(id); }
   function assignTutor(uid, tid) { window.assignTutor && window.assignTutor(uid, tid); }
+  function addToWaitlist() { window.addToWaitlist && window.addToWaitlist(); }
+  function removeFromWaitlist(id) { window.removeFromWaitlist && window.removeFromWaitlist(id); }
+  function convertWaitlistToUser(name, email) { window.convertWaitlistToUser && window.convertWaitlistToUser(name, email); }
 </script>
 </body>
 </html>
