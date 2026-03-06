@@ -27,7 +27,7 @@ export default async function handler(req, res) {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'Packer SAT Tutoring', email: 'Jackroseblue@gmail.com' },
+        sender: { name: 'Packer SAT Tutoring', email: 'noreply@packersat.org' },
         to: [{ email: to_email, name: to_name || to_email }],
         subject,
         htmlContent: html_content,
