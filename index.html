@@ -714,9 +714,69 @@
     }
 
     /* ── RESPONSIVE ── */
+    /* ── HAMBURGER ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 0.4rem;
+      background: none;
+      border: none;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: all 0.3s cubic-bezier(.22,1,.36,1);
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(26,5,8,0.98);
+      z-index: 99;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--white);
+      text-decoration: none;
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--red); }
+    .mobile-menu .mobile-divider {
+      width: 40px;
+      height: 1px;
+      background: rgba(192,24,43,0.4);
+    }
+    .mobile-menu .mobile-cta {
+      background: var(--red);
+      padding: 0.9rem 2.5rem;
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
     @media (max-width: 900px) {
       nav { padding: 1rem 2rem; }
       .nav-links { display: none; }
+      .hamburger { display: flex; }
       #hero { padding: 6rem 2rem 3rem; }
       .hero-stats { gap: 1.5rem; }
       #about { padding: 5rem 2rem; }
@@ -746,7 +806,21 @@
     <li><a href="portal/index.html" style="color:rgba(250,250,248,0.7); border:1.5px solid rgba(250,250,248,0.2); padding:0.45rem 1.1rem; border-radius:2px; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(250,250,248,0.6)';this.style.color='#FAFAF8'" onmouseout="this.style.borderColor='rgba(250,250,248,0.2)';this.style.color='rgba(250,250,248,0.7)'">Log In</a></li>
     <li><a href="#cta" class="nav-cta" onclick="openModal()">Sign Up Free</a></li>
   </ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#about" onclick="closeMenu()">About</a>
+  <a href="#how" onclick="closeMenu()">How It Works</a>
+  <a href="#subjects" onclick="closeMenu()">Subjects</a>
+  <a href="#faq" onclick="closeMenu()">FAQ</a>
+  <div class="mobile-divider"></div>
+  <a href="portal/index.html" class="mobile-cta">Log In</a>
+  <a href="#cta" onclick="openModal(); closeMenu();" style="color:rgba(250,250,248,0.5);font-size:1rem;font-family:'DM Sans',sans-serif;font-weight:500">Sign Up Free</a>
+</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -755,7 +829,7 @@
   <div class="hero-content">
     <div class="hero-badge">Packer Collegiate Institute · 100% Free</div>
     <h1>Conquer the SAT<em>with your peers.</em></h1>
-    <p class="hero-sub">Free, student-led SAT tutoring exclusively for Packer Collegiate students.</p>
+    <p class="hero-sub">Free, student-led SAT tutoring exclusively for Packer Collegiate students. No fees, no stress, just results.</p>
     <div class="hero-cta-group">
       <a href="#cta" class="btn-primary" onclick="openModal(); return false;">Sign Up, It's Free</a>
       <a href="#how" class="btn-outline">How It Works</a>
@@ -834,13 +908,13 @@
         <div class="step-num">01</div>
         <div class="step-icon">📋</div>
         <h3>Sign Up & Assess</h3>
-        <p>Fill out our short form so we can understand your starting point and pair you with the right tutor.</p>
+        <p>Fill out our short form and take a brief diagnostic quiz so we can understand your starting point and pair you with the right tutor.</p>
       </div>
       <div class="step reveal" style="transition-delay:0.2s">
         <div class="step-num">02</div>
         <div class="step-icon">📚</div>
         <h3>Weekly Sessions</h3>
-        <p>Attend small-group or one-on-one tutoring sessions one to two times a week. We cover both Math and Reading & Writing with focused practice sets and strategies.</p>
+        <p>Attend small-group tutoring sessions one to two times a week. We cover both Math and Reading & Writing with focused practice sets and strategies.</p>
       </div>
       <div class="step reveal" style="transition-delay:0.3s">
         <div class="step-num">03</div>
@@ -910,7 +984,7 @@
 <section id="free">
   <div class="inner reveal">
     <h2>Zero cost.<br>Zero excuses.</h2>
-    <p>Our tutoring program is completely free for all Packer students.</p>
+    <p>Our tutoring program is completely free for all Packer students. There are no hidden fees, no premium tiers, and no paywalls.</p>
     <div class="free-badge">100% FREE FOR PACKER STUDENTS</div>
   </div>
 </section>
@@ -925,6 +999,14 @@
       <div class="faq-toggle">+</div>
     </div>
     <div class="faq-a">Any current student at The Packer Collegiate Institute who is preparing for the SAT. Whether you're a sophomore just starting out or a junior retaking the test, you're welcome.</div>
+  </div>
+
+  <div class="faq-item reveal">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Is it really free?
+      <div class="faq-toggle">+</div>
+    </div>
+    <div class="faq-a">Yes, completely. This is a student-run, peer tutoring initiative. There are no fees, no subscriptions, and no costs of any kind. Packer students helping Packer students.</div>
   </div>
 
   <div class="faq-item reveal">
@@ -1103,6 +1185,20 @@
       document.getElementById('form-body').style.display = 'none';
       document.getElementById('success-msg').style.display = 'block';
     }
+  }
+
+  // ── HAMBURGER MENU ──
+  function toggleMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.getElementById('hamburger');
+    menu.classList.toggle('open');
+    btn.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  function closeMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow = '';
   }
 
   // ── COUNTER ANIMATION ──
