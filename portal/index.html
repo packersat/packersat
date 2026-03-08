@@ -619,8 +619,10 @@
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (snap.exists()) {
         CU = { uid: user.uid, email: user.email, ...snap.data() };
-        // Record last login time
-        await setDoc(doc(db, 'users', user.uid), { lastLoginAt: new Date().toISOString() }, { merge: true });
+        // Record last login time — wrapped so a rules error never blocks login
+        try {
+          await updateDoc(doc(db, 'users', user.uid), { lastLoginAt: new Date().toISOString() });
+        } catch(e) { /* non-critical */ }
         await cacheAllUsers();
         enterPortal();
       } else {
