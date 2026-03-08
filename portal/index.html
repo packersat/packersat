@@ -547,6 +547,25 @@
   </div>
 </div>
 
+<!-- Share Document Modal -->
+<div class="modal-overlay" id="modal-doc">
+  <div class="modal" style="max-width:500px">
+    <h3>Share Document</h3>
+    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">with <strong id="doc-student-name"></strong></p>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Label</div><input class="input-field" type="text" id="doc-label" placeholder="e.g. Week 3 Homework, Practice Test #2" /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Link (Google Drive, Docs, Sheets, etc.)</div><input class="input-field" type="url" id="doc-url" placeholder="https://docs.google.com/..." /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-doc')">Cancel</button>
+      <button class="btn-red" id="confirm-doc-btn">Share</button>
+    </div>
+    <div class="form-msg" id="doc-msg"></div>
+  </div>
+</div>
+
 <!-- Change Email Modal -->
 <div class="modal-overlay" id="modal-change-email">
   <div class="modal" style="max-width:440px">
@@ -939,6 +958,12 @@
       <div class="page" id="page-student-assignments">
         <div class="page-header"><h2>Assignments</h2><p>Tasks and practice assigned by your tutor.</p></div>
         <div id="student-assignments-list"><div class="empty-state"><div class="icon"></div>No assignments yet.</div></div>
+      </div>
+
+      <!-- STUDENT DOCUMENTS PAGE -->
+      <div class="page" id="page-student-documents">
+        <div class="page-header"><h2>My Documents</h2><p>Files and links shared by your tutor.</p></div>
+        <div id="student-docs-list"><div class="empty-state"><div class="icon"></div>No documents shared yet.</div></div>
       </div>
 
       <!-- PREP RESOURCES PAGE -->
@@ -1565,6 +1590,12 @@
         <div id="student-assignments-list"><div class="empty-state"><div class="icon"></div>No assignments yet.</div></div>
       </div>
 
+      <!-- STUDENT DOCUMENTS PAGE -->
+      <div class="page" id="page-student-documents">
+        <div class="page-header"><h2>My Documents</h2><p>Files and links shared by your tutor.</p></div>
+        <div id="student-docs-list"><div class="empty-state"><div class="icon"></div>No documents shared yet.</div></div>
+      </div>
+
       <!-- PREP RESOURCES PAGE -->
       <div class="page" id="page-resources">
         <div class="page-header">
@@ -1848,8 +1879,15 @@
             <div id="notes-${uid}"><div class="empty-state" style="padding:1rem 0"><div class="icon"></div>No notes yet.</div></div>
           </div>
         </div>
+        <div style="margin-top:1.2rem;border-top:1px solid rgba(250,250,248,0.06);padding-top:1rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+            <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em">Shared Documents</div>
+            <button class="action-btn" onclick="openDocModal('${uid}')">+ Doc</button>
+          </div>
+          <div id="docs-${uid}"><div class="empty-state" style="padding:0.5rem 0"><div class="icon"></div>No documents yet.</div></div>
+        </div>
       </div>`).join('');
-    myStudents.forEach(([uid])=>{ loadStudentScores(uid); loadStudentNotes(uid); });
+    myStudents.forEach(([uid])=>{ loadStudentScores(uid); loadStudentNotes(uid); loadStudentDocs(uid, 'tutor'); });
   }
 
   async function loadTutorStudentsPage() {
@@ -1959,6 +1997,7 @@
       <div class="sidebar-item" onclick="showPage('student-sessions',this)"><span class="sidebar-icon"></span>My Sessions</div>
       <div class="sidebar-item" onclick="showPage('student-notes',this)"><span class="sidebar-icon"></span>Tutor Notes</div>
       <div class="sidebar-item" onclick="showPage('student-assignments',this)"><span class="sidebar-icon"></span>Assignments</div>
+      <div class="sidebar-item" onclick="showPage('student-documents',this)"><span class="sidebar-icon"></span>My Documents</div>
       <div class="sidebar-section">Support</div>
       <div class="sidebar-item" onclick="showPage('student-messages',this)"><span class="sidebar-icon"></span>Messages <span id="student-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-section">Resources</div>
@@ -2051,6 +2090,12 @@
       <div class="page" id="page-student-assignments">
         <div class="page-header"><h2>Assignments</h2><p>Tasks and practice assigned by your tutor.</p></div>
         <div id="student-assignments-list"><div class="empty-state"><div class="icon"></div>No assignments yet.</div></div>
+      </div>
+
+      <!-- STUDENT DOCUMENTS PAGE -->
+      <div class="page" id="page-student-documents">
+        <div class="page-header"><h2>My Documents</h2><p>Files and links shared by your tutor.</p></div>
+        <div id="student-docs-list"><div class="empty-state"><div class="icon"></div>No documents shared yet.</div></div>
       </div>
 
       <!-- PREP RESOURCES PAGE -->
@@ -2630,8 +2675,16 @@
             <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Assignments (${assignments.length})</div>
             ${assignmentsHtml}
           </div>
+          <div style="margin-top:1rem;border-top:1px solid rgba(250,250,248,0.06);padding-top:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em"> Shared Documents</div>
+              <button class="action-btn" onclick="openDocModal('${uid}')">+ Doc</button>
+            </div>
+            <div id="docs-${uid}"><div class="empty-state" style="padding:0.5rem 0"><div class="icon"></div>No documents yet.</div></div>
+          </div>
         </div>`;
     }).join('');
+    students.forEach(([uid])=>loadStudentDocs(uid,'admin'));
   }
 
   window.adminDeleteScore = async function(scoreId, studentId) {
@@ -2785,6 +2838,71 @@
     await updateDoc(doc(db,'assignments',id), { completed: true });
     loadStudentAssignments();
   };
+
+  // ── Shared Documents ──────────────────────────────────────────────────────
+
+  window.openDocModal = function(studentId) {
+    studentId = (studentId||'').trim();
+    const studentName = allUsers[studentId]?.name || allUsers[studentId]?.email || studentId;
+    document.getElementById('doc-student-name').textContent = studentName;
+    document.getElementById('doc-label').value = '';
+    document.getElementById('doc-url').value = '';
+    document.getElementById('doc-msg').textContent = '';
+    openModal('modal-doc');
+    document.getElementById('confirm-doc-btn').onclick = async function() {
+      const label = document.getElementById('doc-label').value.trim();
+      const url   = document.getElementById('doc-url').value.trim();
+      const msg   = document.getElementById('doc-msg');
+      if (!label || !url) { showMsg(msg,'Label and link are required.','error'); return; }
+      if (!/^https?:\/\//i.test(url)) { showMsg(msg,'Please enter a valid URL starting with https://','error'); return; }
+      await addDoc(collection(db,'studentDocs'), {
+        studentId,
+        label,
+        url,
+        addedBy: CU.uid,
+        addedByName: CU.name || CU.email,
+        createdAt: new Date().toISOString()
+      });
+      showMsg(msg,'Document shared!','success');
+      setTimeout(()=>{ closeModal('modal-doc'); loadStudentDocs(studentId, CU.role); }, 700);
+    };
+  };
+
+  window.loadStudentDocs = async function(studentId, viewerRole) {
+    const containerId = viewerRole === 'student' ? 'student-docs-list' : `docs-${studentId}`;
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '<div style="font-size:0.8rem;color:rgba(250,250,248,0.3)">Loading…</div>';
+    const snap = await getDocs(collection(db,'studentDocs'));
+    const docs = [];
+    snap.forEach(d=>{ const data={id:d.id,...d.data()}; if(data.studentId===studentId) docs.push(data); });
+    docs.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+    if (!docs.length) {
+      el.innerHTML = '<div class="empty-state" style="padding:0.5rem 0"><div class="icon"></div>No documents yet.</div>';
+      return;
+    }
+    const canDelete = viewerRole === 'admin' || viewerRole === 'tutor';
+    el.innerHTML = docs.map(d=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;background:rgba(250,250,248,0.04);border-radius:8px;margin-bottom:0.45rem;gap:0.5rem">
+        <a href="${d.url}" target="_blank" rel="noopener noreferrer"
+           style="color:#e8b4b8;font-size:0.88rem;font-weight:500;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+           title="${d.label}">📄 ${d.label}</a>
+        <span style="font-size:0.72rem;color:rgba(250,250,248,0.3);white-space:nowrap">${d.addedByName||''}</span>
+        ${canDelete ? `<button class="action-btn danger" style="padding:0.2rem 0.55rem;font-size:0.72rem" onclick="deleteSharedDoc('${d.id}','${studentId}','${viewerRole}')">✕</button>` : ''}
+      </div>`).join('');
+  };
+
+  window.deleteSharedDoc = async function(docId, studentId, viewerRole) {
+    if (!confirm('Remove this document?')) return;
+    await deleteDoc(doc(db,'studentDocs',docId));
+    loadStudentDocs(studentId, viewerRole);
+  };
+
+  async function loadStudentDocuments() {
+    await loadStudentDocs(CU.uid, 'student');
+  }
+
+
 
 
 
@@ -3284,6 +3402,7 @@
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
     if (pageId==='student-assignments') loadStudentAssignments();
+    if (pageId==='student-documents') loadStudentDocuments();
     if (pageId==='tutor-messages') loadUserDMThread('tutor');
     if (pageId==='student-messages') loadUserDMThread('student');
     if (pageId==='tutor-assignments') loadTutorAssignments();
