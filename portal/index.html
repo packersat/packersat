@@ -1491,7 +1491,7 @@
       <div class="sidebar-item active" onclick="showPage('tutor-dashboard',this)"><span class="sidebar-icon"></span>Dashboard</div>
       <div class="sidebar-section">My Work</div>
       <div class="sidebar-item" onclick="showPage('tutor-students',this)"><span class="sidebar-icon"></span>My Students</div>
-      <div class="sidebar-item" onclick="showPage('tutor-sessions',this)"><span class="sidebar-icon"></span>Sessions</div>
+      <div class="sidebar-item" onclick="showPage('tutor-sessions',this)"><span class="sidebar-icon"></span>Sessions <span id="tutor-req-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-item" onclick="showPage('tutor-assignments',this)"><span class="sidebar-icon"></span>Assignments</div>
       <div class="sidebar-section">Support</div>
       <div class="sidebar-item" onclick="showPage('tutor-messages',this)"><span class="sidebar-icon"></span>Messages <span id="tutor-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
@@ -1536,6 +1536,10 @@
       <!-- TUTOR SESSIONS -->
       <div class="page" id="page-tutor-sessions">
         <div class="page-header"><h2>Sessions</h2><p>Your scheduled tutoring sessions.</p></div>
+        <div class="card" id="tutor-requests-card" style="margin-bottom:1.2rem;display:none">
+          <div class="card-title">⏳ Session Requests <span id="tutor-req-count" style="font-size:0.8rem;font-weight:400;color:rgba(250,250,248,0.5)"></span></div>
+          <div id="tutor-requests-list"></div>
+        </div>
         <div class="card">
           <div class="card-title">Upcoming Sessions <button class="btn-red" onclick="openTutorSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Location</th><th>Actions</th></tr></thead><tbody id="tutor-sessions-tbody"></tbody></table></div>
@@ -1810,6 +1814,7 @@
     `;
 
     loadTutorDashboard();
+    loadTutorSessionRequests();
   }
 
   async function loadTutorDashboard() {
@@ -2056,7 +2061,15 @@
 
       <!-- STUDENT SESSIONS -->
       <div class="page" id="page-student-sessions">
-        <div class="page-header"><h2>My Sessions</h2><p>Your upcoming tutoring sessions.</p></div>
+        <div class="page-header">
+          <h2>My Sessions</h2>
+          <p>Your upcoming tutoring sessions.</p>
+          <button class="btn-red" style="margin-top:0.75rem" onclick="openSessionRequestModal()">+ Request a Session</button>
+        </div>
+        <div class="card" id="student-requests-card" style="margin-bottom:1.2rem;display:none">
+          <div class="card-title">⏳ Pending Requests</div>
+          <div id="student-requests-list"></div>
+        </div>
         <div class="card">
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Tutor</th><th>Location</th></tr></thead><tbody id="student-sessions-tbody"></tbody></table></div>
         </div>
@@ -2906,7 +2919,118 @@
 
 
 
-  window.adminDeleteAssignment = async function(id) {
+  // ─────────────────────────────────────────
+  // ████  SESSION REQUESTS
+  // ─────────────────────────────────────────
+
+  window.openSessionRequestModal = function() {
+    document.getElementById('req-date').value = '';
+    document.getElementById('req-time').value = '';
+    document.getElementById('req-location').value = '';
+    document.getElementById('req-topic').value = '';
+    document.getElementById('session-request-msg').textContent = '';
+    openModal('modal-session-request');
+    document.getElementById('confirm-session-request-btn').onclick = async function() {
+      const date     = document.getElementById('req-date').value;
+      const time     = document.getElementById('req-time').value;
+      const location = document.getElementById('req-location').value.trim();
+      const topic    = document.getElementById('req-topic').value.trim();
+      const msg      = document.getElementById('session-request-msg');
+      if (!date || !time || !topic) { showMsg(msg, 'Date, time, and topic are required.', 'error'); return; }
+      if (!CU.tutorId) { showMsg(msg, 'You don\'t have a tutor assigned yet. Contact your admin.', 'error'); return; }
+      await addDoc(collection(db, 'sessionRequests'), {
+        studentId: CU.uid,
+        tutorId:   CU.tutorId,
+        date, time, location, topic,
+        status:    'pending',
+        createdAt: new Date().toISOString()
+      });
+      showMsg(msg, 'Request sent! Your tutor will confirm soon.', 'success');
+      setTimeout(() => { closeModal('modal-session-request'); loadStudentSessionRequests(); }, 900);
+    };
+  };
+
+  async function loadStudentSessionRequests() {
+    const card = document.getElementById('student-requests-card');
+    const list = document.getElementById('student-requests-list');
+    if (!card || !list) return;
+    const snap = await getDocs(collection(db, 'sessionRequests'));
+    const reqs = [];
+    snap.forEach(d => { const r = {id:d.id,...d.data()}; if (r.studentId === CU.uid && r.status === 'pending') reqs.push(r); });
+    reqs.sort((a,b) => b.createdAt.localeCompare(a.createdAt));
+    if (!reqs.length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    list.innerHTML = reqs.map(r => `
+      <div style="padding:0.7rem 0;border-bottom:1px solid rgba(250,250,248,0.06)">
+        <div style="font-size:0.9rem;font-weight:600;margin-bottom:0.3rem">${formatDate(r.date)} at ${formatTime(r.time)}</div>
+        <div style="font-size:0.82rem;color:rgba(250,250,248,0.55);margin-bottom:0.2rem">📍 ${r.location||'No location specified'}</div>
+        <div style="font-size:0.82rem;color:rgba(250,250,248,0.55)">📝 ${r.topic}</div>
+        <div style="font-size:0.75rem;color:rgba(250,250,248,0.3);margin-top:0.4rem">Awaiting tutor confirmation</div>
+      </div>`).join('');
+  }
+
+  async function loadTutorSessionRequests() {
+    const card  = document.getElementById('tutor-requests-card');
+    const list  = document.getElementById('tutor-requests-list');
+    const count = document.getElementById('tutor-req-count');
+    const badge = document.getElementById('tutor-req-badge');
+    if (!card || !list) return;
+    const snap = await getDocs(collection(db, 'sessionRequests'));
+    const reqs = [];
+    snap.forEach(d => { const r = {id:d.id,...d.data()}; if (r.tutorId === CU.uid && r.status === 'pending') reqs.push(r); });
+    reqs.sort((a,b) => a.date.localeCompare(b.date));
+    // Update badge
+    if (badge) { badge.textContent = reqs.length || ''; badge.style.display = reqs.length ? '' : 'none'; }
+    if (!reqs.length) { card.style.display = 'none'; if (count) count.textContent = ''; return; }
+    card.style.display = '';
+    if (count) count.textContent = `(${reqs.length})`;
+    await cacheAllUsers();
+    list.innerHTML = reqs.map(r => {
+      const sName = allUsers[r.studentId]?.name || allUsers[r.studentId]?.email || 'Student';
+      return `
+      <div style="padding:0.8rem;background:rgba(250,250,248,0.03);border-radius:10px;margin-bottom:0.7rem;border:1px solid rgba(250,250,248,0.07)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+          <div>
+            <div style="font-size:0.92rem;font-weight:600;margin-bottom:0.25rem">👤 ${sName}</div>
+            <div style="font-size:0.85rem;color:rgba(250,250,248,0.7);margin-bottom:0.2rem">📅 ${formatDate(r.date)} at ${formatTime(r.time)}</div>
+            <div style="font-size:0.82rem;color:rgba(250,250,248,0.55);margin-bottom:0.2rem">📍 ${r.location||'No location specified'}</div>
+            <div style="font-size:0.82rem;color:rgba(250,250,248,0.55)">📝 ${r.topic}</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-shrink:0">
+            <button class="btn-red" style="font-size:0.78rem;padding:0.35rem 0.9rem" onclick="confirmSessionRequest('${r.id}','${r.studentId}','${r.date}','${r.time}','${(r.location||'').replace(/'/g,'&apos;')}')">✓ Confirm</button>
+            <button class="action-btn danger" style="font-size:0.78rem;padding:0.35rem 0.9rem" onclick="declineSessionRequest('${r.id}')">✕ Decline</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  window.confirmSessionRequest = async function(reqId, studentId, date, time, location) {
+    await addDoc(collection(db, 'sessions'), {
+      studentId, tutorId: CU.uid, date, time,
+      location: location || '',
+      createdAt: new Date().toISOString()
+    });
+    await updateDoc(doc(db, 'sessionRequests', reqId), { status: 'confirmed' });
+    sendSessionEmail(studentId, CU.uid, date, time, location);
+    loadTutorSessionRequests();
+    loadTutorSessionsPage();
+  };
+
+  window.declineSessionRequest = async function(reqId) {
+    if (!confirm('Decline this session request?')) return;
+    await updateDoc(doc(db, 'sessionRequests', reqId), { status: 'declined' });
+    loadTutorSessionRequests();
+  };
+
+  function formatTime(t) {
+    if (!t) return '—';
+    const [h, m] = t.split(':');
+    const hour = parseInt(h);
+    return `${hour % 12 || 12}:${m} ${hour < 12 ? 'AM' : 'PM'}`;
+  }
+
+
     if (!confirm('Delete this assignment?')) return;
     await deleteDoc(doc(db,'assignments',id));
     if (CU.role==='tutor') loadTutorAssignments();
@@ -3401,6 +3525,8 @@
     if (pageId==='admin-sessions') loadAdminSessions();
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
+    if (pageId==='student-sessions') loadStudentSessionRequests();
+    if (pageId==='tutor-sessions') { loadTutorSessionsPage(); loadTutorSessionRequests(); }
     if (pageId==='student-assignments') loadStudentAssignments();
     if (pageId==='student-documents') loadStudentDocuments();
     if (pageId==='tutor-messages') loadUserDMThread('tutor');
@@ -3408,7 +3534,6 @@
     if (pageId==='tutor-assignments') loadTutorAssignments();
     if (pageId==='tutor-dashboard') loadTutorDashboard();
     if (pageId==='tutor-students') loadTutorStudentsPage();
-    if (pageId==='tutor-sessions') loadTutorSessionsPage();
     // resources page needs no data loading
   };
 
@@ -3467,5 +3592,28 @@
   function removeFromWaitlist(id) { window.removeFromWaitlist && window.removeFromWaitlist(id); }
   function convertWaitlistToUser(name, email) { window.convertWaitlistToUser && window.convertWaitlistToUser(name, email); }
 </script>
+<!-- Session Request Modal -->
+<div class="modal-overlay" id="modal-session-request">
+  <div class="modal" style="max-width:520px">
+    <h3>Request a Session</h3>
+    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">Your tutor will confirm or suggest a different time.</p>
+    <div class="form-row" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Preferred Date</div><input class="input-field" type="date" id="req-date" /></div>
+      <div><div class="field-label">Preferred Time</div><input class="input-field" type="time" id="req-time" /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Location</div><input class="input-field" type="text" id="req-location" placeholder="e.g. Library Room 2, Zoom, etc." /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">What do you need help with?</div><textarea class="input-field" id="req-topic" placeholder="e.g. Math — quadratics, Reading — inference questions..." style="min-height:90px;resize:vertical"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-session-request')">Cancel</button>
+      <button class="btn-red" id="confirm-session-request-btn">Send Request</button>
+    </div>
+    <div class="form-msg" id="session-request-msg"></div>
+  </div>
+</div>
+
 </body>
 </html>
