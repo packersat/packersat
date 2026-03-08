@@ -3033,6 +3033,7 @@
   }
 
 
+  window.adminDeleteAssignment = async function(id) {
     if (!confirm('Delete this assignment?')) return;
     await deleteDoc(doc(db,'assignments',id));
     if (CU.role==='tutor') loadTutorAssignments();
