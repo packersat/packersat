@@ -2577,17 +2577,89 @@
       const tutor = allUsers[tutorId];
       if (!student?.email) return;
       const calLink = buildCalendarLink(date, time, student.name, tutor?.name, location);
-      const [y,m,d] = date.split('-');
       const formattedDate = new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-      const formattedTime = time && time.trim() ? time.trim() : 'TBD';
-      await emailjs.send('service_xia779e', 'template_dz0o5vq', {
-        student_name: student.name || student.email,
-        student_email: student.email,
-        tutor_name: tutor?.name || 'Your Tutor',
-        session_date: formattedDate,
-        session_time: formattedTime,
-        session_location: location || 'TBD',
-        calendar_link: calLink
+      const formattedTime = time && time.trim() ? formatTime(time.trim()) : 'TBD';
+      const tutorName = tutor?.name || 'Your Tutor';
+      const studentName = student.name || student.email;
+      const loc = location || 'TBD';
+
+      const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 20px">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
+        <!-- Header -->
+        <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:36px 40px;text-align:center">
+          <h1 style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:0.02em">Packer <span style="color:#C8A96E">SAT</span> Prep</h1>
+          <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:13px;letter-spacing:0.1em;text-transform:uppercase">Session Confirmed</p>
+        </td></tr>
+        <!-- Body -->
+        <tr><td style="padding:40px">
+          <p style="margin:0 0 8px;color:#1a1a1a;font-size:16px;line-height:1.6">Hi <strong>${studentName}</strong>,</p>
+          <p style="margin:0 0 32px;color:#444444;font-size:15px;line-height:1.7">Your tutor <strong>${tutorName}</strong> has scheduled a tutoring session with you. Here are the details:</p>
+
+          <!-- Session details -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f4f4;border:1px solid #e8d5d5;border-radius:8px;margin-bottom:32px">
+            <tr>
+              <td style="padding:24px 28px 12px;width:50%;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C0182B;margin-bottom:6px">Date</div>
+                <div style="font-size:18px;font-weight:700;color:#1a1a1a">${formattedDate}</div>
+              </td>
+              <td style="padding:24px 28px 12px;width:50%;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C0182B;margin-bottom:6px">Time</div>
+                <div style="font-size:18px;font-weight:700;color:#1a1a1a">${formattedTime}</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:12px 28px 24px;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C0182B;margin-bottom:6px">Tutor</div>
+                <div style="font-size:16px;font-weight:600;color:#1a1a1a">${tutorName}</div>
+              </td>
+              <td style="padding:12px 28px 24px;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C0182B;margin-bottom:6px">Location</div>
+                <div style="font-size:16px;font-weight:600;color:#1a1a1a">${loc}</div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Calendar button -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:36px">
+            <tr><td align="center">
+              <a href="${calLink}" target="_blank" style="display:inline-block;background:#C0182B;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:4px;letter-spacing:0.03em">📅 Add to Google Calendar</a>
+            </td></tr>
+          </table>
+
+          <!-- Before your session -->
+          <div style="border-top:1px solid #eeeeee;padding-top:28px;margin-bottom:8px">
+            <p style="margin:0 0 16px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C0182B">Before Your Session</p>
+            <table cellpadding="0" cellspacing="0" width="100%">
+              <tr><td style="padding:6px 0;color:#444444;font-size:14px;line-height:1.6">✏️&nbsp; Review any practice problems or areas you struggled with recently.</td></tr>
+              <tr><td style="padding:6px 0;color:#444444;font-size:14px;line-height:1.6">📱&nbsp; Make sure you have your device ready with Bluebook or Khan Academy open if needed.</td></tr>
+              <tr><td style="padding:6px 0;color:#444444;font-size:14px;line-height:1.6">🎯&nbsp; Think about what topics you want to focus on so you can make the most of your time.</td></tr>
+            </table>
+          </div>
+
+          <p style="margin:28px 0 0;text-align:center"><a href="https://www.packersat.org/portal" style="color:#C0182B;font-size:14px;font-weight:600;text-decoration:none">View in Portal →</a></p>
+          <p style="margin:24px 0 0;color:#666666;font-size:14px;line-height:1.6">See you soon, and good luck with your prep!</p>
+        </td></tr>
+        <!-- Footer -->
+        <tr><td style="background:#f9f9f9;padding:20px 40px;border-top:1px solid #eeeeee;text-align:center">
+          <p style="margin:0;color:#999999;font-size:12px">Packer SAT Tutoring &middot; The Packer Collegiate Institute &middot; Brooklyn, NY</p>
+          <p style="margin:4px 0 0;color:#bbbbbb;font-size:11px">Free. Always.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+      await sendBrevoEmail({
+        to_email: student.email,
+        to_name: studentName,
+        subject: `Session Confirmed — ${formattedDate} at ${formattedTime}`,
+        html_content: html
       });
     } catch(e) {
       console.log('Session email failed (non-critical):', e);
@@ -3512,7 +3584,6 @@
 </body>
 </html>`;
   }
-
   window.showPage = function(pageId, el) {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
