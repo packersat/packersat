@@ -857,6 +857,10 @@
           <div class="card-title">All Sessions <button class="btn-red" onclick="openAdminSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button> <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">️ Export CSV</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th><th>Actions</th></tr></thead><tbody id="admin-sessions-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No sessions yet.</div></td></tr></tbody></table></div>
         </div>
+        <div class="card" style="margin-top:1.2rem">
+          <div class="card-title">Group Sessions</div>
+          <div id="admin-group-sessions-list"><div class="empty-state"><div class="icon"></div>No group sessions yet.</div></div>
+        </div>
       </div>
 
       <!-- ADMIN STUDENT PROFILES -->
@@ -1542,9 +1546,13 @@
           <div class="card-title">⏳ Session Requests <span id="tutor-req-count" style="font-size:0.8rem;font-weight:400;color:rgba(250,250,248,0.5)"></span></div>
           <div id="tutor-requests-list"></div>
         </div>
-        <div class="card">
-          <div class="card-title">Upcoming Sessions <button class="btn-red" onclick="openTutorSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button></div>
+        <div class="card" style="margin-bottom:1.2rem">
+          <div class="card-title">Upcoming Sessions <button class="btn-red" onclick="openTutorSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button> <button class="action-btn" onclick="openGroupSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Group Session</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Location</th><th>Actions</th></tr></thead><tbody id="tutor-sessions-tbody"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Group Sessions <button class="action-btn" onclick="openGroupSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ New</button></div>
+          <div id="tutor-group-sessions-list"><div class="empty-state"><div class="icon"></div>No group sessions yet.</div></div>
         </div>
       </div>
 
@@ -1817,6 +1825,7 @@
 
     loadTutorDashboard();
     loadTutorSessionRequests();
+    loadGroupSessions();
   }
 
   async function loadTutorDashboard() {
@@ -2067,13 +2076,18 @@
           <h2>My Sessions</h2>
           <p>Your upcoming tutoring sessions.</p>
           <button class="btn-red" style="margin-top:0.75rem" onclick="openSessionRequestModal()">+ Request a Session</button>
+          <button class="action-btn" style="margin-top:0.5rem" onclick="openGroupRequestModal()">+ Request Group Session</button>
         </div>
         <div class="card" id="student-requests-card" style="margin-bottom:1.2rem;display:none">
           <div class="card-title">⏳ Pending Requests</div>
           <div id="student-requests-list"></div>
         </div>
-        <div class="card">
+        <div class="card" style="margin-bottom:1.2rem">
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Tutor</th><th>Location</th></tr></thead><tbody id="student-sessions-tbody"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Group Sessions</div>
+          <div id="student-group-sessions-list"><div class="empty-state"><div class="icon"></div>No group sessions yet.</div></div>
         </div>
       </div>
 
@@ -2985,6 +2999,230 @@
     loadStudentDocs(studentId, viewerRole);
   };
 
+  // ─────────────────────────────────────────
+  // ████  GROUP SESSIONS
+  // ─────────────────────────────────────────
+
+  window.openGroupSessionModal = async function() {
+    await cacheAllUsers();
+    const students = Object.entries(allUsers).filter(([,u])=>u.role==='student');
+    const tutors   = Object.entries(allUsers).filter(([,u])=>u.role==='tutor');
+
+    // Populate student checkboxes
+    const sList = document.getElementById('gs-students-list');
+    sList.innerHTML = students.length ? students.map(([uid,u])=>`
+      <label style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;font-size:0.88rem;color:rgba(250,250,248,0.85);cursor:pointer">
+        <input type="checkbox" value="${uid}" style="accent-color:#C0182B"> ${u.name||u.email}
+      </label>`).join('') : '<span style="color:rgba(250,250,248,0.4);font-size:0.85rem">No students yet.</span>';
+
+    // Populate tutor checkboxes — pre-check current user if tutor
+    const tList = document.getElementById('gs-tutors-list');
+    tList.innerHTML = tutors.length ? tutors.map(([uid,u])=>`
+      <label style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;font-size:0.88rem;color:rgba(250,250,248,0.85);cursor:pointer">
+        <input type="checkbox" value="${uid}" ${CU.role==='tutor'&&CU.uid===uid?'checked':''} style="accent-color:#C0182B"> ${u.name||u.email}
+      </label>`).join('') : '<span style="color:rgba(250,250,248,0.4);font-size:0.85rem">No tutors yet.</span>';
+
+    document.getElementById('gs-date').value = '';
+    document.getElementById('gs-time').value = '';
+    document.getElementById('gs-location').value = '';
+    document.getElementById('gs-topic').value = '';
+    document.getElementById('gs-msg').textContent = '';
+    openModal('modal-group-session');
+
+    document.getElementById('confirm-group-session-btn').onclick = async function() {
+      const date     = document.getElementById('gs-date').value;
+      const time     = document.getElementById('gs-time').value;
+      const location = document.getElementById('gs-location').value.trim();
+      const topic    = document.getElementById('gs-topic').value.trim();
+      const msg      = document.getElementById('gs-msg');
+      const studentIds = [...document.querySelectorAll('#gs-students-list input:checked')].map(x=>x.value);
+      const tutorIds   = [...document.querySelectorAll('#gs-tutors-list input:checked')].map(x=>x.value);
+      if (!date || !time) { showMsg(msg,'Date and time are required.','error'); return; }
+      if (!studentIds.length) { showMsg(msg,'Select at least one student.','error'); return; }
+      if (!tutorIds.length) { showMsg(msg,'Select at least one tutor.','error'); return; }
+
+      await addDoc(collection(db,'groupSessions'), {
+        studentIds, tutorIds, date, time, location, topic,
+        createdBy: CU.uid, createdAt: new Date().toISOString()
+      });
+
+      // Send email to each student
+      const formattedDate = new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+      const formattedTime = formatTime(time);
+      const tutorNames = tutorIds.map(tid=>allUsers[tid]?.name||'Tutor').join(', ');
+      const studentNames = studentIds.map(sid=>allUsers[sid]?.name||'Student').join(', ');
+      for (const sid of studentIds) {
+        const student = allUsers[sid];
+        if (!student?.email) continue;
+        await sendGroupSessionEmail({ student, tutorNames, studentNames, formattedDate, formattedTime, location, topic });
+      }
+
+      showMsg(msg,'Group session scheduled! Emails sent to all students.','success');
+      setTimeout(()=>{
+        closeModal('modal-group-session');
+        loadGroupSessions();
+      }, 900);
+    };
+  };
+
+  async function sendGroupSessionEmail({ student, tutorNames, studentNames, formattedDate, formattedTime, location, topic }) {
+    try {
+      const loc = location || 'TBD';
+      const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#1A0508;font-family:'Helvetica Neue',Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+        <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:36px 40px;border-radius:8px 8px 0 0;text-align:center">
+          <h1 style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</h1>
+          <p style="margin:8px 0 0;color:rgba(250,250,248,0.75);font-size:13px;letter-spacing:0.1em;text-transform:uppercase">Group Session Confirmed</p>
+        </td></tr>
+        <tr><td style="background:#2A0A10;padding:40px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
+          <p style="margin:0 0 8px;color:#FAFAF8 !important;font-size:16px;line-height:1.6" color="#FAFAF8">Hi <strong>${student.name||student.email}</strong>,</p>
+          <p style="margin:0 0 28px;color:#FAFAF8 !important;font-size:15px;line-height:1.7" color="#FAFAF8">A group tutoring session has been scheduled for you. Here are the details:</p>
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(192,24,43,0.12);border:1px solid rgba(192,24,43,0.3);border-radius:8px;margin-bottom:28px">
+            <tr>
+              <td style="padding:20px 24px 10px;width:50%;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C8A96E;margin-bottom:6px">Date</div>
+                <div style="font-size:16px;font-weight:700;color:#FAFAF8 !important" color="#FAFAF8">${formattedDate}</div>
+              </td>
+              <td style="padding:20px 24px 10px;width:50%;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C8A96E;margin-bottom:6px">Time</div>
+                <div style="font-size:16px;font-weight:700;color:#FAFAF8 !important" color="#FAFAF8">${formattedTime}</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:10px 24px 10px;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C8A96E;margin-bottom:6px">Location</div>
+                <div style="font-size:14px;font-weight:600;color:#FAFAF8 !important" color="#FAFAF8">${loc}</div>
+              </td>
+              <td style="padding:10px 24px 10px;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C8A96E;margin-bottom:6px">Tutor(s)</div>
+                <div style="font-size:14px;font-weight:600;color:#FAFAF8 !important" color="#FAFAF8">${tutorNames}</div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="padding:10px 24px 20px;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C8A96E;margin-bottom:6px">Students</div>
+                <div style="font-size:14px;color:#FAFAF8 !important" color="#FAFAF8">${studentNames}</div>
+              </td>
+            </tr>
+            ${topic ? `<tr><td colspan="2" style="padding:0 24px 20px;vertical-align:top">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C8A96E;margin-bottom:6px">Topic</div>
+                <div style="font-size:14px;color:#FAFAF8 !important" color="#FAFAF8">${topic}</div>
+              </td></tr>` : ''}
+          </table>
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px">
+            <tr><td align="center">
+              <a href="https://www.packersat.org/portal" style="display:inline-block;background:#C0182B;color:#FAFAF8;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:4px">View in Portal →</a>
+            </td></tr>
+          </table>
+          <p style="margin:0;color:#FAFAF8 !important;font-size:14px;line-height:1.6" color="#FAFAF8">See you there, and good luck with your prep!</p>
+        </td></tr>
+        <tr><td style="background:#0F0305;padding:24px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
+          <p style="margin:0;color:rgba(250,250,248,0.25);font-size:12px">Packer SAT Tutoring &middot; The Packer Collegiate Institute &middot; Brooklyn, NY</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+      await sendBrevoEmail({
+        to_email: student.email,
+        to_name: student.name || student.email,
+        subject: `Group Session Confirmed — ${formattedDate} at ${formattedTime}`,
+        html_content: html
+      });
+    } catch(e) { console.log('Group session email failed:', e); }
+  }
+
+  async function loadGroupSessions() {
+    await cacheAllUsers();
+    const snap = await getDocs(collection(db,'groupSessions'));
+    const all = [];
+    snap.forEach(d => all.push({id:d.id,...d.data()}));
+    all.sort((a,b)=>a.date.localeCompare(b.date));
+
+    // Tutor view
+    const tutorList = document.getElementById('tutor-group-sessions-list');
+    if (tutorList) {
+      const mine = all.filter(g => g.tutorIds?.includes(CU.uid) || g.studentIds?.includes(CU.uid));
+      renderGroupSessionList(tutorList, mine, 'tutor');
+    }
+    // Student view
+    const studentList = document.getElementById('student-group-sessions-list');
+    if (studentList) {
+      const mine = all.filter(g => g.studentIds?.includes(CU.uid));
+      renderGroupSessionList(studentList, mine, 'student');
+    }
+    // Admin view
+    const adminList = document.getElementById('admin-group-sessions-list');
+    if (adminList) {
+      renderGroupSessionList(adminList, all, 'admin');
+    }
+  }
+
+  function renderGroupSessionList(el, sessions, role) {
+    if (!sessions.length) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No group sessions yet.</div>'; return; }
+    el.innerHTML = sessions.map(g => {
+      const tutorNames   = (g.tutorIds||[]).map(id=>allUsers[id]?.name||'Tutor').join(', ');
+      const studentNames = (g.studentIds||[]).map(id=>allUsers[id]?.name||'Student').join(', ');
+      const canDelete    = role === 'admin' || role === 'tutor';
+      return `
+      <div style="padding:0.9rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.07);border-radius:10px;margin-bottom:0.7rem">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+          <div style="flex:1">
+            <div style="font-size:0.9rem;font-weight:700;color:#FAFAF8;margin-bottom:0.3rem">👥 Group Session — ${formatDate(g.date)} at ${formatTime(g.time)}</div>
+            <div style="font-size:0.82rem;color:rgba(250,250,248,0.6);margin-bottom:0.2rem">📍 ${g.location||'No location'}</div>
+            ${g.topic ? `<div style="font-size:0.82rem;color:rgba(250,250,248,0.6);margin-bottom:0.2rem">📝 ${g.topic}</div>` : ''}
+            <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.4rem">Tutors: ${tutorNames}</div>
+            <div style="font-size:0.78rem;color:rgba(250,250,248,0.4)">Students: ${studentNames}</div>
+          </div>
+          ${canDelete ? `<button class="action-btn danger" onclick="deleteGroupSession('${g.id}')">Remove</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  window.deleteGroupSession = async function(id) {
+    if (!confirm('Remove this group session?')) return;
+    await deleteDoc(doc(db,'groupSessions',id));
+    loadGroupSessions();
+  };
+
+  window.openGroupRequestModal = function() {
+    document.getElementById('gr-date').value = '';
+    document.getElementById('gr-time').value = '';
+    document.getElementById('gr-location').value = '';
+    document.getElementById('gr-topic').value = '';
+    document.getElementById('gr-others').value = '';
+    document.getElementById('group-request-msg').textContent = '';
+    openModal('modal-group-request');
+    document.getElementById('confirm-group-request-btn').onclick = async function() {
+      const date     = document.getElementById('gr-date').value;
+      const time     = document.getElementById('gr-time').value;
+      const location = document.getElementById('gr-location').value.trim();
+      const topic    = document.getElementById('gr-topic').value.trim();
+      const others   = document.getElementById('gr-others').value.trim();
+      const msg      = document.getElementById('group-request-msg');
+      if (!date || !time || !topic) { showMsg(msg,'Date, time, and topic are required.','error'); return; }
+      if (!CU.tutorId) { showMsg(msg,'You don\'t have a tutor assigned yet.','error'); return; }
+      await addDoc(collection(db,'sessionRequests'), {
+        studentId: CU.uid, tutorId: CU.tutorId,
+        date, time, location, topic,
+        suggestedStudents: others,
+        isGroup: true, status: 'pending',
+        createdAt: new Date().toISOString()
+      });
+      showMsg(msg,'Group session request sent!','success');
+      setTimeout(()=>{ closeModal('modal-group-request'); loadStudentSessionRequests(); }, 900);
+    };
+  };
+
+
+
   async function loadStudentDocuments() {
     await loadStudentDocs(CU.uid, 'student');
   }
@@ -3061,14 +3299,17 @@
     await cacheAllUsers();
     list.innerHTML = reqs.map(r => {
       const sName = allUsers[r.studentId]?.name || allUsers[r.studentId]?.email || 'Student';
+      const groupBadge = r.isGroup ? `<span style="background:rgba(192,24,43,0.25);color:#e8b4b8;font-size:0.7rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:20px;margin-left:0.4rem;letter-spacing:0.05em">GROUP</span>` : '';
+      const suggestedHtml = r.isGroup && r.suggestedStudents ? `<div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.2rem">👥 Suggested: ${r.suggestedStudents}</div>` : '';
       return `
       <div style="padding:0.8rem;background:rgba(250,250,248,0.03);border-radius:10px;margin-bottom:0.7rem;border:1px solid rgba(250,250,248,0.07)">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
           <div>
-            <div style="font-size:0.92rem;font-weight:600;margin-bottom:0.25rem">👤 ${sName}</div>
+            <div style="font-size:0.92rem;font-weight:600;margin-bottom:0.25rem">👤 ${sName}${groupBadge}</div>
             <div style="font-size:0.85rem;color:rgba(250,250,248,0.7);margin-bottom:0.2rem">📅 ${formatDate(r.date)} at ${formatTime(r.time)}</div>
             <div style="font-size:0.82rem;color:rgba(250,250,248,0.55);margin-bottom:0.2rem">📍 ${r.location||'No location specified'}</div>
             <div style="font-size:0.82rem;color:rgba(250,250,248,0.55)">📝 ${r.topic}</div>
+            ${suggestedHtml}
           </div>
           <div style="display:flex;gap:0.5rem;flex-shrink:0">
             <button class="btn-red" style="font-size:0.78rem;padding:0.35rem 0.9rem" onclick="confirmSessionRequest('${r.id}','${r.studentId}','${r.date}','${r.time}','${(r.location||'').replace(/'/g,'&apos;')}')">✓ Confirm</button>
@@ -3599,9 +3840,10 @@
     if (pageId==='admin-sessions') loadAdminSessions();
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
-    if (pageId==='student-sessions') loadStudentSessionRequests();
-    if (pageId==='tutor-sessions') { loadTutorSessionsPage(); loadTutorSessionRequests(); }
-    if (pageId==='student-assignments') loadStudentAssignments();
+    if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
+    if (pageId==='student-sessions') { loadStudentSessionRequests(); loadGroupSessions(); }
+    if (pageId==='tutor-sessions') { loadTutorSessionsPage(); loadTutorSessionRequests(); loadGroupSessions(); }
+    if (pageId==='admin-sessions') { loadAdminSessions(); loadGroupSessions(); }
     if (pageId==='student-documents') loadStudentDocuments();
     if (pageId==='tutor-messages') loadUserDMThread('tutor');
     if (pageId==='student-messages') loadUserDMThread('student');
@@ -3686,6 +3928,67 @@
       <button class="btn-red" id="confirm-session-request-btn">Send Request</button>
     </div>
     <div class="form-msg" id="session-request-msg"></div>
+  </div>
+</div>
+
+<!-- Group Session Modal (tutor/admin creates) -->
+<div class="modal-overlay" id="modal-group-session">
+  <div class="modal" style="max-width:580px">
+    <h3>Schedule Group Session</h3>
+    <div class="form-row" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Date</div><input class="input-field" type="date" id="gs-date" /></div>
+      <div><div class="field-label">Time</div><input class="input-field" type="time" id="gs-time" /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Location</div><input class="input-field" type="text" id="gs-location" placeholder="e.g. Library Room 2, Zoom, etc." /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Topic</div><input class="input-field" type="text" id="gs-topic" placeholder="e.g. Math — quadratics, Reading strategy..." /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div>
+        <div class="field-label">Students <span style="color:rgba(250,250,248,0.4);font-size:0.75rem">(select one or more)</span></div>
+        <div id="gs-students-list" style="background:rgba(250,250,248,0.04);border:1px solid rgba(250,250,248,0.1);border-radius:6px;padding:0.6rem;max-height:160px;overflow-y:auto"></div>
+      </div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div>
+        <div class="field-label">Tutors <span style="color:rgba(250,250,248,0.4);font-size:0.75rem">(select one or more)</span></div>
+        <div id="gs-tutors-list" style="background:rgba(250,250,248,0.04);border:1px solid rgba(250,250,248,0.1);border-radius:6px;padding:0.6rem;max-height:120px;overflow-y:auto"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-group-session')">Cancel</button>
+      <button class="btn-red" id="confirm-group-session-btn">Schedule &amp; Notify</button>
+    </div>
+    <div class="form-msg" id="gs-msg"></div>
+  </div>
+</div>
+
+<!-- Group Session Request Modal (student) -->
+<div class="modal-overlay" id="modal-group-request">
+  <div class="modal" style="max-width:520px">
+    <h3>Request a Group Session</h3>
+    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">Your tutor will confirm and set the final roster.</p>
+    <div class="form-row" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Preferred Date</div><input class="input-field" type="date" id="gr-date" /></div>
+      <div><div class="field-label">Preferred Time</div><input class="input-field" type="time" id="gr-time" /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Location</div><input class="input-field" type="text" id="gr-location" placeholder="e.g. Library Room 2, Zoom, etc." /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Topic / what you need help with</div><textarea class="input-field" id="gr-topic" placeholder="e.g. Math — quadratics..." style="min-height:70px;resize:vertical"></textarea></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Suggested students to invite <span style="color:rgba(250,250,248,0.4);font-size:0.75rem">(optional — names or emails)</span></div>
+      <textarea class="input-field" id="gr-others" placeholder="e.g. Sarah Kim, Marcus Chen..." style="min-height:60px;resize:vertical"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-group-request')">Cancel</button>
+      <button class="btn-red" id="confirm-group-request-btn">Send Request</button>
+    </div>
+    <div class="form-msg" id="group-request-msg"></div>
   </div>
 </div>
 
