@@ -4475,18 +4475,17 @@
     if (pageId==='admin-messages') { populateDMRecipients(); loadDMHistory(); loadDMInbox(); }
     if (pageId==='admin-waitlist') loadWaitlist();
     if (pageId==='admin-scores') { loadAllScores(); populateAdminScoreStudents(); }
-    if (pageId==='admin-sessions') loadAdminSessions();
+    if (pageId==='admin-sessions') { loadAdminSessions(); loadGroupSessions(); }
+    if (pageId==='admin-session-logs') loadAdminSessionLogs();
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
-    if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
     if (pageId==='student-sessions') { loadStudentSessionRequests(); loadGroupSessions(); }
-    if (pageId==='tutor-sessions') { loadTutorSessionsPage(); loadTutorSessionRequests(); loadGroupSessions(); loadTutorSessionLog(); }
-    if (pageId==='admin-sessions') { loadAdminSessions(); loadGroupSessions(); }
-    if (pageId==='tutor-session-log') loadTutorSessionLog();
-    if (pageId==='admin-session-logs') loadAdminSessionLogs();
     if (pageId==='student-documents') loadStudentDocuments();
-    if (pageId==='tutor-messages') loadUserDMThread('tutor');
     if (pageId==='student-messages') loadUserDMThread('student');
+    if (pageId==='student-assignments') loadStudentAssignments();
+    if (pageId==='tutor-sessions') { loadTutorSessionsPage(); loadTutorSessionRequests(); loadGroupSessions(); loadTutorSessionLog(); }
+    if (pageId==='tutor-session-log') loadTutorSessionLog();
+    if (pageId==='tutor-messages') loadUserDMThread('tutor');
     if (pageId==='tutor-assignments') loadTutorAssignments();
     if (pageId==='tutor-dashboard') loadTutorDashboard();
     if (pageId==='tutor-students') loadTutorStudentsPage();
