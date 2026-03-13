@@ -895,7 +895,8 @@
 
         <!-- Full log table -->
         <div class="card">
-          <div class="card-title">📋 All Session Logs
+          <div class="card-title">All Session Logs
+            <button class="btn-red" onclick="openManualLogModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Log Manually</button>
             <select id="log-filter-student" class="input-field" style="font-size:0.75rem;padding:0.25rem 0.6rem;width:auto;display:inline-block;margin-left:0.6rem">
               <option value="">All students</option>
             </select>
@@ -1602,11 +1603,11 @@
       <div class="page" id="page-tutor-session-log">
         <div class="page-header"><h2>Session Log</h2><p>Log completed sessions and track student progress over time.</p></div>
         <div class="card" style="margin-bottom:1.2rem">
-          <div class="card-title">📋 Past Sessions — Ready to Log</div>
+          <div class="card-title">Past Sessions — Ready to Log</div>
           <div id="tutor-past-sessions-list"><div class="empty-state"><div class="icon"></div>No completed sessions yet.</div></div>
         </div>
         <div class="card">
-          <div class="card-title">✅ Completed Logs</div>
+          <div class="card-title">Completed Logs <button class="btn-red" onclick="openManualLogModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Log Manually</button></div>
           <div id="tutor-completed-logs-list"><div class="empty-state"><div class="icon"></div>No session logs yet.</div></div>
         </div>
       </div>
@@ -3058,7 +3059,85 @@
   // ████  SESSION LOG
   // ─────────────────────────────────────────
 
-  let _currentLogSession = null;
+  window.openManualLogModal = async function() {
+    await cacheAllUsers();
+    const isAdmin = CU.role === 'admin';
+
+    // Populate students
+    const sSel = document.getElementById('mlog-student');
+    sSel.innerHTML = '<option value="">Select student</option>';
+    Object.entries(allUsers).filter(([,u]) => u.role === 'student').forEach(([uid, u]) => {
+      sSel.innerHTML += `<option value="${uid}">${u.name || u.email}</option>`;
+    });
+
+    // Tutor row — admin sees all tutors; tutor sees themselves only
+    const tRow = document.getElementById('mlog-tutor-row');
+    const tSel = document.getElementById('mlog-tutor');
+    if (isAdmin) {
+      tRow.style.display = '';
+      tSel.innerHTML = '<option value="">Select tutor</option>';
+      Object.entries(allUsers).filter(([,u]) => u.role === 'tutor').forEach(([uid, u]) => {
+        tSel.innerHTML += `<option value="${uid}">${u.name || u.email}</option>`;
+      });
+      // Auto-select tutor when student is picked
+      sSel.onchange = () => {
+        const student = allUsers[sSel.value];
+        if (student?.tutorId) tSel.value = student.tutorId;
+      };
+    } else {
+      tRow.style.display = 'none';
+    }
+
+    // Reset fields
+    ['mlog-date','mlog-time','mlog-location','mlog-subjects','mlog-struggles','mlog-goals','mlog-notes'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('mlog-msg').textContent = '';
+    document.getElementById('mlog-date').value = today();
+    openModal('modal-manual-log');
+
+    document.getElementById('confirm-manual-log-btn').onclick = async function() {
+      const studentId = sSel.value;
+      const tutorId   = isAdmin ? tSel.value : CU.uid;
+      const date      = document.getElementById('mlog-date').value;
+      const time      = document.getElementById('mlog-time').value;
+      const location  = document.getElementById('mlog-location').value.trim();
+      const subjects  = document.getElementById('mlog-subjects').value.trim();
+      const struggles = document.getElementById('mlog-struggles').value.trim();
+      const goals     = document.getElementById('mlog-goals').value.trim();
+      const notes     = document.getElementById('mlog-notes').value.trim();
+      const msg       = document.getElementById('mlog-msg');
+
+      if (!studentId) { showMsg(msg, 'Please select a student.', 'error'); return; }
+      if (!tutorId)   { showMsg(msg, 'Please select a tutor.', 'error'); return; }
+      if (!date)      { showMsg(msg, 'Please enter a date.', 'error'); return; }
+      if (!subjects)  { showMsg(msg, 'Please enter at least one subject.', 'error'); return; }
+
+      const btn = document.getElementById('confirm-manual-log-btn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+
+      await addDoc(collection(db, 'sessionLogs'), {
+        sessionId:  null,
+        studentId, tutorId, date, time, location,
+        subjects:   subjects.split(',').map(s => s.trim()).filter(Boolean),
+        struggles, goals, notes,
+        manual:     true,
+        loggedBy:   CU.uid,
+        loggedAt:   new Date().toISOString()
+      });
+
+      showMsg(msg, 'Session logged!', 'success');
+      setTimeout(() => {
+        closeModal('modal-manual-log');
+        btn.disabled = false; btn.textContent = 'Save Log';
+        if (document.getElementById('tutor-completed-logs-list')) loadTutorSessionLog();
+        if (document.getElementById('admin-logs-list')) loadAdminSessionLogs();
+      }, 700);
+    };
+  };
+
+
 
   window.openSessionLogModal = function(session) {
     _currentLogSession = session;
@@ -3115,14 +3194,21 @@
     const completedList = document.getElementById('tutor-completed-logs-list');
     if (!pastList && !completedList) return;
 
-    const todayStr = today();
+    const now = new Date();
 
-    // Get all sessions for this tutor that are in the past
+    // Get all sessions for this tutor where 1+ hour has passed since session start
     const sessSnap = await getDocs(collection(db, 'sessions'));
     const pastSessions = [];
     sessSnap.forEach(d => {
       const s = { id: d.id, ...d.data() };
-      if (s.tutorId === CU.uid && s.date < todayStr) pastSessions.push(s);
+      if (s.tutorId !== CU.uid) return;
+      let sessionStart;
+      if (s.date && s.time) {
+        sessionStart = new Date(s.date + 'T' + s.time);
+      } else if (s.date) {
+        sessionStart = new Date(s.date + 'T00:00');
+      } else return;
+      if (now >= new Date(sessionStart.getTime() + 60 * 60 * 1000)) pastSessions.push(s);
     });
     pastSessions.sort((a, b) => b.date.localeCompare(a.date));
 
@@ -3136,22 +3222,21 @@
     });
     logs.sort((a, b) => b.date.localeCompare(a.date));
 
-    // Unlogged past sessions
     const unlogged = pastSessions.filter(s => !loggedSessionIds.has(s.id));
 
     if (pastList) {
       if (!unlogged.length) {
-        pastList.innerHTML = '<div class="empty-state"><div class="icon">✅</div>All past sessions have been logged.</div>';
+        pastList.innerHTML = '<div class="empty-state"><div class="icon"></div>All past sessions have been logged.</div>';
       } else {
         pastList.innerHTML = unlogged.map(s => {
           const sName = allUsers[s.studentId]?.name || allUsers[s.studentId]?.email || 'Student';
           return `
           <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.08);border-radius:10px;margin-bottom:0.6rem;flex-wrap:wrap;gap:0.6rem">
             <div>
-              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8;margin-bottom:0.2rem">👤 ${sName}</div>
-              <div style="font-size:0.8rem;color:rgba(250,250,248,0.5)">📅 ${formatDate(s.date)} ${s.time ? '· ' + formatTime(s.time) : ''} ${s.location ? '· 📍 ' + s.location : ''}</div>
+              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8;margin-bottom:0.2rem">${sName}</div>
+              <div style="font-size:0.8rem;color:rgba(250,250,248,0.5)">${formatDate(s.date)} ${s.time ? '· ' + formatTime(s.time) : ''} ${s.location ? '· ' + s.location : ''}</div>
             </div>
-            <button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem;white-space:nowrap" onclick='openSessionLogModal(${JSON.stringify(s)})'>📋 Log Session</button>
+            <button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem;white-space:nowrap" onclick='openSessionLogModal(${JSON.stringify(s)})'>Log Session</button>
           </div>`;
         }).join('');
       }
@@ -3167,10 +3252,10 @@
           <div style="padding:1rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.07);border-radius:10px;margin-bottom:0.8rem">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.7rem">
               <div>
-                <div style="font-size:0.92rem;font-weight:700;color:#FAFAF8">👤 ${sName} — ${formatDate(l.date)}</div>
+                <div style="font-size:0.92rem;font-weight:700;color:#FAFAF8">${sName} — ${formatDate(l.date)}</div>
                 <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.15rem">${l.time ? formatTime(l.time) + ' · ' : ''}${l.location || ''}</div>
               </div>
-              <div style="font-size:0.72rem;color:rgba(250,250,248,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}</div>
+              <div style="font-size:0.72rem;color:rgba(250,250,248,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}${l.manual ? '<span style="background:rgba(200,169,110,0.15);color:#C8A96E;font-size:0.65rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:20px;margin-left:0.4rem;letter-spacing:0.05em">MANUAL</span>' : ''}</div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem 1.2rem;font-size:0.82rem">
               <div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Subjects</div><div style="color:rgba(250,250,248,0.8)">${(l.subjects||[]).join(', ') || '—'}</div></div>
@@ -3183,6 +3268,7 @@
       }
     }
   }
+
 
   async function loadAdminSessionLogs() {
     await cacheAllUsers();
@@ -3295,7 +3381,7 @@
             <div style="font-size:0.92rem;font-weight:700;color:#FAFAF8">👤 ${sName} <span style="color:rgba(250,250,248,0.35);font-weight:400;font-size:0.8rem">with ${tName}</span></div>
             <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.15rem">${formatDate(l.date)}${l.time ? ' · ' + formatTime(l.time) : ''}${l.location ? ' · 📍 ' + l.location : ''}</div>
           </div>
-          <div style="font-size:0.72rem;color:rgba(250,250,248,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}</div>
+          <div style="font-size:0.72rem;color:rgba(250,250,248,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}${l.manual ? '<span style="background:rgba(200,169,110,0.15);color:#C8A96E;font-size:0.65rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:20px;margin-left:0.4rem;letter-spacing:0.05em">MANUAL</span>' : ''}</div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem 1.2rem;font-size:0.82rem">
           <div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Subjects</div><div style="color:rgba(250,250,248,0.8)">${(l.subjects||[]).join(', ') || '—'}</div></div>
@@ -4236,6 +4322,45 @@
       <button class="btn-red" id="confirm-session-request-btn">Send Request</button>
     </div>
     <div class="form-msg" id="session-request-msg"></div>
+  </div>
+</div>
+
+<!-- Manual Session Log Modal -->
+<div class="modal-overlay" id="modal-manual-log">
+  <div class="modal" style="max-width:600px">
+    <h3>Log a Session Manually</h3>
+    <div class="form-row" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Student</div><select class="input-field" id="mlog-student"></select></div>
+      <div id="mlog-tutor-row"><div class="field-label">Tutor</div><select class="input-field" id="mlog-tutor"></select></div>
+    </div>
+    <div class="form-row" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Date</div><input class="input-field" type="date" id="mlog-date" /></div>
+      <div><div class="field-label">Time</div><input class="input-field" type="time" id="mlog-time" /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Location</div><input class="input-field" type="text" id="mlog-location" placeholder="e.g. Library, Zoom" /></div>
+    </div>
+    <div style="margin-bottom:0.9rem">
+      <div class="field-label">Subjects Studied <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(comma separated)</span></div>
+      <input class="input-field" type="text" id="mlog-subjects" placeholder="e.g. Algebra, Quadratics, Evidence-based Reading" />
+    </div>
+    <div style="margin-bottom:0.9rem">
+      <div class="field-label">Specific Struggles</div>
+      <textarea class="input-field" id="mlog-struggles" placeholder="What concepts or question types gave the student difficulty?" style="min-height:75px;resize:vertical"></textarea>
+    </div>
+    <div style="margin-bottom:0.9rem">
+      <div class="field-label">Goals for Next Meeting</div>
+      <textarea class="input-field" id="mlog-goals" placeholder="What should the student work on before the next session?" style="min-height:75px;resize:vertical"></textarea>
+    </div>
+    <div style="margin-bottom:0.9rem">
+      <div class="field-label">General Notes <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(optional)</span></div>
+      <textarea class="input-field" id="mlog-notes" placeholder="Any other observations, mood, effort level, wins..." style="min-height:65px;resize:vertical"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-manual-log')">Cancel</button>
+      <button class="btn-red" id="confirm-manual-log-btn">Save Log</button>
+    </div>
+    <div class="form-msg" id="mlog-msg"></div>
   </div>
 </div>
 
