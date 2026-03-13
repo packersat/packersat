@@ -385,7 +385,7 @@
       </div>
       <div>
         <div class="field-label">Time</div>
-        <input class="input-field" type="text" id="session-time" placeholder="e.g. 3:30 PM" />
+        <input class="input-field" type="time" id="session-time" />
       </div>
     </div>
     <div class="form-row full" style="margin-bottom:1rem">
@@ -3978,8 +3978,13 @@
 
   function formatTime(t) {
     if (!t) return '—';
-    const [h, m] = t.split(':');
+    const s = t.trim();
+    // Already in 12-hour format — return as-is
+    if (/am|pm/i.test(s)) return s;
+    // 24-hour format — convert
+    const [h, m] = s.split(':');
     const hour = parseInt(h);
+    if (isNaN(hour)) return s;
     return `${hour % 12 || 12}:${m} ${hour < 12 ? 'AM' : 'PM'}`;
   }
 
