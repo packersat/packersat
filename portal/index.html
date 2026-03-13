@@ -760,6 +760,7 @@
       <div class="sidebar-item" onclick="showPage('admin-users',this)"><span class="sidebar-icon"></span>Manage Users</div>
       <div class="sidebar-item" onclick="showPage('admin-scores',this)"><span class="sidebar-icon"></span>Scores</div>
       <div class="sidebar-item" onclick="showPage('admin-sessions',this)"><span class="sidebar-icon"></span>Sessions</div>
+      <div class="sidebar-item" onclick="showPage('admin-session-logs',this)"><span class="sidebar-icon">📋</span>Session Logs</div>
       <div class="sidebar-item" onclick="showPage('admin-announce',this)"><span class="sidebar-icon"></span>Announcements</div>
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
@@ -860,6 +861,46 @@
         <div class="card" style="margin-top:1.2rem">
           <div class="card-title">Group Sessions</div>
           <div id="admin-group-sessions-list"><div class="empty-state"><div class="icon"></div>No group sessions yet.</div></div>
+        </div>
+      </div>
+
+      <!-- ADMIN SESSION LOGS -->
+      <div class="page" id="page-admin-session-logs">
+        <div class="page-header"><h2>Session Logs</h2><p>Review all logged sessions and track student progress.</p></div>
+
+        <!-- Stats row -->
+        <div class="grid-3" style="margin-bottom:1.2rem">
+          <div class="stat-card"><div class="stat-num" id="log-stat-total">—</div><div class="stat-label">Sessions Logged</div></div>
+          <div class="stat-card"><div class="stat-num" id="log-stat-students">—</div><div class="stat-label">Students Covered</div></div>
+          <div class="stat-card"><div class="stat-num" id="log-stat-tutors">—</div><div class="stat-label">Active Tutors</div></div>
+        </div>
+
+        <!-- Subject breakdown + recent logs -->
+        <div class="grid-2" style="align-items:flex-start;margin-bottom:1.2rem">
+          <div class="card">
+            <div class="card-title">📚 Top Subjects Studied</div>
+            <div id="log-subjects-breakdown"><div class="empty-state"><div class="icon"></div>No data yet.</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🎯 Common Struggles</div>
+            <div id="log-struggles-breakdown"><div class="empty-state"><div class="icon"></div>No data yet.</div></div>
+          </div>
+        </div>
+
+        <!-- Per-student breakdown -->
+        <div class="card" style="margin-bottom:1.2rem">
+          <div class="card-title">👤 Sessions per Student</div>
+          <div id="log-per-student"><div class="empty-state"><div class="icon"></div>No data yet.</div></div>
+        </div>
+
+        <!-- Full log table -->
+        <div class="card">
+          <div class="card-title">📋 All Session Logs
+            <select id="log-filter-student" class="input-field" style="font-size:0.75rem;padding:0.25rem 0.6rem;width:auto;display:inline-block;margin-left:0.6rem">
+              <option value="">All students</option>
+            </select>
+          </div>
+          <div id="admin-logs-list"><div class="empty-state"><div class="icon"></div>No logs yet.</div></div>
         </div>
       </div>
 
@@ -1498,6 +1539,7 @@
       <div class="sidebar-section">My Work</div>
       <div class="sidebar-item" onclick="showPage('tutor-students',this)"><span class="sidebar-icon"></span>My Students</div>
       <div class="sidebar-item" onclick="showPage('tutor-sessions',this)"><span class="sidebar-icon"></span>Sessions <span id="tutor-req-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
+      <div class="sidebar-item" onclick="showPage('tutor-session-log',this)"><span class="sidebar-icon">📋</span>Session Log</div>
       <div class="sidebar-item" onclick="showPage('tutor-assignments',this)"><span class="sidebar-icon"></span>Assignments</div>
       <div class="sidebar-section">Support</div>
       <div class="sidebar-item" onclick="showPage('tutor-messages',this)"><span class="sidebar-icon"></span>Messages <span id="tutor-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
@@ -1553,6 +1595,19 @@
         <div class="card">
           <div class="card-title">Group Sessions <button class="action-btn" onclick="openGroupSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ New</button></div>
           <div id="tutor-group-sessions-list"><div class="empty-state"><div class="icon"></div>No group sessions yet.</div></div>
+        </div>
+      </div>
+
+      <!-- TUTOR SESSION LOG -->
+      <div class="page" id="page-tutor-session-log">
+        <div class="page-header"><h2>Session Log</h2><p>Log completed sessions and track student progress over time.</p></div>
+        <div class="card" style="margin-bottom:1.2rem">
+          <div class="card-title">📋 Past Sessions — Ready to Log</div>
+          <div id="tutor-past-sessions-list"><div class="empty-state"><div class="icon"></div>No completed sessions yet.</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">✅ Completed Logs</div>
+          <div id="tutor-completed-logs-list"><div class="empty-state"><div class="icon"></div>No session logs yet.</div></div>
         </div>
       </div>
 
@@ -3000,8 +3055,259 @@
   };
 
   // ─────────────────────────────────────────
-  // ████  GROUP SESSIONS
+  // ████  SESSION LOG
   // ─────────────────────────────────────────
+
+  let _currentLogSession = null;
+
+  window.openSessionLogModal = function(session) {
+    _currentLogSession = session;
+    const studentName = allUsers[session.studentId]?.name || allUsers[session.studentId]?.email || 'Student';
+    document.getElementById('slog-student-name').textContent = studentName;
+    document.getElementById('slog-date').textContent = formatDate(session.date);
+    document.getElementById('slog-time').textContent = formatTime(session.time) || '—';
+    document.getElementById('slog-location').textContent = session.location || '—';
+    document.getElementById('slog-subjects').value = '';
+    document.getElementById('slog-struggles').value = '';
+    document.getElementById('slog-goals').value = '';
+    document.getElementById('slog-notes').value = '';
+    document.getElementById('slog-msg').textContent = '';
+    openModal('modal-session-log');
+
+    document.getElementById('confirm-session-log-btn').onclick = async function() {
+      const subjects  = document.getElementById('slog-subjects').value.trim();
+      const struggles = document.getElementById('slog-struggles').value.trim();
+      const goals     = document.getElementById('slog-goals').value.trim();
+      const notes     = document.getElementById('slog-notes').value.trim();
+      const msg       = document.getElementById('slog-msg');
+      if (!subjects) { showMsg(msg, 'Please enter at least one subject studied.', 'error'); return; }
+
+      const btn = document.getElementById('confirm-session-log-btn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+
+      await addDoc(collection(db, 'sessionLogs'), {
+        sessionId:  _currentLogSession.id,
+        studentId:  _currentLogSession.studentId,
+        tutorId:    _currentLogSession.tutorId || CU.uid,
+        date:       _currentLogSession.date,
+        time:       _currentLogSession.time || '',
+        location:   _currentLogSession.location || '',
+        subjects:   subjects.split(',').map(s => s.trim()).filter(Boolean),
+        struggles,
+        goals,
+        notes,
+        loggedBy:   CU.uid,
+        loggedAt:   new Date().toISOString()
+      });
+
+      showMsg(msg, 'Session logged!', 'success');
+      setTimeout(() => {
+        closeModal('modal-session-log');
+        btn.disabled = false; btn.textContent = 'Save Log';
+        loadTutorSessionLog();
+      }, 700);
+    };
+  };
+
+  async function loadTutorSessionLog() {
+    await cacheAllUsers();
+    const pastList      = document.getElementById('tutor-past-sessions-list');
+    const completedList = document.getElementById('tutor-completed-logs-list');
+    if (!pastList && !completedList) return;
+
+    const todayStr = today();
+
+    // Get all sessions for this tutor that are in the past
+    const sessSnap = await getDocs(collection(db, 'sessions'));
+    const pastSessions = [];
+    sessSnap.forEach(d => {
+      const s = { id: d.id, ...d.data() };
+      if (s.tutorId === CU.uid && s.date < todayStr) pastSessions.push(s);
+    });
+    pastSessions.sort((a, b) => b.date.localeCompare(a.date));
+
+    // Get all existing logs by this tutor
+    const logSnap = await getDocs(collection(db, 'sessionLogs'));
+    const logs = [];
+    const loggedSessionIds = new Set();
+    logSnap.forEach(d => {
+      const l = { id: d.id, ...d.data() };
+      if (l.tutorId === CU.uid) { logs.push(l); loggedSessionIds.add(l.sessionId); }
+    });
+    logs.sort((a, b) => b.date.localeCompare(a.date));
+
+    // Unlogged past sessions
+    const unlogged = pastSessions.filter(s => !loggedSessionIds.has(s.id));
+
+    if (pastList) {
+      if (!unlogged.length) {
+        pastList.innerHTML = '<div class="empty-state"><div class="icon">✅</div>All past sessions have been logged.</div>';
+      } else {
+        pastList.innerHTML = unlogged.map(s => {
+          const sName = allUsers[s.studentId]?.name || allUsers[s.studentId]?.email || 'Student';
+          return `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.08);border-radius:10px;margin-bottom:0.6rem;flex-wrap:wrap;gap:0.6rem">
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8;margin-bottom:0.2rem">👤 ${sName}</div>
+              <div style="font-size:0.8rem;color:rgba(250,250,248,0.5)">📅 ${formatDate(s.date)} ${s.time ? '· ' + formatTime(s.time) : ''} ${s.location ? '· 📍 ' + s.location : ''}</div>
+            </div>
+            <button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem;white-space:nowrap" onclick='openSessionLogModal(${JSON.stringify(s)})'>📋 Log Session</button>
+          </div>`;
+        }).join('');
+      }
+    }
+
+    if (completedList) {
+      if (!logs.length) {
+        completedList.innerHTML = '<div class="empty-state"><div class="icon"></div>No session logs yet.</div>';
+      } else {
+        completedList.innerHTML = logs.map(l => {
+          const sName = allUsers[l.studentId]?.name || allUsers[l.studentId]?.email || 'Student';
+          return `
+          <div style="padding:1rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.07);border-radius:10px;margin-bottom:0.8rem">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.7rem">
+              <div>
+                <div style="font-size:0.92rem;font-weight:700;color:#FAFAF8">👤 ${sName} — ${formatDate(l.date)}</div>
+                <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.15rem">${l.time ? formatTime(l.time) + ' · ' : ''}${l.location || ''}</div>
+              </div>
+              <div style="font-size:0.72rem;color:rgba(250,250,248,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem 1.2rem;font-size:0.82rem">
+              <div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Subjects</div><div style="color:rgba(250,250,248,0.8)">${(l.subjects||[]).join(', ') || '—'}</div></div>
+              ${l.struggles ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Struggles</div><div style="color:rgba(250,250,248,0.8)">${l.struggles}</div></div>` : ''}
+              ${l.goals ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Goals for Next</div><div style="color:rgba(250,250,248,0.8)">${l.goals}</div></div>` : ''}
+              ${l.notes ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Notes</div><div style="color:rgba(250,250,248,0.8)">${l.notes}</div></div>` : ''}
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+  }
+
+  async function loadAdminSessionLogs() {
+    await cacheAllUsers();
+    const snap = await getDocs(collection(db, 'sessionLogs'));
+    const logs = [];
+    snap.forEach(d => logs.push({ id: d.id, ...d.data() }));
+    logs.sort((a, b) => b.date.localeCompare(a.date));
+
+    // Stats
+    const statTotal    = document.getElementById('log-stat-total');
+    const statStudents = document.getElementById('log-stat-students');
+    const statTutors   = document.getElementById('log-stat-tutors');
+    if (statTotal)    statTotal.textContent    = logs.length;
+    if (statStudents) statStudents.textContent = new Set(logs.map(l => l.studentId)).size;
+    if (statTutors)   statTutors.textContent   = new Set(logs.map(l => l.tutorId)).size;
+
+    // Subject frequency
+    const subjectCount = {};
+    const struggleWords = {};
+    logs.forEach(l => {
+      (l.subjects || []).forEach(s => { subjectCount[s] = (subjectCount[s] || 0) + 1; });
+      if (l.struggles) {
+        // Word frequency on struggles (simple, ignore short words)
+        l.struggles.toLowerCase().split(/[\s,;.]+/).filter(w => w.length > 4).forEach(w => {
+          struggleWords[w] = (struggleWords[w] || 0) + 1;
+        });
+      }
+    });
+
+    const subjectEl = document.getElementById('log-subjects-breakdown');
+    if (subjectEl) {
+      const sorted = Object.entries(subjectCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      if (!sorted.length) { subjectEl.innerHTML = '<div class="empty-state"><div class="icon"></div>No data yet.</div>'; }
+      else {
+        const max = sorted[0][1];
+        subjectEl.innerHTML = sorted.map(([s, n]) => `
+          <div style="margin-bottom:0.6rem">
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:0.25rem">
+              <span style="color:#FAFAF8">${s}</span><span style="color:rgba(250,250,248,0.4)">${n} session${n > 1 ? 's' : ''}</span>
+            </div>
+            <div style="height:6px;background:rgba(250,250,248,0.07);border-radius:3px">
+              <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#C0182B,#C8A96E);width:${Math.round(n / max * 100)}%"></div>
+            </div>
+          </div>`).join('');
+      }
+    }
+
+    const struggleEl = document.getElementById('log-struggles-breakdown');
+    if (struggleEl) {
+      const sorted = Object.entries(struggleWords).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      if (!sorted.length) { struggleEl.innerHTML = '<div class="empty-state"><div class="icon"></div>No data yet.</div>'; }
+      else {
+        struggleEl.innerHTML = sorted.map(([w, n]) => `
+          <div style="display:inline-block;background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);border-radius:20px;padding:0.25rem 0.75rem;margin:0.2rem;font-size:0.8rem;color:#e8b4b8">
+            ${w} <span style="opacity:0.6;font-size:0.72rem">×${n}</span>
+          </div>`).join('');
+      }
+    }
+
+    // Per-student breakdown
+    const perStudentEl = document.getElementById('log-per-student');
+    if (perStudentEl) {
+      const studentCounts = {};
+      const studentLastLog = {};
+      logs.forEach(l => {
+        studentCounts[l.studentId] = (studentCounts[l.studentId] || 0) + 1;
+        if (!studentLastLog[l.studentId] || l.date > studentLastLog[l.studentId]) studentLastLog[l.studentId] = l.date;
+      });
+      const sorted = Object.entries(studentCounts).sort((a, b) => b[1] - a[1]);
+      if (!sorted.length) { perStudentEl.innerHTML = '<div class="empty-state"><div class="icon"></div>No data yet.</div>'; }
+      else {
+        perStudentEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.7rem">` +
+          sorted.map(([sid, n]) => {
+            const u = allUsers[sid];
+            const tutorName = allUsers[u?.tutorId]?.name || '—';
+            return `
+            <div style="padding:0.8rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.07);border-radius:10px">
+              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8;margin-bottom:0.2rem">${u?.name || u?.email || 'Unknown'}</div>
+              <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);margin-bottom:0.5rem">Tutor: ${tutorName}</div>
+              <div style="font-size:1.4rem;font-weight:700;color:#C8A96E">${n}</div>
+              <div style="font-size:0.72rem;color:rgba(250,250,248,0.35)">session${n > 1 ? 's' : ''} logged · last ${formatDate(studentLastLog[sid])}</div>
+            </div>`;
+          }).join('') + '</div>';
+      }
+    }
+
+    // Filter dropdown
+    const filterSel = document.getElementById('log-filter-student');
+    if (filterSel) {
+      const students = [...new Set(logs.map(l => l.studentId))];
+      filterSel.innerHTML = '<option value="">All students</option>' +
+        students.map(sid => `<option value="${sid}">${allUsers[sid]?.name || allUsers[sid]?.email || sid}</option>`).join('');
+      filterSel.onchange = () => renderAdminLogsList(logs, filterSel.value);
+    }
+    renderAdminLogsList(logs, '');
+  }
+
+  function renderAdminLogsList(logs, filterStudentId) {
+    const el = document.getElementById('admin-logs-list');
+    if (!el) return;
+    const filtered = filterStudentId ? logs.filter(l => l.studentId === filterStudentId) : logs;
+    if (!filtered.length) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No logs found.</div>'; return; }
+    el.innerHTML = filtered.map(l => {
+      const sName = allUsers[l.studentId]?.name || allUsers[l.studentId]?.email || 'Student';
+      const tName = allUsers[l.tutorId]?.name  || allUsers[l.tutorId]?.email  || 'Tutor';
+      return `
+      <div style="padding:1rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.07);border-radius:10px;margin-bottom:0.8rem">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.7rem">
+          <div>
+            <div style="font-size:0.92rem;font-weight:700;color:#FAFAF8">👤 ${sName} <span style="color:rgba(250,250,248,0.35);font-weight:400;font-size:0.8rem">with ${tName}</span></div>
+            <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.15rem">${formatDate(l.date)}${l.time ? ' · ' + formatTime(l.time) : ''}${l.location ? ' · 📍 ' + l.location : ''}</div>
+          </div>
+          <div style="font-size:0.72rem;color:rgba(250,250,248,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem 1.2rem;font-size:0.82rem">
+          <div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Subjects</div><div style="color:rgba(250,250,248,0.8)">${(l.subjects||[]).join(', ') || '—'}</div></div>
+          ${l.struggles ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Struggles</div><div style="color:rgba(250,250,248,0.8)">${l.struggles}</div></div>` : ''}
+          ${l.goals ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Goals for Next</div><div style="color:rgba(250,250,248,0.8)">${l.goals}</div></div>` : ''}
+          ${l.notes ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Notes</div><div style="color:rgba(250,250,248,0.8)">${l.notes}</div></div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+
 
   window.openGroupSessionModal = async function() {
     await cacheAllUsers();
@@ -3844,6 +4150,8 @@
     if (pageId==='student-sessions') { loadStudentSessionRequests(); loadGroupSessions(); }
     if (pageId==='tutor-sessions') { loadTutorSessionsPage(); loadTutorSessionRequests(); loadGroupSessions(); }
     if (pageId==='admin-sessions') { loadAdminSessions(); loadGroupSessions(); }
+    if (pageId==='tutor-session-log') loadTutorSessionLog();
+    if (pageId==='admin-session-logs') loadAdminSessionLogs();
     if (pageId==='student-documents') loadStudentDocuments();
     if (pageId==='tutor-messages') loadUserDMThread('tutor');
     if (pageId==='student-messages') loadUserDMThread('student');
@@ -3928,6 +4236,42 @@
       <button class="btn-red" id="confirm-session-request-btn">Send Request</button>
     </div>
     <div class="form-msg" id="session-request-msg"></div>
+  </div>
+</div>
+
+<!-- Session Log Modal -->
+<div class="modal-overlay" id="modal-session-log">
+  <div class="modal" style="max-width:600px">
+    <h3>📋 Log Session</h3>
+    <div style="background:rgba(192,24,43,0.1);border:1px solid rgba(192,24,43,0.25);border-radius:8px;padding:1rem;margin-bottom:1.2rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1.5rem;font-size:0.85rem">
+        <div><span style="color:rgba(250,250,248,0.45);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em">Student</span><div style="color:#FAFAF8;font-weight:600;margin-top:0.2rem" id="slog-student-name">—</div></div>
+        <div><span style="color:rgba(250,250,248,0.45);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em">Date</span><div style="color:#FAFAF8;font-weight:600;margin-top:0.2rem" id="slog-date">—</div></div>
+        <div><span style="color:rgba(250,250,248,0.45);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em">Time</span><div style="color:#FAFAF8;font-weight:600;margin-top:0.2rem" id="slog-time">—</div></div>
+        <div><span style="color:rgba(250,250,248,0.45);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em">Location</span><div style="color:#FAFAF8;font-weight:600;margin-top:0.2rem" id="slog-location">—</div></div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.9rem">
+      <div class="field-label">Subjects Studied <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(comma separated, e.g. Math, Reading)</span></div>
+      <input class="input-field" type="text" id="slog-subjects" placeholder="e.g. Algebra, Quadratics, Evidence-based Reading" />
+    </div>
+    <div style="margin-bottom:0.9rem">
+      <div class="field-label">Specific Struggles</div>
+      <textarea class="input-field" id="slog-struggles" placeholder="What concepts or question types gave the student difficulty?" style="min-height:80px;resize:vertical"></textarea>
+    </div>
+    <div style="margin-bottom:0.9rem">
+      <div class="field-label">Goals for Next Meeting</div>
+      <textarea class="input-field" id="slog-goals" placeholder="What should the student work on before the next session?" style="min-height:80px;resize:vertical"></textarea>
+    </div>
+    <div style="margin-bottom:0.9rem">
+      <div class="field-label">General Notes <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(optional)</span></div>
+      <textarea class="input-field" id="slog-notes" placeholder="Any other observations, mood, effort level, wins..." style="min-height:70px;resize:vertical"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-session-log')">Cancel</button>
+      <button class="btn-red" id="confirm-session-log-btn">Save Log</button>
+    </div>
+    <div class="form-msg" id="slog-msg"></div>
   </div>
 </div>
 
