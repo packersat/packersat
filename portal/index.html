@@ -1886,6 +1886,15 @@
     loadTutorDashboard();
     loadTutorSessionRequests();
     loadGroupSessions();
+
+    // Auto-refresh sessions every 60 seconds so past sessions move automatically
+    if (window._sessionRefreshInterval) clearInterval(window._sessionRefreshInterval);
+    window._sessionRefreshInterval = setInterval(() => {
+      if (document.getElementById('tutor-sessions-tbody')) {
+        loadTutorSessionsPage();
+        loadTutorSessionLog();
+      }
+    }, 60 * 1000);
   }
 
   async function loadTutorDashboard() {
@@ -1990,7 +1999,7 @@
         const [yr, mo, dy] = s.date.split('-').map(Number);
         sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
       }
-      const cutoff = new Date(sessionStart.getTime() + 60 * 60 * 1000);
+      const cutoff = new Date(sessionStart.getTime() + 30 * 60 * 1000);
       if (now < cutoff) mySessions.push(s); // only upcoming
     });
     window._tutorMySessions = mySessions;
@@ -3241,7 +3250,7 @@
         const [yr, mo, dy] = s.date.split('-').map(Number);
         sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
       }
-      const cutoff = new Date(sessionStart.getTime() + 60 * 60 * 1000);
+      const cutoff = new Date(sessionStart.getTime() + 30 * 60 * 1000);
       if (now >= cutoff) pastSessions.push(s);
     });
     pastSessions.sort((a, b) => b.date.localeCompare(a.date));
