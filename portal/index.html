@@ -1593,9 +1593,13 @@
           <div class="card-title">Upcoming Sessions <button class="btn-red" onclick="openTutorSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button> <button class="action-btn" onclick="openGroupSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Group Session</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Location</th><th>Actions</th></tr></thead><tbody id="tutor-sessions-tbody"></tbody></table></div>
         </div>
-        <div class="card">
+        <div class="card" style="margin-bottom:1.2rem">
           <div class="card-title">Group Sessions <button class="action-btn" onclick="openGroupSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ New</button></div>
           <div id="tutor-group-sessions-list"><div class="empty-state"><div class="icon"></div>No group sessions yet.</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Past Sessions</div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Location</th><th>Log</th></tr></thead><tbody id="tutor-past-sessions-tbody"><tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No past sessions yet.</div></td></tr></tbody></table></div>
         </div>
       </div>
 
@@ -3139,7 +3143,12 @@
 
 
 
-  window.openSessionLogModal = function(session) {
+  window._sessionLogCache = window._sessionLogCache || {};
+  let _currentLogSession = null;
+
+  window.openSessionLogModal = function(cacheKey) {
+    const session = window._sessionLogCache && window._sessionLogCache[cacheKey];
+    if (!session) return;
     _currentLogSession = session;
     const studentName = allUsers[session.studentId]?.name || allUsers[session.studentId]?.email || 'Student';
     document.getElementById('slog-student-name').textContent = studentName;
@@ -3184,6 +3193,8 @@
         closeModal('modal-session-log');
         btn.disabled = false; btn.textContent = 'Save Log';
         loadTutorSessionLog();
+        // Also refresh the upcoming/past split on the sessions tab if visible
+        if (document.getElementById('tutor-past-sessions-tbody')) loadTutorSessionLog();
       }, 700);
     };
   };
@@ -3231,6 +3242,33 @@
 
     const unlogged = pastSessions.filter(s => !loggedSessionIds.has(s.id));
 
+    // Store all past sessions in cache for safe onclick access
+    window._sessionLogCache = {};
+    pastSessions.forEach(s => { window._sessionLogCache[s.id] = s; });
+
+    // Also populate the Past Sessions table on the Sessions tab
+    const pastTbody = document.getElementById('tutor-past-sessions-tbody');
+    if (pastTbody) {
+      if (!pastSessions.length) {
+        pastTbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No past sessions yet.</div></td></tr>';
+      } else {
+        pastTbody.innerHTML = pastSessions.map(s => {
+          const sName = allUsers[s.studentId]?.name || allUsers[s.studentId]?.email || '—';
+          const isLogged = loggedSessionIds.has(s.id);
+          const logBtn = isLogged
+            ? '<span style="color:rgba(250,250,248,0.3);font-size:0.78rem">Logged</span>'
+            : `<button class="action-btn" style="font-size:0.75rem;padding:0.25rem 0.7rem" onclick="openSessionLogModal('${s.id}')">Log</button>`;
+          return `<tr>
+            <td>${formatDate(s.date)}</td>
+            <td>${s.time ? formatTime(s.time) : '—'}</td>
+            <td>${sName}</td>
+            <td>${s.location || '—'}</td>
+            <td>${logBtn}</td>
+          </tr>`;
+        }).join('');
+      }
+    }
+
     if (pastList) {
       if (!unlogged.length) {
         pastList.innerHTML = '<div class="empty-state"><div class="icon"></div>All past sessions have been logged.</div>';
@@ -3243,7 +3281,7 @@
               <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8;margin-bottom:0.2rem">${sName}</div>
               <div style="font-size:0.8rem;color:rgba(250,250,248,0.5)">${formatDate(s.date)} ${s.time ? '· ' + formatTime(s.time) : ''} ${s.location ? '· ' + s.location : ''}</div>
             </div>
-            <button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem;white-space:nowrap" onclick='openSessionLogModal(${JSON.stringify(s)})'>Log Session</button>
+            <button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem;white-space:nowrap" onclick="openSessionLogModal('${s.id}')">Log Session</button>
           </div>`;
         }).join('');
       }
@@ -4241,7 +4279,7 @@
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
     if (pageId==='student-sessions') { loadStudentSessionRequests(); loadGroupSessions(); }
-    if (pageId==='tutor-sessions') { loadTutorSessionsPage(); loadTutorSessionRequests(); loadGroupSessions(); }
+    if (pageId==='tutor-sessions') { loadTutorSessionsPage(); loadTutorSessionRequests(); loadGroupSessions(); loadTutorSessionLog(); }
     if (pageId==='admin-sessions') { loadAdminSessions(); loadGroupSessions(); }
     if (pageId==='tutor-session-log') loadTutorSessionLog();
     if (pageId==='admin-session-logs') loadAdminSessionLogs();
