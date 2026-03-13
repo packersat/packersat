@@ -854,9 +854,13 @@
       <!-- ADMIN SESSIONS -->
       <div class="page" id="page-admin-sessions">
         <div class="page-header"><h2>Sessions</h2><p>Schedule and manage tutoring sessions.</p></div>
-        <div class="card">
-          <div class="card-title">All Sessions <button class="btn-red" onclick="openAdminSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button> <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">️ Export CSV</button></div>
+        <div class="card" style="margin-bottom:1.2rem">
+          <div class="card-title">Upcoming Sessions <button class="btn-red" onclick="openAdminSessionModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Schedule</button> <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">️ Export CSV</button></div>
           <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th><th>Actions</th></tr></thead><tbody id="admin-sessions-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No sessions yet.</div></td></tr></tbody></table></div>
+        </div>
+        <div class="card" style="margin-bottom:1.2rem">
+          <div class="card-title">Past Sessions</div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th></tr></thead><tbody id="admin-past-sessions-tbody"><tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No past sessions yet.</div></td></tr></tbody></table></div>
         </div>
         <div class="card" style="margin-top:1.2rem">
           <div class="card-title">Group Sessions</div>
@@ -897,6 +901,8 @@
         <div class="card">
           <div class="card-title">All Session Logs
             <button class="btn-red" onclick="openManualLogModal()" style="font-size:0.75rem;padding:0.3rem 0.8rem">+ Log Manually</button>
+            <button class="btn-ghost" onclick="exportLogsCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">Export CSV</button>
+            <button class="btn-ghost" onclick="exportLogsXLSX()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">Export XLSX</button>
             <select id="log-filter-student" class="input-field" style="font-size:0.75rem;padding:0.25rem 0.6rem;width:auto;display:inline-block;margin-left:0.6rem">
               <option value="">All students</option>
             </select>
@@ -1259,7 +1265,23 @@
     document.getElementById('stat-students').textContent = students;
     document.getElementById('stat-tutors').textContent = tutors;
     const sSnap = await getDocs(collection(db, 'sessions'));
-    document.getElementById('stat-sessions').textContent = sSnap.size;
+    const now = new Date();
+    let upcomingCount = 0;
+    sSnap.forEach(d => {
+      const r = d.data();
+      if (!r.date) return;
+      let sessionStart;
+      if (r.time && /^\d{1,2}:\d{2}$/.test(r.time.trim())) {
+        const [h, m] = r.time.trim().split(':').map(Number);
+        const [yr, mo, dy] = r.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, h, m, 0);
+      } else {
+        const [yr, mo, dy] = r.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
+      }
+      if (now < new Date(sessionStart.getTime() + 30 * 60 * 1000)) upcomingCount++;
+    });
+    document.getElementById('stat-sessions').textContent = upcomingCount;
   }
 
   async function loadUsersTable() {
@@ -1374,31 +1396,77 @@
   }
 
   async function loadAdminSessions() {
-    const tbody = document.getElementById('admin-sessions-tbody');
-    if (!tbody) return;
+    const tbody     = document.getElementById('admin-sessions-tbody');
+    const pastTbody = document.getElementById('admin-past-sessions-tbody');
+    if (!tbody && !pastTbody) return;
     const snap = await getDocs(collection(db,'sessions'));
-    if (snap.empty) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No sessions yet.</div></td></tr>'; return; }
-    const rows = [];
-    snap.forEach(d => rows.push({id:d.id,...d.data()}));
-    rows.sort((a,b)=>a.date.localeCompare(b.date));
-    tbody.innerHTML = rows.map(r=>`
-      <tr>
-        <td>${formatDate(r.date)}</td>
-        <td>${r.time||'—'}</td>
-        <td>${allUsers[r.studentId]?.name||'—'}</td>
-        <td>${allUsers[r.tutorId]?.name||'—'}</td>
-        <td>${r.location||'—'}</td>
-        <td><button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button></td>
-      </tr>`).join('');
+    const now = new Date();
+    const upcoming = [], past = [];
+    snap.forEach(d => {
+      const r = { id: d.id, ...d.data() };
+      if (!r.date) return;
+      let sessionStart;
+      if (r.time && /^\d{1,2}:\d{2}$/.test(r.time.trim())) {
+        const [h, m] = r.time.trim().split(':').map(Number);
+        const [yr, mo, dy] = r.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, h, m, 0);
+      } else {
+        const [yr, mo, dy] = r.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
+      }
+      if (now < new Date(sessionStart.getTime() + 30 * 60 * 1000)) upcoming.push(r);
+      else past.push(r);
+    });
+    upcoming.sort((a,b) => a.date.localeCompare(b.date));
+    past.sort((a,b) => b.date.localeCompare(a.date));
+
+    if (tbody) {
+      if (!upcoming.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No upcoming sessions.</div></td></tr>'; }
+      else tbody.innerHTML = upcoming.map(r=>`
+        <tr>
+          <td>${formatDate(r.date)}</td>
+          <td>${r.time||'—'}</td>
+          <td>${allUsers[r.studentId]?.name||'—'}</td>
+          <td>${allUsers[r.tutorId]?.name||'—'}</td>
+          <td>${r.location||'—'}</td>
+          <td><button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button></td>
+        </tr>`).join('');
+    }
+
+    if (pastTbody) {
+      if (!past.length) { pastTbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No past sessions yet.</div></td></tr>'; }
+      else pastTbody.innerHTML = past.map(r=>`
+        <tr>
+          <td>${formatDate(r.date)}</td>
+          <td>${r.time||'—'}</td>
+          <td>${allUsers[r.studentId]?.name||'—'}</td>
+          <td>${allUsers[r.tutorId]?.name||'—'}</td>
+          <td>${r.location||'—'}</td>
+        </tr>`).join('');
+    }
   }
 
   async function loadAdminSessionsPreview() {
     const el = document.getElementById('admin-sessions-preview');
     if (!el) return;
     const snap = await getDocs(collection(db,'sessions'));
-    if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No sessions scheduled.</div>'; return; }
+    const now = new Date();
     const rows = [];
-    snap.forEach(d=>rows.push(d.data()));
+    snap.forEach(d => {
+      const r = d.data();
+      if (!r.date) return;
+      let sessionStart;
+      if (r.time && /^\d{1,2}:\d{2}$/.test(r.time.trim())) {
+        const [h, m] = r.time.trim().split(':').map(Number);
+        const [yr, mo, dy] = r.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, h, m, 0);
+      } else {
+        const [yr, mo, dy] = r.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
+      }
+      if (now < new Date(sessionStart.getTime() + 30 * 60 * 1000)) rows.push(r);
+    });
+    if (!rows.length) { el.innerHTML = '<div class="empty-state"><div class="icon"></div>No upcoming sessions.</div>'; return; }
     rows.sort((a,b)=>a.date.localeCompare(b.date));
     el.innerHTML = rows.slice(0,4).map(r=>`
       <div style="display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid rgba(192,24,43,0.1);font-size:0.85rem">
@@ -3480,7 +3548,98 @@
     }).join('');
   }
 
+  // Helper: fetch all logs (respects current filter if set)
+  async function _fetchAllLogs() {
+    await cacheAllUsers();
+    const snap = await getDocs(collection(db, 'sessionLogs'));
+    const logs = [];
+    snap.forEach(d => logs.push({ id: d.id, ...d.data() }));
+    logs.sort((a, b) => b.date.localeCompare(a.date));
+    return logs;
+  }
 
+  window.exportLogsCSV = async function() {
+    const logs = await _fetchAllLogs();
+    if (!logs.length) { alert('No session logs to export.'); return; }
+    const headers = ['Date','Time','Student','Tutor','Location','Subjects','Struggles','Goals for Next Meeting','Notes','Logged By','Logged At','Manual'];
+    const escape = v => `"${String(v||'').replace(/"/g,'""')}"`;
+    const rows = logs.map(l => [
+      l.date || '',
+      l.time ? formatTime(l.time) : '',
+      allUsers[l.studentId]?.name || allUsers[l.studentId]?.email || l.studentId || '',
+      allUsers[l.tutorId]?.name  || allUsers[l.tutorId]?.email  || l.tutorId  || '',
+      l.location || '',
+      (l.subjects || []).join('; '),
+      l.struggles || '',
+      l.goals     || '',
+      l.notes     || '',
+      allUsers[l.loggedBy]?.name || allUsers[l.loggedBy]?.email || l.loggedBy || '',
+      l.loggedAt ? new Date(l.loggedAt).toLocaleString() : '',
+      l.manual ? 'Yes' : 'No'
+    ].map(escape).join(','));
+    const csv = [headers.map(escape).join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `session-logs-${today()}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  window.exportLogsXLSX = async function() {
+    const logs = await _fetchAllLogs();
+    if (!logs.length) { alert('No session logs to export.'); return; }
+
+    // Build table rows
+    const headers = ['Date','Time','Student','Tutor','Location','Subjects','Struggles','Goals for Next Meeting','Notes','Logged By','Logged At','Manual'];
+    const rows = logs.map(l => [
+      l.date || '',
+      l.time ? formatTime(l.time) : '',
+      allUsers[l.studentId]?.name || allUsers[l.studentId]?.email || l.studentId || '',
+      allUsers[l.tutorId]?.name  || allUsers[l.tutorId]?.email  || l.tutorId  || '',
+      l.location || '',
+      (l.subjects || []).join('; '),
+      l.struggles || '',
+      l.goals     || '',
+      l.notes     || '',
+      allUsers[l.loggedBy]?.name || allUsers[l.loggedBy]?.email || l.loggedBy || '',
+      l.loggedAt ? new Date(l.loggedAt).toLocaleString() : '',
+      l.manual ? 'Yes' : 'No'
+    ]);
+
+    // Build minimal XLSX manually (XML-based)
+    const xmlRows = [headers, ...rows].map(row =>
+      `<row>${row.map(cell => `<c t="inlineStr"><is><t>${String(cell||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</t></is></c>`).join('')}</row>`
+    ).join('');
+
+    const sheet = `<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${xmlRows}</sheetData></worksheet>`;
+    const wb    = `<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Session Logs" sheetId="1" r:id="rId1"/></sheets></workbook>`;
+    const rels  = `<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>`;
+    const wbRels= `<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
+    const ct    = `<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`;
+
+    // Use JSZip-style manual zip via data URIs — simplest reliable approach: output as CSV with xlsx extension note, or use Blob with proper MIME
+    // Best cross-browser approach: use the CSV content but name it .xlsx won't open properly.
+    // Instead use a proper zip. Load JSZip from CDN dynamically.
+    if (!window.JSZip) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    const zip = new window.JSZip();
+    zip.file('[Content_Types].xml', ct);
+    zip.file('_rels/.rels', wbRels);
+    zip.file('xl/workbook.xml', wb);
+    zip.file('xl/_rels/workbook.xml.rels', rels);
+    zip.file('xl/worksheets/sheet1.xml', sheet);
+    const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `session-logs-${today()}.xlsx`; a.click();
+    URL.revokeObjectURL(url);
+  };
 
   window.openGroupSessionModal = async function() {
     await cacheAllUsers();
