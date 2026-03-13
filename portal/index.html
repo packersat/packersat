@@ -1894,6 +1894,9 @@
         loadTutorSessionsPage();
         loadTutorSessionLog();
       }
+      if (document.getElementById('tutor-sessions-preview')) {
+        loadTutorDashboard();
+      }
     }, 60 * 1000);
   }
 
@@ -1904,10 +1907,24 @@
     const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
     document.getElementById('tutor-stat-students').textContent = myStudents.length;
 
-    // Sessions
+    // Sessions — split into upcoming vs past using same 30-min cutoff
     const sessSnap = await getDocs(collection(db,'sessions'));
     const mySessions = [];
-    sessSnap.forEach(d=>{ if(d.data().tutorId===CU.uid) mySessions.push({id:d.id,...d.data()}); });
+    const now = new Date();
+    sessSnap.forEach(d => {
+      const s = { id: d.id, ...d.data() };
+      if (s.tutorId !== CU.uid || !s.date) return;
+      let sessionStart;
+      if (s.time && /^\d{1,2}:\d{2}$/.test(s.time.trim())) {
+        const [h, m] = s.time.trim().split(':').map(Number);
+        const [yr, mo, dy] = s.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, h, m, 0);
+      } else {
+        const [yr, mo, dy] = s.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
+      }
+      if (now < new Date(sessionStart.getTime() + 30 * 60 * 1000)) mySessions.push(s);
+    });
     document.getElementById('tutor-stat-sessions').textContent = mySessions.length;
 
     // Scores logged
@@ -1918,7 +1935,7 @@
 
     // Sessions preview
     const preview = document.getElementById('tutor-sessions-preview');
-    const upcoming = mySessions.filter(s=>s.date>=today()).sort((a,b)=>a.date.localeCompare(b.date));
+    const upcoming = mySessions.sort((a,b)=>a.date.localeCompare(b.date));
     if (!upcoming.length) { preview.innerHTML = '<div class="empty-state"><div class="icon"></div>No upcoming sessions.</div>'; }
     else preview.innerHTML = upcoming.slice(0,4).map(s=>`
       <div style="display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid rgba(192,24,43,0.1);font-size:0.85rem">
