@@ -1975,8 +1975,24 @@
 
   async function loadTutorSessionsPage() {
     const sessSnap = await getDocs(collection(db,'sessions'));
+    const now = new Date();
     const mySessions = [];
-    sessSnap.forEach(d=>{ if(d.data().tutorId===CU.uid) mySessions.push({id:d.id,...d.data()}); });
+    sessSnap.forEach(d => {
+      const s = { id: d.id, ...d.data() };
+      if (s.tutorId !== CU.uid) return;
+      if (!s.date) return;
+      let sessionStart;
+      if (s.time && /^\d{1,2}:\d{2}$/.test(s.time.trim())) {
+        const [h, m] = s.time.trim().split(':').map(Number);
+        const [yr, mo, dy] = s.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, h, m, 0);
+      } else {
+        const [yr, mo, dy] = s.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
+      }
+      const cutoff = new Date(sessionStart.getTime() + 60 * 60 * 1000);
+      if (now < cutoff) mySessions.push(s); // only upcoming
+    });
     window._tutorMySessions = mySessions;
     loadTutorSessionsTable(mySessions);
   }
