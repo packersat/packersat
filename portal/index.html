@@ -760,7 +760,7 @@
       <div class="sidebar-item" onclick="showPage('admin-users',this)"><span class="sidebar-icon"></span>Manage Users</div>
       <div class="sidebar-item" onclick="showPage('admin-scores',this)"><span class="sidebar-icon"></span>Scores</div>
       <div class="sidebar-item" onclick="showPage('admin-sessions',this)"><span class="sidebar-icon"></span>Sessions</div>
-      <div class="sidebar-item" onclick="showPage('admin-session-logs',this)"><span class="sidebar-icon">📋</span>Session Logs</div>
+      <div class="sidebar-item" onclick="showPage('admin-session-logs',this)"><span class="sidebar-icon"></span>Session Logs</div>
       <div class="sidebar-item" onclick="showPage('admin-announce',this)"><span class="sidebar-icon"></span>Announcements</div>
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
@@ -1540,7 +1540,7 @@
       <div class="sidebar-section">My Work</div>
       <div class="sidebar-item" onclick="showPage('tutor-students',this)"><span class="sidebar-icon"></span>My Students</div>
       <div class="sidebar-item" onclick="showPage('tutor-sessions',this)"><span class="sidebar-icon"></span>Sessions <span id="tutor-req-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
-      <div class="sidebar-item" onclick="showPage('tutor-session-log',this)"><span class="sidebar-icon">📋</span>Session Log</div>
+      <div class="sidebar-item" onclick="showPage('tutor-session-log',this)"><span class="sidebar-icon"></span>Session Log</div>
       <div class="sidebar-item" onclick="showPage('tutor-assignments',this)"><span class="sidebar-icon"></span>Assignments</div>
       <div class="sidebar-section">Support</div>
       <div class="sidebar-item" onclick="showPage('tutor-messages',this)"><span class="sidebar-icon"></span>Messages <span id="tutor-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
@@ -3202,13 +3202,20 @@
     sessSnap.forEach(d => {
       const s = { id: d.id, ...d.data() };
       if (s.tutorId !== CU.uid) return;
+      if (!s.date) return;
       let sessionStart;
-      if (s.date && s.time) {
-        sessionStart = new Date(s.date + 'T' + s.time);
-      } else if (s.date) {
-        sessionStart = new Date(s.date + 'T00:00');
-      } else return;
-      if (now >= new Date(sessionStart.getTime() + 60 * 60 * 1000)) pastSessions.push(s);
+      if (s.time && /^\d{1,2}:\d{2}$/.test(s.time.trim())) {
+        // Parse as local time explicitly to avoid UTC offset issues
+        const [h, m] = s.time.trim().split(':').map(Number);
+        const [yr, mo, dy] = s.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, h, m, 0);
+      } else {
+        // No time stored — treat the whole day as eligible (use start of day)
+        const [yr, mo, dy] = s.date.split('-').map(Number);
+        sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
+      }
+      const cutoff = new Date(sessionStart.getTime() + 60 * 60 * 1000);
+      if (now >= cutoff) pastSessions.push(s);
     });
     pastSessions.sort((a, b) => b.date.localeCompare(a.date));
 
@@ -4367,7 +4374,7 @@
 <!-- Session Log Modal -->
 <div class="modal-overlay" id="modal-session-log">
   <div class="modal" style="max-width:600px">
-    <h3>📋 Log Session</h3>
+    <h3>Log Session</h3>
     <div style="background:rgba(192,24,43,0.1);border:1px solid rgba(192,24,43,0.25);border-radius:8px;padding:1rem;margin-bottom:1.2rem">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1.5rem;font-size:0.85rem">
         <div><span style="color:rgba(250,250,248,0.45);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em">Student</span><div style="color:#FAFAF8;font-weight:600;margin-top:0.2rem" id="slog-student-name">—</div></div>
