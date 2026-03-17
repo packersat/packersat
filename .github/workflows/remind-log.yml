@@ -1,0 +1,27 @@
+name: Nightly Session Log Reminder
+
+on:
+  schedule:
+    - cron: '0 21 * * *'  # 9 PM UTC every night (5 PM ET / 4 PM CT)
+  workflow_dispatch:       # allows manual trigger from GitHub Actions tab
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send session log reminders
+        run: |
+          curl -s -o response.json -w "%{http_code}" \
+            -X GET https://packersat.vercel.app/api/remind-log \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            > status_code.txt
+          
+          STATUS=$(cat status_code.txt)
+          echo "HTTP Status: $STATUS"
+          echo "Response:"
+          cat response.json
+          
+          if [ "$STATUS" != "200" ]; then
+            echo "ERROR: remind-log returned status $STATUS"
+            exit 1
+          fi
