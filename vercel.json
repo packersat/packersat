@@ -8,5 +8,11 @@
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
       ]
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/session-log-reminder",
+      "schedule": "0 1 * * *"
+    }
   ]
 }
