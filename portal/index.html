@@ -800,6 +800,22 @@
           <div class="card-title"> Student Progress Summary</div>
           <div id="admin-progress-summary"><div class="empty-state"><div class="icon"></div>No student data yet.</div></div>
         </div>
+        <div class="card" style="margin-top:1.2rem">
+          <div class="card-title">Automation</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8">Nightly Session Log Reminders</div>
+              <div style="font-size:0.8rem;color:rgba(250,250,248,0.45);margin-top:0.2rem">Tutors are emailed each night about unlogged past sessions</div>
+            </div>
+            <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0;margin-left:1.5rem;cursor:pointer">
+              <input type="checkbox" id="reminder-toggle" style="opacity:0;width:0;height:0;position:absolute" onchange="toggleReminders(this.checked)">
+              <span id="reminder-slider" style="position:absolute;inset:0;border-radius:26px;background:rgba(250,250,248,0.15);transition:background 0.2s;cursor:pointer">
+                <span id="reminder-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.2s"></span>
+              </span>
+            </label>
+          </div>
+          <div id="reminder-status-text" style="font-size:0.75rem;color:rgba(250,250,248,0.3);margin-top:0.3rem"></div>
+        </div>
       </div>
 
       <!-- ADMIN USERS -->
@@ -1234,6 +1250,7 @@
     `;
 
     loadAdminStats();
+    loadReminderToggle();
     // Load waitlist badge
     setTimeout(async () => {
       const wlSnap = await getDocs(collection(db,'waitlist'));
@@ -3173,8 +3190,47 @@
   };
 
   // ─────────────────────────────────────────
-  // ████  SESSION LOG
+  // ████  REMINDER TOGGLE
   // ─────────────────────────────────────────
+
+  async function loadReminderToggle() {
+    const toggle = document.getElementById('reminder-toggle');
+    const slider = document.getElementById('reminder-slider');
+    const knob   = document.getElementById('reminder-knob');
+    const status = document.getElementById('reminder-status-text');
+    if (!toggle) return;
+
+    try {
+      const docRef = doc(db, 'settings', 'reminders');
+      const snap   = await getDoc(docRef);
+      // Default to enabled if doc doesn't exist yet
+      const enabled = snap.exists() ? snap.data().enabled !== false : true;
+      applyReminderUI(enabled, toggle, slider, knob, status);
+    } catch(e) {
+      console.log('Could not load reminder setting:', e);
+    }
+  }
+
+  function applyReminderUI(enabled, toggle, slider, knob, status) {
+    toggle.checked = enabled;
+    slider.style.background = enabled ? '#C0182B' : 'rgba(250,250,248,0.15)';
+    knob.style.transform     = enabled ? 'translateX(22px)' : 'translateX(0)';
+    if (status) status.textContent = enabled ? 'Reminders are on — tutors will be emailed nightly.' : 'Reminders are off — no emails will be sent.';
+  }
+
+  window.toggleReminders = async function(enabled) {
+    const slider = document.getElementById('reminder-slider');
+    const knob   = document.getElementById('reminder-knob');
+    const status = document.getElementById('reminder-status-text');
+    applyReminderUI(enabled, document.getElementById('reminder-toggle'), slider, knob, status);
+    try {
+      await setDoc(doc(db, 'settings', 'reminders'), { enabled, updatedAt: new Date().toISOString() });
+    } catch(e) {
+      console.error('Failed to save reminder setting:', e);
+    }
+  };
+
+
 
   window.openManualLogModal = async function() {
     await cacheAllUsers();
@@ -4486,6 +4542,7 @@
     if (pageId==='admin-sessions') { loadAdminSessions(); loadGroupSessions(); }
     if (pageId==='admin-session-logs') loadAdminSessionLogs();
     if (pageId==='admin-announce') loadAdminAnnouncements();
+    if (pageId==='admin-dashboard') loadReminderToggle();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
     if (pageId==='student-sessions') { loadStudentSessionRequests(); loadGroupSessions(); }
     if (pageId==='student-documents') loadStudentDocuments();
