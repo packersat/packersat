@@ -3727,18 +3727,64 @@
     if (statStudents) statStudents.textContent = new Set(logs.map(l => l.studentId)).size;
     if (statTutors)   statTutors.textContent   = new Set(logs.map(l => l.tutorId)).size;
 
-    // Subject frequency
+    // ── Top Subjects: count the stored subject tags directly ──
     const subjectCount = {};
-    const struggleWords = {};
     logs.forEach(l => {
-      (l.subjects || []).forEach(s => { subjectCount[s] = (subjectCount[s] || 0) + 1; });
-      if (l.struggles) {
-        // Word frequency on struggles (simple, ignore short words)
-        l.struggles.toLowerCase().split(/[\s,;.]+/).filter(w => w.length > 4).forEach(w => {
-          struggleWords[w] = (struggleWords[w] || 0) + 1;
-        });
-      }
+      (l.subjects || []).forEach(s => {
+        const clean = s.trim();
+        if (clean.length < 2) return;
+        // Normalize capitalization for grouping (case-insensitive merge)
+        const key = clean.charAt(0).toUpperCase() + clean.slice(1);
+        subjectCount[key] = (subjectCount[key] || 0) + 1;
+      });
     });
+
+    // ── Common Struggles: extract meaningful phrases from struggle text ──
+    // Split on sentence boundaries, filter to only substantive phrases
+    const strugglePhrases = {};
+    const STOPWORDS = new Set(['the','and','but','for','with','that','this','they','have',
+      'from','their','also','when','were','been','more','some','into','than','then',
+      'very','just','about','which','would','could','should','there','where','after',
+      'before','because','student','students','during','often','still','seems','seemed',
+      'needs','need','understanding','understand','working','practice','practices',
+      'having','getting','issues','issue','area','areas','help','helps','difficulty',
+      'difficult','struggled','struggling','problem','problems','trouble','tends','tend']);
+
+    logs.forEach(l => {
+      if (!l.struggles) return;
+      // Split on . ; and newlines to get clauses
+      const clauses = l.struggles.split(/[.;\n]+/).map(s => s.trim()).filter(s => s.length > 8);
+      clauses.forEach(clause => {
+        // Look for subject-like noun phrases: 2-5 word chunks that aren't stopwords
+        // Extract 2-3 word meaningful sequences
+        const words = clause.toLowerCase()
+          .replace(/[^a-z\s\-\/]/g, '')
+          .split(/\s+/)
+          .filter(w => w.length > 2 && !STOPWORDS.has(w));
+
+        // Use 2-word collocations as the phrase unit
+        for (let i = 0; i < words.length - 1; i++) {
+          const phrase = words[i] + ' ' + words[i + 1];
+          // Skip if either word is too generic
+          if (words[i].length < 3 || words[i + 1].length < 3) continue;
+          // Skip phrases with slashes or numbers (artifacts)
+          if (/[\/\d]/.test(phrase)) continue;
+          const display = phrase.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          strugglePhrases[display] = (strugglePhrases[display] || 0) + 1;
+        }
+
+        // Also capture single meaningful topic words (3+ syllables / 8+ chars)
+        words.filter(w => w.length >= 8 && !STOPWORDS.has(w)).forEach(w => {
+          const display = w.charAt(0).toUpperCase() + w.slice(1);
+          // Only count singletons if they appear in multiple logs (avoid noise)
+          if (!strugglePhrases[display]) strugglePhrases[display] = 0;
+          strugglePhrases[display] += 0.5; // half weight so pairs rank higher
+        });
+      });
+    });
+
+    // Filter to only phrases that appear more than once OR are from multiple students
+    const minCount = logs.length <= 3 ? 1 : 1.5;
 
     const subjectEl = document.getElementById('log-subjects-breakdown');
     if (subjectEl) {
@@ -3760,13 +3806,20 @@
 
     const struggleEl = document.getElementById('log-struggles-breakdown');
     if (struggleEl) {
-      const sorted = Object.entries(struggleWords).sort((a, b) => b[1] - a[1]).slice(0, 8);
-      if (!sorted.length) { struggleEl.innerHTML = '<div class="empty-state"><div class="icon"></div>No data yet.</div>'; }
-      else {
-        struggleEl.innerHTML = sorted.map(([w, n]) => `
+      const sorted = Object.entries(strugglePhrases)
+        .filter(([, n]) => n >= minCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+      if (!sorted.length) {
+        struggleEl.innerHTML = '<div class="empty-state"><div class="icon"></div>Not enough data yet — log more sessions to see patterns.</div>';
+      } else {
+        struggleEl.innerHTML = sorted.map(([phrase, n]) => {
+          const count = Math.round(n);
+          return `
           <div style="display:inline-block;background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);border-radius:20px;padding:0.25rem 0.75rem;margin:0.2rem;font-size:0.8rem;color:#e8b4b8">
-            ${w} <span style="opacity:0.6;font-size:0.72rem">×${n}</span>
-          </div>`).join('');
+            ${phrase}${count > 1 ? ` <span style="opacity:0.6;font-size:0.72rem">×${count}</span>` : ''}
+          </div>`;
+        }).join('');
       }
     }
 
