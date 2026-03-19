@@ -968,20 +968,39 @@
               <div class="card-title">Compose</div>
 
               <div style="margin-bottom:0.9rem">
+                <div class="field-label">Audience</div>
+                <div style="display:flex;gap:0.5rem">
+                  <button id="aud-students" class="action-btn" onclick="setAudience('students')" style="flex:1;font-size:0.8rem;background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Students</button>
+                  <button id="aud-tutors" class="action-btn" onclick="setAudience('tutors')" style="flex:1;font-size:0.8rem">Tutors</button>
+                  <button id="aud-everyone" class="action-btn" onclick="setAudience('everyone')" style="flex:1;font-size:0.8rem">Everyone</button>
+                </div>
+              </div>
+
+              <div style="margin-bottom:0.9rem">
                 <div class="field-label">Template</div>
                 <select class="input-field" id="email-template" onchange="applyEmailTemplate()">
-                  <option value="custom">Custom — blank</option>
-                  <option value="session_reminder">Session Reminder</option>
-                  <option value="homework_reminder">Homework Reminder</option>
-                  <option value="score_update">Score Update / Encouragement</option>
-                  <option value="general">General Announcement</option>
+                  <optgroup label="— Student Templates —">
+                    <option value="custom">Custom — blank</option>
+                    <option value="session_reminder">Session Reminder</option>
+                    <option value="homework_reminder">Homework Reminder</option>
+                    <option value="score_update">Score Update / Encouragement</option>
+                    <option value="general_student">General Announcement (Student)</option>
+                  </optgroup>
+                  <optgroup label="— Tutor Templates —">
+                    <option value="new_feature">New Feature Added to Portal</option>
+                    <option value="log_reminder_manual">Session Log Reminder</option>
+                    <option value="tutor_schedule">Schedule Update Request</option>
+                    <option value="tutor_recognition">Tutor Recognition / Thank You</option>
+                    <option value="program_update">Program Update</option>
+                    <option value="general_tutor">General Announcement (Tutor)</option>
+                  </optgroup>
                 </select>
               </div>
 
               <div style="margin-bottom:0.9rem">
                 <div class="field-label">To</div>
                 <select class="input-field" id="email-recipient" onchange="updateEmailPreview()">
-                  <option value="__all__">All students</option>
+                  <option value="__all_students__">All students</option>
                 </select>
               </div>
 
@@ -991,12 +1010,12 @@
               </div>
 
               <div style="margin-bottom:0.9rem">
-                <div class="field-label">Body <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">— plain text, line breaks preserved</span></div>
+                <div class="field-label">Body <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">— use [Name] to personalize</span></div>
                 <textarea class="input-field" id="email-body" rows="8" placeholder="Write your message here..." oninput="updateEmailPreview()" style="resize:vertical;min-height:160px;font-family:inherit;line-height:1.6"></textarea>
               </div>
 
               <div style="margin-bottom:0.9rem">
-                <div class="field-label">Button label <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(optional — leave blank to hide)</span></div>
+                <div class="field-label">Button label <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(optional)</span></div>
                 <input class="input-field" type="text" id="email-btn-label" placeholder="e.g. View in Portal" oninput="updateEmailPreview()" />
               </div>
 
@@ -3259,52 +3278,126 @@
   // ─────────────────────────────────────────
 
   const EMAIL_TEMPLATES = {
-    custom: {
-      subject: '',
-      body: '',
-      btnLabel: '',
-      btnUrl: ''
-    },
+    custom: { subject: '', body: '', btnLabel: '', btnUrl: '', audience: 'students' },
     session_reminder: {
+      audience: 'students',
       subject: 'Reminder: Upcoming SAT tutoring session',
-      body: `Hi [Student Name],\n\nJust a quick reminder that you have a tutoring session coming up soon.\n\nPlease make sure to review any recent practice problems or areas you've been working on before the session, and come prepared with any questions.\n\nSee you soon!`,
-      btnLabel: 'View My Sessions',
-      btnUrl: 'https://www.packersat.org/portal'
+      body: `Hi [Name],\n\nJust a quick reminder that you have a tutoring session coming up soon.\n\nPlease make sure to review any recent practice problems or areas you've been working on before the session, and come prepared with any questions.\n\nSee you soon!`,
+      btnLabel: 'View My Sessions', btnUrl: 'https://www.packersat.org/portal'
     },
     homework_reminder: {
-      subject: 'Reminder: You have an assignment due',
-      body: `Hi [Student Name],\n\nThis is a friendly reminder that you have a pending assignment in your portal.\n\nPlease take some time to complete it before your next session. Your tutor will review it with you.\n\nKeep up the great work!`,
-      btnLabel: 'View My Assignments',
-      btnUrl: 'https://www.packersat.org/portal'
+      audience: 'students',
+      subject: 'Reminder: You have a pending assignment',
+      body: `Hi [Name],\n\nThis is a friendly reminder that you have a pending assignment in your portal.\n\nPlease take some time to complete it before your next session — your tutor will review it with you.\n\nKeep up the great work!`,
+      btnLabel: 'View My Assignments', btnUrl: 'https://www.packersat.org/portal'
     },
     score_update: {
+      audience: 'students',
       subject: 'Your SAT progress update',
-      body: `Hi [Student Name],\n\nWe wanted to share a quick note on your recent SAT prep progress.\n\nYou've been putting in great work and it shows. Keep focusing on the areas your tutor has highlighted, and remember that consistent practice is the key to improvement.\n\nYou've got this!`,
-      btnLabel: 'View My Scores',
-      btnUrl: 'https://www.packersat.org/portal'
+      body: `Hi [Name],\n\nWe wanted to share a quick note on your recent SAT prep progress.\n\nYou've been putting in great work and it shows. Keep focusing on the areas your tutor has highlighted, and remember that consistent practice is the key to improvement.\n\nYou've got this!`,
+      btnLabel: 'View My Scores', btnUrl: 'https://www.packersat.org/portal'
     },
-    general: {
+    general_student: {
+      audience: 'students',
       subject: 'A message from Packer SAT Tutoring',
-      body: `Hi [Student Name],\n\nWe have an update to share with you regarding the Packer SAT tutoring program.\n\n[Write your message here]`,
-      btnLabel: 'Visit the Portal',
-      btnUrl: 'https://www.packersat.org/portal'
+      body: `Hi [Name],\n\nWe have an update to share with you regarding the Packer SAT tutoring program.\n\n[Write your message here]`,
+      btnLabel: 'Visit the Portal', btnUrl: 'https://www.packersat.org/portal'
+    },
+    new_feature: {
+      audience: 'tutors',
+      subject: 'New feature added to the Packer SAT Portal',
+      body: `Hi [Name],\n\nWe've just added a new feature to the portal that you should know about.\n\n[Describe the new feature here — what it does, where to find it, and how it helps you.]\n\nIf you have any questions or feedback, feel free to send a message through the portal.\n\nThanks for everything you do for your students.`,
+      btnLabel: 'Open the Portal', btnUrl: 'https://www.packersat.org/portal'
+    },
+    log_reminder_manual: {
+      audience: 'tutors',
+      subject: 'Reminder: Please log your recent sessions',
+      body: `Hi [Name],\n\nThis is a reminder that you have one or more past sessions that haven't been logged yet.\n\nSession logs help us track student progress and are an important part of the program. Please take a few minutes to log your recent sessions in the portal.\n\nThank you!`,
+      btnLabel: 'Go to Session Log', btnUrl: 'https://www.packersat.org/portal'
+    },
+    tutor_schedule: {
+      audience: 'tutors',
+      subject: 'Action needed: Please schedule your upcoming sessions',
+      body: `Hi [Name],\n\nWe're doing a quick check-in on scheduling to make sure your students are getting regular sessions.\n\nCould you please log into the portal and schedule your upcoming sessions? If your availability has changed or you have any scheduling concerns, feel free to reach out.\n\nThanks for staying on top of this — it makes a big difference for your students.`,
+      btnLabel: 'Schedule Sessions', btnUrl: 'https://www.packersat.org/portal'
+    },
+    tutor_recognition: {
+      audience: 'tutors',
+      subject: 'Thank you from Packer SAT Tutoring',
+      body: `Hi [Name],\n\nWe just wanted to take a moment to say thank you.\n\nThe work you're doing as a tutor makes a real difference. Your students are benefiting from your time, expertise, and dedication — and that means a lot to us and to them.\n\nKeep up the amazing work. We're grateful to have you as part of this program.`,
+      btnLabel: 'View Your Portal', btnUrl: 'https://www.packersat.org/portal'
+    },
+    program_update: {
+      audience: 'tutors',
+      subject: 'Program update from Packer SAT Tutoring',
+      body: `Hi [Name],\n\nWe have an update to share about the Packer SAT Tutoring program.\n\n[Write your update here]\n\nIf you have any questions, please send a message through the portal or reach out directly.\n\nThank you for your continued commitment to the program.`,
+      btnLabel: 'Open the Portal', btnUrl: 'https://www.packersat.org/portal'
+    },
+    general_tutor: {
+      audience: 'tutors',
+      subject: 'A message from Packer SAT Tutoring',
+      body: `Hi [Name],\n\nWe wanted to reach out with a quick message.\n\n[Write your message here]`,
+      btnLabel: 'Open the Portal', btnUrl: 'https://www.packersat.org/portal'
     }
   };
 
+  let _emailAudience = 'students';
+
+  window.setAudience = function(audience) {
+    _emailAudience = audience;
+    ['students','tutors','everyone'].forEach(a => {
+      const btn = document.getElementById('aud-' + a);
+      if (!btn) return;
+      if (a === audience) {
+        btn.style.background = 'rgba(192,24,43,0.2)';
+        btn.style.borderColor = 'rgba(192,24,43,0.5)';
+        btn.style.color = '#FAFAF8';
+      } else {
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }
+    });
+    rebuildRecipientDropdown();
+    updateEmailPreview();
+  };
+
+  function rebuildRecipientDropdown() {
+    const sel = document.getElementById('email-recipient');
+    if (!sel) return;
+    sel.innerHTML = '';
+    if (_emailAudience === 'students') {
+      sel.innerHTML = '<option value="__all_students__">All students</option>';
+      Object.entries(allUsers).filter(([,u]) => u.role === 'student')
+        .sort((a,b) => (a[1].name||'').localeCompare(b[1].name||''))
+        .forEach(([uid, u]) => { sel.innerHTML += `<option value="${uid}">${u.name || u.email}</option>`; });
+    } else if (_emailAudience === 'tutors') {
+      sel.innerHTML = '<option value="__all_tutors__">All tutors</option>';
+      Object.entries(allUsers).filter(([,u]) => u.role === 'tutor')
+        .sort((a,b) => (a[1].name||'').localeCompare(b[1].name||''))
+        .forEach(([uid, u]) => { sel.innerHTML += `<option value="${uid}">${u.name || u.email}</option>`; });
+    } else {
+      sel.innerHTML = '<option value="__everyone__">Everyone (students + tutors)</option>';
+      sel.innerHTML += '<option value="__all_students__">All students only</option>';
+      sel.innerHTML += '<option value="__all_tutors__">All tutors only</option>';
+      Object.entries(allUsers)
+        .filter(([,u]) => u.role === 'student' || u.role === 'tutor')
+        .sort((a,b) => (a[1].name||'').localeCompare(b[1].name||''))
+        .forEach(([uid, u]) => { sel.innerHTML += `<option value="${uid}">${u.name || u.email} (${u.role})</option>`; });
+    }
+  }
+
   function buildEmailHTML(recipientName, subject, body, btnLabel, btnUrl) {
-    // Convert line breaks to <br> and paragraphs
     const bodyHtml = body
       .split(/\n\n+/)
       .map(para => `<p style="margin:0 0 16px;color:#FAFAF8 !important;font-size:15px;line-height:1.7" color="#FAFAF8">${para.replace(/\n/g,'<br>')}</p>`)
       .join('');
-
     const btnHtml = btnLabel ? `
       <table width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 24px">
         <tr><td align="center">
           <a href="${btnUrl || 'https://www.packersat.org/portal'}" style="display:inline-block;background:#C0182B;color:#FAFAF8;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:4px;letter-spacing:0.03em">${btnLabel}</a>
         </td></tr>
       </table>` : '';
-
     return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -3339,6 +3432,7 @@
     document.getElementById('email-body').value      = t.body;
     document.getElementById('email-btn-label').value = t.btnLabel;
     document.getElementById('email-btn-url').value   = t.btnUrl;
+    if (t.audience && t.audience !== _emailAudience) setAudience(t.audience);
     updateEmailPreview();
   };
 
@@ -3347,26 +3441,17 @@
     const body     = document.getElementById('email-body')?.value || '';
     const btnLabel = document.getElementById('email-btn-label')?.value || '';
     const btnUrl   = document.getElementById('email-btn-url')?.value || '';
-    const recipSel = document.getElementById('email-recipient');
-    const recipVal = recipSel?.value || '__all__';
-    const previewName = recipVal === '__all__' ? '[Student Name]' : (allUsers[recipVal]?.name || allUsers[recipVal]?.email || '[Student Name]');
-    const html = buildEmailHTML(previewName, subject, body.replace(/\[Student Name\]/g, previewName), btnLabel, btnUrl);
+    const recipVal = document.getElementById('email-recipient')?.value || '';
+    const previewName = recipVal.startsWith('__') ? '[Name]' : (allUsers[recipVal]?.name || allUsers[recipVal]?.email || '[Name]');
+    const html = buildEmailHTML(previewName, subject, body.replace(/\[Name\]/g, previewName), btnLabel, btnUrl);
     const frame = document.getElementById('email-preview-inner');
     if (frame) frame.innerHTML = html;
   };
 
   async function loadAdminEmailsPage() {
     await cacheAllUsers();
-    const sel = document.getElementById('email-recipient');
-    if (!sel) return;
-    sel.innerHTML = '<option value="__all__">All students</option>';
-    Object.entries(allUsers)
-      .filter(([,u]) => u.role === 'student')
-      .sort((a,b) => (a[1].name||'').localeCompare(b[1].name||''))
-      .forEach(([uid, u]) => {
-        sel.innerHTML += `<option value="${uid}">${u.name || u.email}</option>`;
-      });
-    // Apply default template preview
+    _emailAudience = 'students';
+    rebuildRecipientDropdown();
     applyEmailTemplate();
   }
 
@@ -3378,45 +3463,35 @@
     const recipVal = document.getElementById('email-recipient').value;
     const msg      = document.getElementById('admin-email-msg');
     const btn      = document.getElementById('send-email-btn');
-
     if (!subject) { showMsg(msg, 'Please enter a subject.', 'error'); return; }
     if (!body)    { showMsg(msg, 'Please enter a message body.', 'error'); return; }
-
-    // Build recipient list
-    const recipients = recipVal === '__all__'
-      ? Object.entries(allUsers).filter(([,u]) => u.role === 'student' && u.email)
-      : [[recipVal, allUsers[recipVal]]].filter(([,u]) => u?.email);
-
+    let recipients = [];
+    if (recipVal === '__all_students__') {
+      recipients = Object.entries(allUsers).filter(([,u]) => u.role === 'student' && u.email);
+    } else if (recipVal === '__all_tutors__') {
+      recipients = Object.entries(allUsers).filter(([,u]) => u.role === 'tutor' && u.email);
+    } else if (recipVal === '__everyone__') {
+      recipients = Object.entries(allUsers).filter(([,u]) => (u.role === 'student' || u.role === 'tutor') && u.email);
+    } else {
+      recipients = [[recipVal, allUsers[recipVal]]].filter(([,u]) => u?.email);
+    }
     if (!recipients.length) { showMsg(msg, 'No valid recipients found.', 'error'); return; }
-
+    const total = recipients.length;
     btn.disabled = true;
-    btn.textContent = `Sending to ${recipients.length} student${recipients.length > 1 ? 's' : ''}…`;
-
+    btn.textContent = `Sending to ${total} recipient${total > 1 ? 's' : ''}…`;
     let sent = 0, failed = 0;
     for (const [, u] of recipients) {
-      const personalBody = body.replace(/\[Student Name\]/g, u.name || u.email);
+      const personalBody = body.replace(/\[Name\]/g, u.name || u.email);
       const html = buildEmailHTML(u.name || u.email, subject, personalBody, btnLabel, btnUrl);
       try {
-        const r = await sendBrevoEmail({
-          to_email:     u.email,
-          to_name:      u.name || u.email,
-          subject,
-          html_content: html
-        });
+        await sendBrevoEmail({ to_email: u.email, to_name: u.name || u.email, subject, html_content: html });
         sent++;
-      } catch(e) {
-        failed++;
-        console.error('Failed to send to', u.email, e);
-      }
+      } catch(e) { failed++; console.error('Failed to send to', u.email, e); }
     }
-
     btn.disabled = false;
     btn.textContent = 'Send Email';
-    if (failed === 0) {
-      showMsg(msg, `Sent successfully to ${sent} student${sent > 1 ? 's' : ''}.`, 'success');
-    } else {
-      showMsg(msg, `Sent to ${sent}, failed for ${failed}. Check console.`, 'error');
-    }
+    if (failed === 0) showMsg(msg, `Sent to ${sent} recipient${sent > 1 ? 's' : ''}.`, 'success');
+    else showMsg(msg, `Sent to ${sent}, failed for ${failed}.`, 'error');
   };
 
 
