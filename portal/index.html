@@ -1285,14 +1285,19 @@
 
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
 
-          <a href="https://www.khanacademy.org/test-prep" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">🎓</div>
+          <div class="resource-card" style="cursor:default;border-color:rgba(20,130,80,0.4)">
+            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">&#127891;</div>
             <div class="resource-info">
               <div class="resource-name">Khan Academy SAT Prep</div>
-              <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons. Completely free.</div>
-              <div class="resource-tag">Free · Official Partner</div>
+              <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons.</div>
+              <div style="margin-top:0.6rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+                <a href="https://www.khanacademy.org/sat" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;color:rgba(250,250,248,0.7)">Open Khan Academy</a>
+                <a href="https://www.khanacademy.org/test-prep/sat-2023" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;color:rgba(250,250,248,0.7)">Math Practice</a>
+                <a href="https://www.khanacademy.org/test-prep/sat-reading-and-writing" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;color:rgba(250,250,248,0.7)">Reading &amp; Writing</a>
+              </div>
+              <div class="resource-tag" style="margin-top:0.5rem">Free · Official Partner · Recommended by tutors</div>
             </div>
-          </a>
+          </div>
 
           <a href="https://bluebook.collegeboard.org" target="_blank" class="resource-card">
             <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);">📘</div>
@@ -1872,6 +1877,8 @@
       <div class="sidebar-item" onclick="showPage('tutor-messages',this)"><span class="sidebar-icon"></span>Messages <span id="tutor-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
+      <div class="sidebar-item" onclick="showPage('tutor-onboarding',this)"><span class="sidebar-icon"></span>Onboarding Guide</div>
+      <div class="sidebar-item" onclick="showPage('tutor-templates',this)"><span class="sidebar-icon"></span>Assignment Templates</div>
     `;
 
     document.getElementById('main-content').innerHTML = `
@@ -1966,6 +1973,60 @@
         <div id="tutor-assignments-list"><div class="empty-state"><div class="icon"></div>No assignments yet.</div></div>
       </div>
 
+            <!-- TUTOR ONBOARDING -->
+      <div class="page" id="page-tutor-onboarding">
+        <div class="page-header"><h2>Tutor Onboarding Guide</h2><p>Everything you need to know about running sessions and using the portal.</p></div>
+        <div class="grid-2" style="align-items:flex-start;gap:1.2rem">
+          <div>
+            <div class="card">
+              <div class="card-title">Your Role as a Tutor</div>
+              <p style="color:rgba(250,250,248,0.65);font-size:0.92rem;line-height:1.8;margin-bottom:1rem">You are responsible for running consistent, structured one-on-one sessions with your assigned students. Sessions should be 45 to 60 minutes, held one to two times per week. Your job is to identify weak areas, assign targeted practice, and track progress over time.</p>
+              <p style="color:rgba(250,250,248,0.65);font-size:0.92rem;line-height:1.8">Always come prepared. Review the student's most recent scores and assignment completion before each meeting.</p>
+            </div>
+            <div class="card">
+              <div class="card-title">Session Best Practices</div>
+              <div style="display:flex;flex-direction:column;gap:0.75rem">
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Start each session by reviewing last time's assignment. Hold students accountable.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Spend the first 10 minutes on a warm-up: 3 to 5 questions from a recent struggle area.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Focus on one or two topics per session rather than trying to cover everything at once.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">End every session with a specific assignment and a clear expectation for next time.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Log every session in the portal within 24 hours. Notes help track patterns over time.</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Portal Pages at a Glance</div>
+              <div style="display:flex;flex-direction:column;gap:0.9rem">
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">My Students</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">View assigned students, assign work, log scores, and write notes.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Sessions</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Schedule sessions and log past ones within 30 minutes after they start.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Assignment Templates</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Save reusable assignment types to apply in one click when assigning work.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Messages</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Direct line to the admin for questions, schedule changes, or anything else.</div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Expectations</div>
+              <div style="display:flex;flex-direction:column;gap:0.6rem">
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">1</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">Respond to student messages within 48 hours.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">2</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">Log sessions within 24 hours of completion.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">3</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">If you need to cancel, notify the student and admin as early as possible.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">4</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">Students should always leave a session with a clear next step.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">5</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">Contact the admin if a student stops showing up or seems disengaged.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSIGNMENT TEMPLATES -->
+      <div class="page" id="page-tutor-templates">
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem">
+          <div><h2>Assignment Templates</h2><p>Save reusable assignment types. Apply them in one click when assigning work.</p></div>
+          <button class="btn-red" onclick="openModal('modal-new-template')">+ New Template</button>
+        </div>
+        <div id="tutor-templates-list"><div class="empty-state"><div class="icon"></div>No templates yet.</div></div>
+      </div>
+
       <!-- STUDENT MESSAGES -->
       <div class="page" id="page-student-messages">
         <div class="page-header"><h2>Messages</h2><p>Send and receive messages with the admin.</p></div>
@@ -2005,14 +2066,19 @@
 
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
 
-          <a href="https://www.khanacademy.org/test-prep" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">🎓</div>
+          <div class="resource-card" style="cursor:default;border-color:rgba(20,130,80,0.4)">
+            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">&#127891;</div>
             <div class="resource-info">
               <div class="resource-name">Khan Academy SAT Prep</div>
-              <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons. Completely free.</div>
-              <div class="resource-tag">Free · Official Partner</div>
+              <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons.</div>
+              <div style="margin-top:0.6rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+                <a href="https://www.khanacademy.org/sat" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;color:rgba(250,250,248,0.7)">Open Khan Academy</a>
+                <a href="https://www.khanacademy.org/test-prep/sat-2023" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;color:rgba(250,250,248,0.7)">Math Practice</a>
+                <a href="https://www.khanacademy.org/test-prep/sat-reading-and-writing" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;color:rgba(250,250,248,0.7)">Reading &amp; Writing</a>
+              </div>
+              <div class="resource-tag" style="margin-top:0.5rem">Free · Official Partner · Recommended by tutors</div>
             </div>
-          </a>
+          </div>
 
           <a href="https://bluebook.collegeboard.org" target="_blank" class="resource-card">
             <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);">📘</div>
@@ -2295,6 +2361,7 @@
             <button class="action-btn" onclick="openScoreModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Score</button>
             <button class="action-btn" onclick="openNoteModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Note</button>
             <button class="action-btn" onclick="openAssignmentModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Assign</button>
+            <button class="action-btn" onclick="printStudentReport('${uid}')">&#128438; Print Report</button>
           </div>
         </div>
         <div class="grid-2">
@@ -2448,6 +2515,8 @@
       <div class="sidebar-item" onclick="showPage('student-messages',this)"><span class="sidebar-icon"></span>Messages <span id="student-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
+      <div class="sidebar-item" onclick="showPage('student-achievements',this)"><span class="sidebar-icon"></span>Achievements</div>
+      <div class="sidebar-item" onclick="showPage('student-onboarding',this)"><span class="sidebar-icon"></span>Getting Started</div>
     `;
 
     const tutorName = CU.tutorId ? (allUsers[CU.tutorId]?.name || 'Assigned') : null;
@@ -2566,14 +2635,19 @@
 
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
 
-          <a href="https://www.khanacademy.org/test-prep" target="_blank" class="resource-card">
-            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">🎓</div>
+          <div class="resource-card" style="cursor:default;border-color:rgba(20,130,80,0.4)">
+            <div class="resource-icon" style="background:rgba(20,130,80,0.15);border-color:rgba(20,130,80,0.3);">&#127891;</div>
             <div class="resource-info">
               <div class="resource-name">Khan Academy SAT Prep</div>
-              <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons. Completely free.</div>
-              <div class="resource-tag">Free · Official Partner</div>
+              <div class="resource-desc">Official College Board partner. Personalized practice, full-length tests, and video lessons.</div>
+              <div style="margin-top:0.6rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+                <a href="https://www.khanacademy.org/sat" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;color:rgba(250,250,248,0.7)">Open Khan Academy</a>
+                <a href="https://www.khanacademy.org/test-prep/sat-2023" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;color:rgba(250,250,248,0.7)">Math Practice</a>
+                <a href="https://www.khanacademy.org/test-prep/sat-reading-and-writing" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;color:rgba(250,250,248,0.7)">Reading &amp; Writing</a>
+              </div>
+              <div class="resource-tag" style="margin-top:0.5rem">Free · Official Partner · Recommended by tutors</div>
             </div>
-          </a>
+          </div>
 
           <a href="https://bluebook.collegeboard.org" target="_blank" class="resource-card">
             <div class="resource-icon" style="background:rgba(0,80,160,0.15);border-color:rgba(0,80,160,0.3);">📘</div>
@@ -2768,6 +2842,59 @@
 
         </div>
       </div>
+
+      <!-- STUDENT ACHIEVEMENTS -->
+      <div class="page" id="page-student-achievements">
+        <div class="page-header"><h2>Achievements</h2><p>Milestones earned through your SAT prep journey.</p></div>
+        <div id="achievements-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem"></div>
+      </div>
+
+      <!-- STUDENT ONBOARDING -->
+      <div class="page" id="page-student-onboarding">
+        <div class="page-header"><h2>Getting Started</h2><p>How the program works and what to expect from your sessions.</p></div>
+        <div class="grid-2" style="align-items:flex-start;gap:1.2rem">
+          <div>
+            <div class="card">
+              <div class="card-title">Welcome to Packer SAT Tutoring</div>
+              <p style="color:rgba(250,250,248,0.65);font-size:0.92rem;line-height:1.8;margin-bottom:1rem">You have been paired with a Packer upperclassman who has scored in the top percentile on the SAT. Sessions are one-on-one, free, and tailored entirely to you. There is no fixed curriculum — your tutor will work on whatever you need most.</p>
+              <p style="color:rgba(250,250,248,0.65);font-size:0.92rem;line-height:1.8">The more you put in, the more you will get out. Come to every session having done the assigned work and be honest about what you do and don't understand.</p>
+            </div>
+            <div class="card">
+              <div class="card-title">What Happens in a Session</div>
+              <div style="display:flex;flex-direction:column;gap:0.75rem">
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">1</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Your tutor reviews what you worked on since last time.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">2</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">You work through problems together, focusing on areas you find difficult.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">3</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Your tutor assigns specific practice for you to complete before the next session.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">4</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">After the session, your tutor logs notes in the portal. You can read these under Tutor Notes.</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Your Portal Pages</div>
+              <div style="display:flex;flex-direction:column;gap:0.9rem">
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">My Scores</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">View all your logged SAT scores and track your improvement over time.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">My Sessions</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">See upcoming and past sessions. Request a new session from this page.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Assignments</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">All work assigned by your tutor. Mark complete when done and attach your submission.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Tutor Notes</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Session notes written by your tutor. Read these to review what was covered.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Achievements</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Badges earned for milestones like score improvements and sessions completed.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Prep Resources</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Khan Academy, Bluebook, and other free tools your tutor may recommend.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Messages</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Direct message the admin with any questions or concerns.</div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Tips for Success</div>
+              <div style="display:flex;flex-direction:column;gap:0.65rem">
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Always complete your assignments before the next session, even if it takes extra time.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Be specific about what you don't understand. "I don't get math" is not helpful. "I keep getting the linear equations questions wrong" is.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Take at least one timed full-length Bluebook practice test before your actual SAT.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">If you need to reschedule, message your tutor as early as possible.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     `;
 
     loadStudentDashboard();
@@ -3651,6 +3778,257 @@
   };
 
 
+
+  // ─────────────────────────────────────────
+  // ████  ACHIEVEMENT BADGES
+  // ─────────────────────────────────────────
+
+  const BADGE_DEFS = [
+    { id: 'first_session',    icon: '&#127942;', title: 'First Session',         desc: 'Completed your first tutoring session.',           check: (s,a,sc) => s >= 1 },
+    { id: 'sessions_5',       icon: '&#128293;', title: '5 Sessions',            desc: 'Completed 5 tutoring sessions.',                   check: (s,a,sc) => s >= 5 },
+    { id: 'sessions_10',      icon: '&#127881;', title: '10 Sessions',           desc: 'Completed 10 tutoring sessions.',                  check: (s,a,sc) => s >= 10 },
+    { id: 'sessions_25',      icon: '&#127775;', title: '25 Sessions',           desc: 'Completed 25 tutoring sessions.',                  check: (s,a,sc) => s >= 25 },
+    { id: 'first_score',      icon: '&#128202;', title: 'First Score Logged',    desc: 'Had your first SAT score recorded.',               check: (s,a,sc) => sc.length >= 1 },
+    { id: 'improve_50',       icon: '&#128640;', title: '+50 Points',            desc: 'Improved your score by 50 or more points.',        check: (s,a,sc) => scoreImprovement(sc) >= 50 },
+    { id: 'improve_100',      icon: '&#127937;', title: '+100 Points',           desc: 'Improved your score by 100 or more points.',       check: (s,a,sc) => scoreImprovement(sc) >= 100 },
+    { id: 'improve_150',      icon: '&#129351;', title: '+150 Points',           desc: 'Improved your score by 150 or more points.',       check: (s,a,sc) => scoreImprovement(sc) >= 150 },
+    { id: 'improve_200',      icon: '&#129395;', title: '+200 Points',           desc: 'Improved your score by 200 or more points.',       check: (s,a,sc) => scoreImprovement(sc) >= 200 },
+    { id: 'assignment_first', icon: '&#128218;', title: 'First Assignment Done', desc: 'Completed your first assigned task.',              check: (s,a,sc) => a >= 1 },
+    { id: 'assignment_5',     icon: '&#128214;', title: '5 Assignments Done',    desc: 'Completed 5 assigned tasks.',                      check: (s,a,sc) => a >= 5 },
+    { id: 'assignment_10',    icon: '&#128196;', title: '10 Assignments Done',   desc: 'Completed 10 assigned tasks.',                     check: (s,a,sc) => a >= 10 },
+    { id: 'score_1400',       icon: '&#129354;', title: '1400 Club',             desc: 'Logged a score of 1400 or above.',                 check: (s,a,sc) => sc.some(x=>((x.math||0)+(x.reading||0))>=1400) },
+    { id: 'score_1500',       icon: '&#129353;', title: '1500 Club',             desc: 'Logged a score of 1500 or above.',                 check: (s,a,sc) => sc.some(x=>((x.math||0)+(x.reading||0))>=1500) },
+  ];
+
+  function scoreImprovement(scores) {
+    if (scores.length < 2) return 0;
+    const sorted = [...scores].sort((a,b)=>a.date.localeCompare(b.date));
+    const first = (sorted[0].math||0)+(sorted[0].reading||0);
+    const best  = Math.max(...sorted.map(s=>(s.math||0)+(s.reading||0)));
+    return best - first;
+  }
+
+  async function loadStudentAchievements() {
+    const el = document.getElementById('achievements-grid');
+    if (!el) return;
+    el.innerHTML = '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem;padding:1rem">Loading...</div>';
+
+    const [sessSnap, assignSnap, scoreSnap] = await Promise.all([
+      getDocs(collection(db,'sessions')),
+      getDocs(query(collection(db,'assignments'), where('studentId','==',CU.uid))),
+      getDocs(query(collection(db,'scores'), where('studentId','==',CU.uid)))
+    ]);
+
+    const sessionCount = sessSnap.docs.filter(d=>{
+      const ids = d.data().studentIds||[];
+      return ids.includes(CU.uid);
+    }).length;
+    const completedAssignments = assignSnap.docs.filter(d=>d.data().completed).length;
+    const scores = scoreSnap.docs.map(d=>d.data());
+
+    const earned = BADGE_DEFS.filter(b => b.check(sessionCount, completedAssignments, scores));
+    const locked = BADGE_DEFS.filter(b => !b.check(sessionCount, completedAssignments, scores));
+
+    el.innerHTML =
+      '<div style="grid-column:1/-1;margin-bottom:0.8rem">' +
+        '<span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">' + earned.length + ' of ' + BADGE_DEFS.length + ' earned</span>' +
+        '<div style="height:4px;background:rgba(250,250,248,0.06);border-radius:2px;margin-top:0.5rem;overflow:hidden">' +
+          '<div style="height:100%;width:' + Math.round(earned.length/BADGE_DEFS.length*100) + '%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:2px;transition:width 1.2s cubic-bezier(.22,1,.36,1)"></div>' +
+        '</div>' +
+      '</div>' +
+      earned.map(b =>
+        '<div style="background:linear-gradient(135deg,rgba(192,24,43,0.18),rgba(107,15,26,0.25));border:1px solid rgba(192,24,43,0.4);border-radius:8px;padding:1.2rem;text-align:center">' +
+          '<div style="font-size:1.9rem;margin-bottom:0.5rem">' + b.icon + '</div>' +
+          '<div style="font-weight:600;font-size:0.9rem;margin-bottom:0.3rem">' + b.title + '</div>' +
+          '<div style="font-size:0.78rem;color:rgba(250,250,248,0.5);line-height:1.5">' + b.desc + '</div>' +
+        '</div>'
+      ).join('') +
+      locked.map(b =>
+        '<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:1.2rem;text-align:center;opacity:0.38">' +
+          '<div style="font-size:1.9rem;margin-bottom:0.5rem;filter:grayscale(1) opacity(0.5)">' + b.icon + '</div>' +
+          '<div style="font-weight:600;font-size:0.9rem;margin-bottom:0.3rem">' + b.title + '</div>' +
+          '<div style="font-size:0.78rem;color:rgba(250,250,248,0.35);line-height:1.5">' + b.desc + '</div>' +
+        '</div>'
+      ).join('');
+  }
+
+  // ─────────────────────────────────────────
+  // ████  ASSIGNMENT TEMPLATES
+  // ─────────────────────────────────────────
+
+  async function loadTutorTemplates() {
+    const el = document.getElementById('tutor-templates-list');
+    if (!el) return;
+    el.innerHTML = '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem;padding:1rem">Loading...</div>';
+    await cacheAllUsers();
+
+    const snap = await getDocs(query(collection(db,'assignmentTemplates'), where('tutorId','==',CU.uid)));
+    const templates = snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    if (!templates.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon"></div>No templates yet. Click "+ New Template" to create one.</div>';
+      return;
+    }
+
+    const typeLabel = {practice:'Practice Test',worksheet:'Worksheet',reading:'Reading',review:'Review',khan:'Khan Academy',other:'Other'};
+    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
+
+    el.innerHTML = templates.map(t => `
+      <div class="card" style="margin-bottom:0.8rem">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.6rem;margin-bottom:${t.desc?'0.7rem':'0'}">
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;margin-bottom:0.2rem">${t.name}</div>
+            <div style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${typeLabel[t.type]||t.type}${t.dueDays ? ' &middot; Due in '+t.dueDays+' days' : ''}</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+            <select class="input-field" id="tpl-assign-student-${t.id}" style="width:auto;font-size:0.8rem;padding:0.3rem 0.6rem">
+              <option value="">Pick student...</option>
+              ${myStudents.map(([uid,u])=>`<option value="${uid}">${u.name||u.email}</option>`).join('')}
+            </select>
+            <button class="btn-red" style="font-size:0.8rem;padding:0.35rem 0.9rem" onclick="applyTemplate('${t.id}')">Apply</button>
+            <button class="action-btn danger" onclick="deleteTemplate('${t.id}')">&#128465;</button>
+          </div>
+        </div>
+        ${t.desc ? '<div style="font-size:0.85rem;color:rgba(250,250,248,0.55);line-height:1.6">'+t.desc+'</div>' : ''}
+        ${t.link ? '<a href="'+t.link+'" target="_blank" style="display:inline-block;margin-top:0.5rem;font-size:0.8rem;color:rgba(150,150,255,0.8)">'+t.link+'</a>' : ''}
+      </div>`).join('');
+  }
+
+  window.saveAssignmentTemplate = async function() {
+    const name  = document.getElementById('tpl-name').value.trim();
+    const type  = document.getElementById('tpl-type').value;
+    const days  = document.getElementById('tpl-days').value;
+    const desc  = document.getElementById('tpl-desc').value.trim();
+    const link  = document.getElementById('tpl-link').value.trim();
+    const msg   = document.getElementById('tpl-msg');
+    const btn   = document.getElementById('save-template-btn');
+    if (!name) { showMsg(msg,'Please enter a template name.','error'); return; }
+    btn.disabled = true; btn.textContent = 'Saving...';
+    await addDoc(collection(db,'assignmentTemplates'), {
+      tutorId: CU.uid, name, type,
+      dueDays: days ? parseInt(days) : null,
+      desc: desc||null, link: link||null,
+      createdAt: new Date().toISOString()
+    });
+    btn.disabled = false; btn.textContent = 'Save Template';
+    showMsg(msg,'Template saved!','success');
+    setTimeout(() => {
+      closeModal('modal-new-template');
+      document.getElementById('tpl-name').value = '';
+      document.getElementById('tpl-desc').value = '';
+      document.getElementById('tpl-link').value = '';
+      document.getElementById('tpl-days').value = '';
+      loadTutorTemplates();
+    }, 700);
+  };
+
+  window.applyTemplate = async function(templateId) {
+    const tSnap = await getDocs(query(collection(db,'assignmentTemplates'), where('tutorId','==',CU.uid)));
+    const tDoc  = tSnap.docs.find(d=>d.id===templateId);
+    if (!tDoc) return;
+    const t = tDoc.data();
+    const studentEl = document.getElementById('tpl-assign-student-'+templateId);
+    const studentId = studentEl?.value;
+    if (!studentId) { alert('Please pick a student first.'); return; }
+    let dueDate = null;
+    if (t.dueDays) {
+      const d = new Date(); d.setDate(d.getDate() + t.dueDays);
+      dueDate = d.toISOString().split('T')[0];
+    }
+    await addDoc(collection(db,'assignments'), {
+      studentId, tutorId: CU.uid,
+      title: t.name, desc: t.desc||'', type: t.type,
+      due: dueDate, link: t.link||null,
+      fileUrl: null, fileName: null,
+      completed: false, submissionUrl: null, submissionName: null,
+      createdAt: new Date().toISOString()
+    });
+    const btn = document.querySelector('#tpl-assign-student-'+templateId+' ~ button.btn-red');
+    const origText = 'Apply';
+    if (btn) { btn.textContent = 'Applied!'; btn.disabled = true; setTimeout(()=>{ btn.textContent=origText; btn.disabled=false; }, 1500); }
+  };
+
+  window.deleteTemplate = async function(id) {
+    if (!confirm('Delete this template?')) return;
+    await deleteDoc(doc(db,'assignmentTemplates',id));
+    loadTutorTemplates();
+  };
+
+  // ─────────────────────────────────────────
+  // ████  PRINTABLE PROGRESS REPORT
+  // ─────────────────────────────────────────
+
+  window.printStudentReport = async function(studentId) {
+    await cacheAllUsers();
+    const student = allUsers[studentId];
+    if (!student) return;
+
+    const [scoreSnap, sessSnap, assignSnap, logSnap] = await Promise.all([
+      getDocs(query(collection(db,'scores'), where('studentId','==',studentId))),
+      getDocs(collection(db,'sessions')),
+      getDocs(query(collection(db,'assignments'), where('studentId','==',studentId))),
+      getDocs(query(collection(db,'sessionLogs'), where('studentId','==',studentId)))
+    ]);
+
+    const scores   = scoreSnap.docs.map(d=>d.data()).sort((a,b)=>a.date.localeCompare(b.date));
+    const sessions = sessSnap.docs.filter(d=>(d.data().studentIds||[]).includes(studentId));
+    const assigns  = assignSnap.docs.map(d=>d.data());
+    const logs     = logSnap.docs.map(d=>d.data()).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+    const today    = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    const doneCount = assigns.filter(a=>a.completed).length;
+    const firstScore = scores.length ? (scores[0].math||0)+(scores[0].reading||0) : null;
+    const lastScore  = scores.length ? (scores[scores.length-1].math||0)+(scores[scores.length-1].reading||0) : null;
+    const improvement = (firstScore && lastScore && scores.length>1) ? lastScore - firstScore : null;
+
+    const scoresRows = scores.map(s=>
+      '<tr><td>'+formatDate(s.date)+'</td><td>'+(s.math||'—')+'</td><td>'+(s.reading||'—')+'</td><td style="font-weight:600">'+(((s.math||0)+(s.reading||0))||'—')+'</td></tr>'
+    ).join('');
+
+    const logsRows = logs.map(l=>
+      '<tr><td>'+formatDate(l.date)+'</td><td>'+(l.subjects?.join(', ')||'—')+'</td><td>'+(l.struggles||'—')+'</td></tr>'
+    ).join('');
+
+    const reportHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Progress Report</title>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">' +
+      '<style>' +
+      '*{margin:0;padding:0;box-sizing:border-box}' +
+      'body{font-family:"DM Sans",sans-serif;font-size:13px;color:#1a0508;background:#fff;padding:48px 56px}' +
+      '.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #C0182B;padding-bottom:16px;margin-bottom:28px}' +
+      '.logo{font-family:"Playfair Display",serif;font-size:22px}.logo span{color:#C0182B}' +
+      '.meta{text-align:right;font-size:11px;color:#666;line-height:1.8}' +
+      'h2{font-family:"Playfair Display",serif;font-size:15px;color:#1a0508;margin:24px 0 10px;border-bottom:1px solid #eee;padding-bottom:5px}' +
+      '.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:8px}' +
+      '.stat{border:1px solid #eee;border-radius:4px;padding:12px 8px;text-align:center}' +
+      '.stat .n{font-family:"Playfair Display",serif;font-size:26px;color:#C0182B;line-height:1}' +
+      '.stat .l{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#999;margin-top:4px}' +
+      'table{width:100%;border-collapse:collapse;margin-bottom:16px}' +
+      'th{background:#f9f3f3;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:7px 10px;color:#888}' +
+      'td{padding:7px 10px;border-bottom:1px solid #f5eeee;font-size:12px;color:#444}' +
+      '.footer{margin-top:40px;border-top:1px solid #eee;padding-top:12px;font-size:10px;color:#aaa;display:flex;justify-content:space-between}' +
+      '@media print{body{padding:0}}' +
+      '</style></head><body>' +
+      '<div class="hdr">' +
+        '<div><div class="logo">Packer <span>SAT</span> Prep</div><div style="font-size:12px;color:#999;margin-top:4px">Student Progress Report</div></div>' +
+        '<div class="meta"><strong>' + (student.name||student.email) + '</strong><br>Tutor: ' + (CU.name||'') + '<br>Generated: ' + today + '</div>' +
+      '</div>' +
+      '<div class="stats">' +
+        '<div class="stat"><div class="n">' + sessions.length + '</div><div class="l">Sessions</div></div>' +
+        '<div class="stat"><div class="n">' + doneCount + '</div><div class="l">Assignments Done</div></div>' +
+        '<div class="stat"><div class="n">' + (lastScore||'—') + '</div><div class="l">Latest Score</div></div>' +
+        '<div class="stat"><div class="n" style="color:' + (improvement>0?'#1a6e3a':improvement<0?'#C0182B':'#999') + '">' + (improvement!=null?(improvement>0?'+':'')+improvement:'—') + '</div><div class="l">Improvement</div></div>' +
+      '</div>' +
+      (scores.length ? '<h2>Score History</h2><table><thead><tr><th>Date</th><th>Math</th><th>Reading &amp; Writing</th><th>Total</th></tr></thead><tbody>' + scoresRows + '</tbody></table>' : '') +
+      (logs.length ? '<h2>Recent Session Notes</h2><table><thead><tr><th>Date</th><th>Topics Covered</th><th>Areas of Focus</th></tr></thead><tbody>' + logsRows + '</tbody></table>' : '') +
+      '<div class="footer"><span>Packer SAT Tutoring &middot; The Packer Collegiate Institute &middot; Brooklyn, NY</span><span>Confidential &middot; For student and family use only</span></div>' +
+      '</body></html>';
+
+    const win = window.open('','_blank','width=860,height=1100');
+    if (!win) { alert('Please allow pop-ups to print reports.'); return; }
+    win.document.write(reportHTML);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 700);
+  };
 
   async function loadReminderToggle() {
     const toggle = document.getElementById('reminder-toggle');
@@ -5067,7 +5445,9 @@
     if (pageId==='tutor-assignments') loadTutorAssignments();
     if (pageId==='tutor-dashboard') loadTutorDashboard();
     if (pageId==='tutor-students') loadTutorStudentsPage();
-    // resources page needs no data loading
+    if (pageId==='tutor-templates') loadTutorTemplates();
+    if (pageId==='student-achievements') loadStudentAchievements();
+    // onboarding pages need no data loading
   };
 
   window.openModal = function(id) { document.getElementById(id).classList.add('open'); };
@@ -5124,6 +5504,17 @@
   function addToWaitlist() { window.addToWaitlist && window.addToWaitlist(); }
   function removeFromWaitlist(id) { window.removeFromWaitlist && window.removeFromWaitlist(id); }
   function convertWaitlistToUser(name, email) { window.convertWaitlistToUser && window.convertWaitlistToUser(name, email); }
+  function toggleReminders(v) { window.toggleReminders && window.toggleReminders(v); }
+  function setAudience(a) { window.setAudience && window.setAudience(a); }
+  function applyEmailTemplate() { window.applyEmailTemplate && window.applyEmailTemplate(); }
+  function updateEmailPreview() { window.updateEmailPreview && window.updateEmailPreview(); }
+  function sendAdminEmail() { window.sendAdminEmail && window.sendAdminEmail(); }
+  function mobileNavTo(s) { window.mobileNavTo && window.mobileNavTo(s); }
+  function toggleMobileSidebar() { window.toggleMobileSidebar && window.toggleMobileSidebar(); }
+  function saveAssignmentTemplate() { window.saveAssignmentTemplate && window.saveAssignmentTemplate(); }
+  function applyTemplate(id) { window.applyTemplate && window.applyTemplate(id); }
+  function deleteTemplate(id) { window.deleteTemplate && window.deleteTemplate(id); }
+  function printStudentReport(uid) { window.printStudentReport && window.printStudentReport(uid); }
   function toggleReminders(v) { window.toggleReminders && window.toggleReminders(v); }
   function setAudience(a) { window.setAudience && window.setAudience(a); }
   function applyEmailTemplate() { window.applyEmailTemplate && window.applyEmailTemplate(); }
@@ -5360,6 +5751,43 @@
     More
   </button>
 </div>
+<!-- New Assignment Template Modal -->
+<div class="modal-overlay" id="modal-new-template">
+  <div class="modal" style="max-width:520px">
+    <h3>New Assignment Template</h3>
+    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">Save a reusable assignment you can apply to any student in one click.</p>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Template Name</div><input class="input-field" type="text" id="tpl-name" placeholder="e.g. Khan Academy — Algebra Module" /></div>
+    </div>
+    <div class="form-row" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Type</div>
+        <select class="input-field" id="tpl-type">
+          <option value="practice">Practice Test</option>
+          <option value="worksheet">Worksheet</option>
+          <option value="reading">Reading</option>
+          <option value="review">Review</option>
+          <option value="khan">Khan Academy</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div><div class="field-label">Default Due Days Out (optional)</div><input class="input-field" type="number" id="tpl-days" placeholder="e.g. 7" min="1" max="60" /></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Default Instructions</div><textarea class="input-field" id="tpl-desc" placeholder="What should the student do?" style="min-height:80px;resize:vertical"></textarea></div>
+    </div>
+    <div class="form-row full" style="margin-bottom:0.8rem">
+      <div><div class="field-label">Default Link (optional)</div><input class="input-field" type="url" id="tpl-link" placeholder="https://..." /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-new-template')">Cancel</button>
+      <button class="btn-red" id="save-template-btn" onclick="saveAssignmentTemplate()">Save Template</button>
+    </div>
+    <div class="form-msg" id="tpl-msg"></div>
+  </div>
+</div>
+
+<!-- Print Report Modal (hidden, used for printing only) -->
+<div id="print-report-container" style="display:none"></div>
 
 </body>
 </html>
