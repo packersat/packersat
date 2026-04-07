@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   // Allowlist of verified Brevo sender addresses
   const ALLOWED_SENDERS = {
     'noreply@packersat.org': 'Packer SAT Tutoring',
-    'jack@packersat.org':    'Jack — Packer SAT Tutoring',
+    'jack@packersat.org':    'Jack Rose',
   };
 
   const senderEmail = (from_email && ALLOWED_SENDERS[from_email])
