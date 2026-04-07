@@ -12,11 +12,23 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { to_email, to_name, subject, html_content } = req.body;
+  const { to_email, to_name, subject, html_content, from_email, from_name } = req.body;
 
   if (!to_email || !subject || !html_content) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
+
+  // Allowlist of verified Brevo sender addresses
+  const ALLOWED_SENDERS = {
+    'noreply@packersat.org': 'Packer SAT Tutoring',
+    'jack@packersat.org':    'Jack — Packer SAT Tutoring',
+  };
+
+  const senderEmail = (from_email && ALLOWED_SENDERS[from_email])
+    ? from_email
+    : 'noreply@packersat.org';
+
+  const senderName = from_name || ALLOWED_SENDERS[senderEmail];
 
   try {
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -27,7 +39,7 @@ export default async function handler(req, res) {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'Packer SAT Tutoring', email: 'noreply@packersat.org' },
+        sender: { name: senderName, email: senderEmail },
         to: [{ email: to_email, name: to_name || to_email }],
         subject,
         htmlContent: html_content,
