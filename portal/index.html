@@ -1183,6 +1183,14 @@
                 <input class="input-field" type="text" id="email-btn-url" placeholder="https://www.packersat.org/portal" oninput="updateEmailPreview()" />
               </div>
 
+              <div style="margin-bottom:0.9rem">
+                <div class="field-label">Send from</div>
+                <select class="input-field" id="email-from">
+                  <option value="noreply@packersat.org">noreply@packersat.org — Packer SAT Tutoring</option>
+                  <option value="jack@packersat.org">jack@packersat.org — Jack, Packer SAT Tutoring</option>
+                </select>
+              </div>
+
               <button class="btn-red" id="send-email-btn" onclick="sendAdminEmail()">Send Email</button>
               <div class="form-msg" id="admin-email-msg" style="margin-top:0.6rem"></div>
             </div>
@@ -3815,13 +3823,14 @@ Good luck!`,
   }
 
   window.sendAdminEmail = async function() {
-    const subject  = document.getElementById('email-subject').value.trim();
-    const body     = document.getElementById('email-body').value.trim();
-    const btnLabel = document.getElementById('email-btn-label').value.trim();
-    const btnUrl   = document.getElementById('email-btn-url').value.trim();
-    const recipVal = document.getElementById('email-recipient').value;
-    const msg      = document.getElementById('admin-email-msg');
-    const btn      = document.getElementById('send-email-btn');
+    const subject   = document.getElementById('email-subject').value.trim();
+    const body      = document.getElementById('email-body').value.trim();
+    const btnLabel  = document.getElementById('email-btn-label').value.trim();
+    const btnUrl    = document.getElementById('email-btn-url').value.trim();
+    const recipVal  = document.getElementById('email-recipient').value;
+    const fromEmail = document.getElementById('email-from')?.value || 'noreply@packersat.org';
+    const msg       = document.getElementById('admin-email-msg');
+    const btn       = document.getElementById('send-email-btn');
     if (!subject) { showMsg(msg, 'Please enter a subject.', 'error'); return; }
     if (!body)    { showMsg(msg, 'Please enter a message body.', 'error'); return; }
     let recipients = [];
@@ -3843,7 +3852,7 @@ Good luck!`,
       const personalBody = body.replace(/\[Name\]/g, u.name || u.email);
       const html = buildEmailHTML(u.name || u.email, subject, personalBody, btnLabel, btnUrl);
       try {
-        await sendBrevoEmail({ to_email: u.email, to_name: u.name || u.email, subject, html_content: html });
+        await sendBrevoEmail({ to_email: u.email, to_name: u.name || u.email, subject, html_content: html, from_email: fromEmail });
         sent++;
       } catch(e) { failed++; console.error('Failed to send to', u.email, e); }
     }
@@ -5420,11 +5429,11 @@ Good luck!`,
   // BREVO EMAIL
   // ─────────────────────────────────────────
 
-  async function sendBrevoEmail({ to_email, to_name, subject, html_content }) {
+  async function sendBrevoEmail({ to_email, to_name, subject, html_content, from_email, from_name }) {
     const res = await fetch('https://packersat.vercel.app/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to_email, to_name, subject, html_content })
+      body: JSON.stringify({ to_email, to_name, subject, html_content, from_email, from_name })
     });
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
