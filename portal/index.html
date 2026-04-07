@@ -1137,9 +1137,12 @@
                 <select class="input-field" id="email-template" onchange="applyEmailTemplate()">
                   <optgroup label="— Student Templates —">
                     <option value="custom">Custom — blank</option>
+                    <option value="welcome_student">Welcome to the Program</option>
+                    <option value="your_tutor_is">Your Tutor Is...</option>
                     <option value="session_reminder">Session Reminder</option>
                     <option value="homework_reminder">Homework Reminder</option>
                     <option value="score_update">Score Update / Encouragement</option>
+                    <option value="test_day_prep">Test Day Checklist</option>
                     <option value="general_student">General Announcement (Student)</option>
                   </optgroup>
                   <optgroup label="— Tutor Templates —">
@@ -3547,6 +3550,94 @@
 
   const EMAIL_TEMPLATES = {
     custom: { subject: '', body: '', btnLabel: '', btnUrl: '', audience: 'students' },
+
+    welcome_student: {
+      audience: 'students',
+      subject: 'Welcome to Packer SAT Tutoring',
+      body: `Hi [Name],
+
+Welcome to the Packer SAT Tutoring Program. We're glad you're here.
+
+You've been signed up and your account is ready. Here's what you can do in the portal:
+
+My Scores — Log your SAT practice and official scores here. Your tutor uses these to track your progress and adjust what you work on.
+
+My Sessions — See all your upcoming and past tutoring sessions. You can also request a new session from this page if you need to schedule one outside your regular time.
+
+Assignments — Your tutor will assign specific practice here after each session. Complete it before you meet next and mark it done when you're finished.
+
+Tutor Notes — After each session, your tutor writes notes on what you covered and what to focus on. Read these to review between sessions.
+
+Achievements — As you progress, you'll earn badges for milestones like completing sessions and improving your score.
+
+Prep Resources — Khan Academy, Bluebook, and other free tools your tutor may point you to during sessions.
+
+Messages — Use this to send a direct message to the admin if you have questions or need anything.
+
+Your first session details will come in a separate email. In the meantime, log in and take a look around.
+
+See you soon!`,
+      btnLabel: 'Log In to the Portal',
+      btnUrl: 'https://www.packersat.org/portal'
+    },
+
+    your_tutor_is: {
+      audience: 'students',
+      subject: 'Meet your Packer SAT tutor',
+      body: `Hi [Name],
+
+We've matched you with your tutor for the Packer SAT Tutoring Program.
+
+Your tutor is: [Tutor Name]
+
+They'll be reaching out soon to schedule your first session. In the meantime, you can log in to the portal to check your upcoming sessions once they've been scheduled.
+
+A few things to know before your first session:
+
+Come prepared with any recent practice test results or problem areas you want to focus on. Your tutor will use your first session to understand where you are and what to work on.
+
+Sessions are typically 45 to 60 minutes, one to two times per week.
+
+After each session, your tutor will assign specific practice. Completing it before the next session is important — the program works best when both sides show up prepared.
+
+If you ever need to reschedule or have questions, you can message the admin directly through the portal.
+
+Looking forward to seeing your progress!`,
+      btnLabel: 'Log In to the Portal',
+      btnUrl: 'https://www.packersat.org/portal'
+    },
+
+    test_day_prep: {
+      audience: 'students',
+      subject: 'Getting ready for test day',
+      body: `Hi [Name],
+
+Your SAT is coming up soon. Here's a quick checklist to make sure you're ready.
+
+The night before:
+- Lay out your photo ID and your Bluebook admission ticket
+- Pack pencils (for scratch work), a calculator with fresh batteries, and a snack
+- Set an alarm and get a full night of sleep — this matters more than last-minute cramming
+
+The morning of:
+- Eat a real breakfast
+- Arrive at the testing center at least 15 minutes early
+- Keep your phone off and put away from the moment you enter the building
+
+During the test:
+- Manage your time section by section — don't get stuck on one question
+- Use the process of elimination on anything you're unsure about
+- Flag and move on if you're stuck; come back at the end if you have time
+- Stay calm. You've put in the work. Trust it.
+
+After the test:
+- Your scores will be available in your Bluebook account within a few weeks
+- Log them in your portal so your tutor can see your results
+
+Good luck!`,
+      btnLabel: 'Log In to the Portal',
+      btnUrl: 'https://www.packersat.org/portal'
+    },
     session_reminder: {
       audience: 'students',
       subject: 'Reminder: Upcoming SAT tutoring session',
