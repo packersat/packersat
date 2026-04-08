@@ -176,7 +176,6 @@ export default async function handler(req, res) {
         <p style="margin:0 0 8px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi <strong>${tutorName}</strong>,</p>
         <p style="margin:0 0 24px;color:#FAFAF8;font-size:15px;line-height:1.7">
           You have <strong>${count} past session${count > 1 ? 's' : ''}</strong> that ${count > 1 ? 'have' : 'has'} not been logged yet.
-          You will receive this reminder each night until ${count > 1 ? 'they are' : 'it is'} logged.
         </p>
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px">
           <thead>
