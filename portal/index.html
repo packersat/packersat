@@ -1187,7 +1187,7 @@
                 <div class="field-label">Send from</div>
                 <select class="input-field" id="email-from">
                   <option value="noreply@packersat.org">noreply@packersat.org — Packer SAT Tutoring</option>
-                  <option value="jack@packersat.org">jack@packersat.org — Jack, Packer SAT Tutoring</option>
+                  <option value="jack@packersat.org">jack@packersat.org — Jack Rose</option>
                 </select>
               </div>
 
@@ -4058,22 +4058,111 @@ Good luck!`,
     const scores   = scoreSnap.docs.map(d=>d.data()).sort((a,b)=>a.date.localeCompare(b.date));
     const sessions = sessSnap.docs.filter(d=>(d.data().studentIds||[]).includes(studentId));
     const assigns  = assignSnap.docs.map(d=>d.data());
-    const logs     = logSnap.docs.map(d=>d.data()).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+    const logs     = logSnap.docs.map(d=>d.data()).sort((a,b)=>b.date.localeCompare(a.date));
     const today    = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
     const doneCount = assigns.filter(a=>a.completed).length;
-    const firstScore = scores.length ? (scores[0].math||0)+(scores[0].reading||0) : null;
-    const lastScore  = scores.length ? (scores[scores.length-1].math||0)+(scores[scores.length-1].reading||0) : null;
-    const improvement = (firstScore && lastScore && scores.length>1) ? lastScore - firstScore : null;
 
-    const scoresRows = scores.map(s=>
-      '<tr><td>'+formatDate(s.date)+'</td><td>'+(s.math||'—')+'</td><td>'+(s.reading||'—')+'</td><td style="font-weight:600">'+(((s.math||0)+(s.reading||0))||'—')+'</td></tr>'
+    // Score analysis
+    const firstScore  = scores.length ? scores[0] : null;
+    const lastScore   = scores.length ? scores[scores.length-1] : null;
+    const firstTotal  = firstScore  ? ((firstScore.math||0)+(firstScore.rw||0))  : null;
+    const lastTotal   = lastScore   ? ((lastScore.math||0)+(lastScore.rw||0))    : null;
+    const improvement = (firstTotal && lastTotal && scores.length > 1) ? lastTotal - firstTotal : null;
+    const bestMath    = scores.length ? Math.max(...scores.map(s=>s.math||0))  : null;
+    const bestRW      = scores.length ? Math.max(...scores.map(s=>s.rw||0))    : null;
+
+    // Math vs RW trend — which improved more
+    const mathDelta = (firstScore && lastScore) ? (lastScore.math||0) - (firstScore.math||0) : null;
+    const rwDelta   = (firstScore && lastScore) ? (lastScore.rw||0)   - (firstScore.rw||0)   : null;
+
+    // Session log analysis — subjects and struggles
+    const subjectFreq  = {};
+    const struggleFreq = {};
+    const STOPWORDS = new Set(['the','and','but','for','with','that','this','they','have','from',
+      'their','also','when','were','been','more','some','into','than','then','very','just','about',
+      'which','would','could','should','there','where','after','before','because','student','students',
+      'during','often','still','seems','seemed','needs','need','understanding','understand','working',
+      'practice','having','getting','issues','issue','area','areas','help','helps','difficulty',
+      'difficult','struggled','struggling','problem','problems','trouble','tends','tend']);
+
+    logs.forEach(l => {
+      (l.subjects||[]).forEach(s => {
+        const k = s.trim();
+        if (k) subjectFreq[k] = (subjectFreq[k]||0) + 1;
+      });
+      if (l.struggles) {
+        const words = l.struggles.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/)
+          .filter(w => w.length > 3 && !STOPWORDS.has(w));
+        for (let i = 0; i < words.length - 1; i++) {
+          const phrase = words[i] + ' ' + words[i+1];
+          if (words[i].length >= 3 && words[i+1].length >= 3 && !/\d/.test(phrase)) {
+            struggleFreq[phrase] = (struggleFreq[phrase]||0) + 1;
+          }
+        }
+        words.filter(w=>w.length>=7).forEach(w=>{
+          struggleFreq[w] = (struggleFreq[w]||0) + 0.5;
+        });
+      }
+    });
+
+    const topSubjects  = Object.entries(subjectFreq).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const topStruggles = Object.entries(struggleFreq).filter(([,n])=>n>=1).sort((a,b)=>b[1]-a[1]).slice(0,6);
+
+    // Build score history table rows
+    const scoresRows = scores.map((s,i) => {
+      const total = (s.math||0)+(s.rw||0);
+      const prev  = i > 0 ? (scores[i-1].math||0)+(scores[i-1].rw||0) : null;
+      const delta = (prev !== null && total && prev) ? total - prev : null;
+      const deltaStr = delta !== null ? (delta > 0 ? '<span style="color:#1a6e3a">+'+delta+'</span>' : delta < 0 ? '<span style="color:#b81c2a">'+delta+'</span>' : '<span style="color:#999">—</span>') : '';
+      return '<tr>' +
+        '<td>'+formatDate(s.date)+'</td>' +
+        '<td style="text-align:center">'+(s.math||'—')+'</td>' +
+        '<td style="text-align:center">'+(s.rw||'—')+'</td>' +
+        '<td style="text-align:center;font-weight:600">'+(total||'—')+'</td>' +
+        '<td style="text-align:center">'+deltaStr+'</td>' +
+        (s.notes ? '<td style="color:#666;font-size:11px">'+s.notes+'</td>' : '<td style="color:#ccc">—</td>') +
+      '</tr>';
+    }).join('');
+
+    // Build session log rows (last 8)
+    const logsRows = logs.slice(0,8).map(l =>
+      '<tr>' +
+        '<td>'+formatDate(l.date)+'</td>' +
+        '<td>'+(l.subjects?.join(', ')||'—')+'</td>' +
+        '<td>'+(l.struggles||'—')+'</td>' +
+        '<td>'+(l.goals||'—')+'</td>' +
+      '</tr>'
     ).join('');
 
-    const logsRows = logs.map(l=>
-      '<tr><td>'+formatDate(l.date)+'</td><td>'+(l.subjects?.join(', ')||'—')+'</td><td>'+(l.struggles||'—')+'</td></tr>'
-    ).join('');
+    // Strengths = subjects that appear most frequently
+    const strengthsHTML = topSubjects.length
+      ? topSubjects.map(([s,n]) =>
+          '<span style="display:inline-block;background:#eef7ee;border:1px solid #9ecf9e;color:#1a5c1a;font-size:11px;padding:3px 10px;border-radius:3px;margin:2px">' +
+          s + (n > 1 ? ' ('+n+'×)' : '') + '</span>'
+        ).join(' ')
+      : '<span style="color:#aaa">Not enough data yet</span>';
 
-    const reportHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Progress Report</title>' +
+    const weaknessesHTML = topStruggles.length
+      ? topStruggles.map(([s]) => {
+          const display = s.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+          return '<span style="display:inline-block;background:#fdf0f0;border:1px solid #e8a8a8;color:#8b1520;font-size:11px;padding:3px 10px;border-radius:3px;margin:2px">'+display+'</span>';
+        }).join(' ')
+      : '<span style="color:#aaa">Not enough data yet</span>';
+
+    // Math vs RW comparison note
+    let sectionNote = '';
+    if (mathDelta !== null && rwDelta !== null && scores.length > 1) {
+      if (Math.abs(mathDelta) > 5 || Math.abs(rwDelta) > 5) {
+        const stronger = mathDelta >= rwDelta ? 'Math' : 'Reading & Writing';
+        const weaker   = mathDelta >= rwDelta ? 'Reading & Writing' : 'Math';
+        const strongDelta = Math.max(mathDelta, rwDelta);
+        const weakDelta   = Math.min(mathDelta, rwDelta);
+        sectionNote = stronger + ' has improved more (+' + strongDelta + ' pts). ' +
+          weaker + (weakDelta >= 0 ? ' also improved (+'+weakDelta+' pts).' : ' needs attention ('+weakDelta+' pts).');
+      }
+    }
+
+    const reportHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Progress Report — '+(student.name||student.email)+'</title>' +
       '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">' +
       '<style>' +
       '*{margin:0;padding:0;box-sizing:border-box}' +
@@ -4082,32 +4171,59 @@ Good luck!`,
       '.logo{font-family:"Playfair Display",serif;font-size:22px}.logo span{color:#C0182B}' +
       '.meta{text-align:right;font-size:11px;color:#666;line-height:1.8}' +
       'h2{font-family:"Playfair Display",serif;font-size:15px;color:#1a0508;margin:24px 0 10px;border-bottom:1px solid #eee;padding-bottom:5px}' +
-      '.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:8px}' +
-      '.stat{border:1px solid #eee;border-radius:4px;padding:12px 8px;text-align:center}' +
-      '.stat .n{font-family:"Playfair Display",serif;font-size:26px;color:#C0182B;line-height:1}' +
+      '.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:8px}' +
+      '.stat{border:1px solid #eee;border-radius:4px;padding:10px 8px;text-align:center}' +
+      '.stat .n{font-family:"Playfair Display",serif;font-size:22px;color:#C0182B;line-height:1}' +
       '.stat .l{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#999;margin-top:4px}' +
       'table{width:100%;border-collapse:collapse;margin-bottom:16px}' +
       'th{background:#f9f3f3;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:7px 10px;color:#888}' +
-      'td{padding:7px 10px;border-bottom:1px solid #f5eeee;font-size:12px;color:#444}' +
-      '.footer{margin-top:40px;border-top:1px solid #eee;padding-top:12px;font-size:10px;color:#aaa;display:flex;justify-content:space-between}' +
+      'th.c,td.c{text-align:center}' +
+      'td{padding:7px 10px;border-bottom:1px solid #f5eeee;font-size:12px;color:#444;vertical-align:top}' +
+      '.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:8px}' +
+      '.insight-box{border:1px solid #eee;border-radius:4px;padding:12px}' +
+      '.insight-box h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:8px}' +
+      '.note-box{background:#fdf8f0;border:1px solid #e8d8a8;border-radius:4px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#5a3e00;line-height:1.6}' +
+      '.footer{margin-top:32px;border-top:1px solid #eee;padding-top:12px;font-size:10px;color:#aaa;display:flex;justify-content:space-between}' +
       '@media print{body{padding:0}}' +
       '</style></head><body>' +
+
       '<div class="hdr">' +
         '<div><div class="logo">Packer <span>SAT</span> Prep</div><div style="font-size:12px;color:#999;margin-top:4px">Student Progress Report</div></div>' +
-        '<div class="meta"><strong>' + (student.name||student.email) + '</strong><br>Tutor: ' + (CU.name||'') + '<br>Generated: ' + today + '</div>' +
+        '<div class="meta"><strong>'+(student.name||student.email)+'</strong><br>Tutor: '+(CU.name||'')+'<br>Generated: '+today+'</div>' +
       '</div>' +
+
       '<div class="stats">' +
-        '<div class="stat"><div class="n">' + sessions.length + '</div><div class="l">Sessions</div></div>' +
-        '<div class="stat"><div class="n">' + doneCount + '</div><div class="l">Assignments Done</div></div>' +
-        '<div class="stat"><div class="n">' + (lastScore||'—') + '</div><div class="l">Latest Score</div></div>' +
-        '<div class="stat"><div class="n" style="color:' + (improvement>0?'#1a6e3a':improvement<0?'#C0182B':'#999') + '">' + (improvement!=null?(improvement>0?'+':'')+improvement:'—') + '</div><div class="l">Improvement</div></div>' +
+        '<div class="stat"><div class="n">'+(lastScore?.math||'—')+'</div><div class="l">Latest Math</div></div>' +
+        '<div class="stat"><div class="n">'+(lastScore?.rw||'—')+'</div><div class="l">Latest R&amp;W</div></div>' +
+        '<div class="stat"><div class="n">'+(lastTotal||'—')+'</div><div class="l">Latest Total</div></div>' +
+        '<div class="stat"><div class="n" style="color:'+(improvement>0?'#1a6e3a':improvement<0?'#C0182B':'#999')+'">'+(improvement!=null?(improvement>0?'+':'')+improvement:'—')+'</div><div class="l">Total Change</div></div>' +
+        '<div class="stat"><div class="n">'+(sessions.length)+'</div><div class="l">Sessions</div></div>' +
       '</div>' +
-      (scores.length ? '<h2>Score History</h2><table><thead><tr><th>Date</th><th>Math</th><th>Reading &amp; Writing</th><th>Total</th></tr></thead><tbody>' + scoresRows + '</tbody></table>' : '') +
-      (logs.length ? '<h2>Recent Session Notes</h2><table><thead><tr><th>Date</th><th>Topics Covered</th><th>Areas of Focus</th></tr></thead><tbody>' + logsRows + '</tbody></table>' : '') +
-      '<div class="footer"><span>Packer SAT Tutoring &middot; The Packer Collegiate Institute &middot; Brooklyn, NY</span><span>Confidential &middot; For student and family use only</span></div>' +
+
+      (sectionNote ? '<div class="note-box">&#128200; '+sectionNote+'</div>' : '') +
+
+      '<div class="two-col">' +
+        '<div class="insight-box"><h3>Topics Most Practiced</h3>'+strengthsHTML+'</div>' +
+        '<div class="insight-box"><h3>Areas Needing Work</h3>'+weaknessesHTML+'</div>' +
+      '</div>' +
+
+      (scores.length ? '<h2>Full Score History</h2>' +
+        '<table><thead><tr>' +
+          '<th>Date</th><th class="c">Math</th><th class="c">R&amp;W</th><th class="c">Total</th><th class="c">Change</th><th>Notes</th>' +
+        '</tr></thead><tbody>'+scoresRows+'</tbody></table>' : '') +
+
+      (logs.length ? '<h2>Session Log History</h2>' +
+        '<table><thead><tr>' +
+          '<th>Date</th><th>Topics Covered</th><th>Struggles / Focus Areas</th><th>Goals</th>' +
+        '</tr></thead><tbody>'+logsRows+'</tbody></table>' : '') +
+
+      '<div class="footer">' +
+        '<span>Packer SAT Tutoring &middot; The Packer Collegiate Institute &middot; Brooklyn, NY</span>' +
+        '<span>Confidential &middot; For student and family use only</span>' +
+      '</div>' +
       '</body></html>';
 
-    const win = window.open('','_blank','width=860,height=1100');
+    const win = window.open('','_blank','width=900,height=1200');
     if (!win) { alert('Please allow pop-ups to print reports.'); return; }
     win.document.write(reportHTML);
     win.document.close();
