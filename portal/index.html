@@ -3890,22 +3890,20 @@ Good luck!`,
 
       btn.textContent = 'Writing…';
 
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      const resp = await fetch('https://packersat.vercel.app/api/generate-newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          system: `You write concise, warm newsletter emails for a free student-run SAT tutoring program at The Packer Collegiate Institute in Brooklyn, NY. Tutors are high-scoring Packer upperclassmen. Newsletters go to both students and parents. Tone: friendly, encouraging, professional. Write in plain text, no markdown. Use line breaks between paragraphs. Do not use em dashes. Keep it 3 short paragraphs. Do not write a greeting or sign-off — those are added automatically. Do not invent specific student or tutor names. Return only the body text.`,
-          messages: [{
-            role: 'user',
-            content: 'Write a newsletter body based on this real program data from the last 30 days:\n\n' + contextLines + '\n\nHighlight what has been happening, celebrate progress where the data supports it, and end with an encouraging note. Be specific to the data — no vague filler.'
-          }]
-        })
+        body: JSON.stringify({ context: contextLines })
       });
 
+      if (!resp.ok) {
+        const errData = await resp.json().catch(()=>({}));
+        console.error('Newsletter generation error:', errData);
+        throw new Error('Server error: ' + JSON.stringify(errData));
+      }
+
       const data = await resp.json();
-      const generated = data?.content?.[0]?.text?.trim();
+      const generated = data?.text?.trim();
       if (!generated) throw new Error('No content returned');
 
       body.value = 'Hi [Name],\n\n' + generated + '\n\nIf you have any questions, feel free to reach out through the portal or reply to this email.\n\nThank you for being part of the program!';
