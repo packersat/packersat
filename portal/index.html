@@ -4699,45 +4699,246 @@ Good luck!`,
       });
     });
 
-    // ── Common Struggles: extract meaningful phrases from struggle text ──
-    // Split on sentence boundaries, filter to only substantive phrases
+    // ── Common Struggles: match against known SAT topic keywords ──
+    // Free-text NLP is unreliable — tutors write full sentences so phrase extraction
+    // produces fragments ("Learned How", "How Solve"). Instead, scan each struggles
+    // field for known SAT topic terms and count those directly.
     const strugglePhrases = {};
-    const STOPWORDS = new Set(['the','and','but','for','with','that','this','they','have',
-      'from','their','also','when','were','been','more','some','into','than','then',
-      'very','just','about','which','would','could','should','there','where','after',
-      'before','because','student','students','during','often','still','seems','seemed',
-      'needs','need','understanding','understand','working','practice','practices',
-      'having','getting','issues','issue','area','areas','help','helps','difficulty',
-      'difficult','struggled','struggling','problem','problems','trouble','tends','tend']);
+
+    const SAT_TOPICS = [
+      // ── ALGEBRA ──────────────────────────────────────────────────────
+      'linear equation', 'linear equations', 'solving equations', 'equation solving',
+      'one step equation', 'two step equation', 'multi step equation',
+      'systems of equations', 'system of equations', 'elimination method',
+      'substitution method', 'linear systems', 'number of solutions',
+      'linear inequality', 'linear inequalities', 'compound inequality',
+      'graphing inequalities', 'solution set',
+      'quadratic', 'quadratics', 'quadratic equation', 'quadratic formula',
+      'completing the square', 'vertex form', 'standard form', 'factored form',
+      'factoring', 'factor', 'greatest common factor', 'gcf',
+      'difference of squares', 'perfect square trinomial', 'foil',
+      'polynomial', 'polynomials', 'polynomial addition', 'polynomial multiplication',
+      'dividing polynomials', 'polynomial division', 'remainder theorem',
+      'exponents', 'exponent rules', 'negative exponents', 'fractional exponents',
+      'zero exponent', 'product rule', 'quotient rule', 'power rule',
+      'radicals', 'square roots', 'cube roots', 'simplifying radicals',
+      'rationalizing', 'rational expressions', 'rational equations',
+      'absolute value', 'absolute value equations', 'absolute value inequalities',
+      'functions', 'function notation', 'domain', 'range', 'input', 'output',
+      'linear function', 'function composition', 'inverse function',
+      'slope', 'slope intercept', 'slope intercept form', 'point slope form',
+      'rate of change', 'rise over run', 'undefined slope', 'zero slope',
+      'parallel lines', 'perpendicular lines', 'intersecting lines',
+      'x intercept', 'y intercept', 'intercepts', 'graphing lines',
+      'word problems', 'translating words', 'setting up equations',
+      'distance rate time', 'mixture problems', 'work problems',
+      'age problems', 'coin problems', 'consecutive integers',
+      'ratios', 'ratio', 'proportions', 'proportion', 'cross multiply',
+      'percentages', 'percent', 'percent change', 'percent increase', 'percent decrease',
+      'markup', 'discount', 'sales tax', 'commission', 'tip',
+      'rates', 'unit rates', 'unit conversion', 'dimensional analysis',
+      'number line', 'ordering numbers', 'absolute value on number line',
+      'inequalities on number line', 'interval notation',
+      'variables', 'constants', 'coefficients', 'terms', 'like terms',
+      'combining like terms', 'distributive property', 'simplifying expressions',
+      'evaluating expressions', 'substitution',
+
+      // ── ADVANCED MATH ────────────────────────────────────────────────
+      'trigonometry', 'trig', 'sine', 'cosine', 'tangent',
+      'trig ratios', 'trig identities', 'sohcahtoa',
+      'unit circle', 'radians', 'degrees', 'arc length',
+      'pythagorean theorem', 'pythagorean', 'special right triangles',
+      '30 60 90', '45 45 90', 'right triangle',
+      'geometry', 'geometric', 'coordinate geometry', 'analytic geometry',
+      'angles', 'angle', 'supplementary angles', 'complementary angles',
+      'vertical angles', 'corresponding angles', 'alternate interior angles',
+      'transversals', 'parallel lines cut by transversal',
+      'triangles', 'triangle', 'triangle congruence', 'triangle similarity',
+      'similar triangles', 'congruent triangles', 'triangle inequality',
+      'equilateral triangle', 'isosceles triangle', 'scalene triangle',
+      'interior angles', 'exterior angles', 'sum of angles',
+      'circles', 'circle', 'radius', 'diameter', 'circumference',
+      'arc', 'sector', 'central angle', 'inscribed angle', 'chord',
+      'tangent line', 'secant', 'pi',
+      'area', 'perimeter', 'surface area', 'volume',
+      'rectangle', 'square', 'triangle area', 'circle area',
+      'trapezoid', 'parallelogram', 'polygon', 'regular polygon',
+      'cylinder', 'cone', 'sphere', 'prism', 'pyramid',
+      'coordinate plane', 'ordered pairs', 'quadrants', 'plotting points',
+      'midpoint', 'midpoint formula', 'distance formula',
+      'parabola', 'vertex', 'axis of symmetry', 'focus', 'directrix',
+      'circle equation', 'ellipse', 'hyperbola', 'conic sections',
+      'complex numbers', 'imaginary numbers', 'real part', 'imaginary part',
+      'absolute value of complex', 'complex arithmetic',
+      'logarithms', 'log', 'natural log', 'ln', 'log rules',
+      'exponential functions', 'exponential growth', 'exponential decay',
+      'exponential equations', 'half life',
+      'sequences', 'arithmetic sequence', 'geometric sequence',
+      'arithmetic series', 'geometric series', 'sigma notation',
+      'matrices', 'matrix', 'matrix multiplication', 'determinant',
+      'systems with matrices',
+
+      // ── STATISTICS & DATA ────────────────────────────────────────────
+      'statistics', 'statistical', 'data', 'data analysis',
+      'mean', 'median', 'mode', 'range', 'average',
+      'weighted average', 'weighted mean',
+      'standard deviation', 'variance', 'spread',
+      'outliers', 'outlier', 'skewed', 'distribution',
+      'normal distribution', 'bell curve',
+      'percentile', 'quartile', 'interquartile range', 'iqr',
+      'box plot', 'box and whisker', 'histogram', 'bar graph', 'bar chart',
+      'scatter plot', 'scatter plots', 'line of best fit', 'trend line',
+      'correlation', 'positive correlation', 'negative correlation',
+      'no correlation', 'causation', 'association',
+      'two way table', 'frequency table', 'relative frequency',
+      'conditional probability', 'probability',
+      'sample space', 'event', 'independent events', 'dependent events',
+      'counting', 'permutations', 'combinations', 'factorial',
+      'surveys', 'sampling', 'bias', 'margin of error', 'confidence interval',
+      'experimental design', 'control group', 'random sample',
+      'linear model', 'quadratic model', 'regression',
+
+      // ── NUMBER CONCEPTS ──────────────────────────────────────────────
+      'integers', 'whole numbers', 'natural numbers', 'real numbers',
+      'rational numbers', 'irrational numbers', 'number types',
+      'prime numbers', 'composite numbers', 'prime factorization',
+      'factors', 'multiples', 'divisibility', 'divisibility rules',
+      'lcm', 'least common multiple', 'greatest common divisor',
+      'fractions', 'fraction', 'adding fractions', 'subtracting fractions',
+      'multiplying fractions', 'dividing fractions', 'mixed numbers',
+      'improper fractions', 'simplifying fractions', 'equivalent fractions',
+      'decimals', 'decimal', 'converting fractions to decimals',
+      'rounding', 'estimation', 'significant figures',
+      'order of operations', 'pemdas', 'bedmas',
+      'number properties', 'commutative', 'associative', 'distributive',
+      'identity property', 'inverse property',
+      'scientific notation', 'powers of ten',
+
+      // ── READING COMPREHENSION ────────────────────────────────────────
+      'reading comprehension', 'reading', 'comprehension',
+      'main idea', 'central idea', 'main point', 'thesis',
+      'supporting details', 'details', 'detail questions',
+      'inference', 'inferences', 'inferring', 'implied meaning',
+      'drawing conclusions', 'conclusions',
+      'evidence', 'textual evidence', 'citing evidence', 'supporting evidence',
+      'claims', 'claim', 'counterclaim', 'argument',
+      'author purpose', 'author intent', 'author tone', 'authors purpose',
+      'perspective', 'point of view', 'bias', 'objectivity',
+      'tone', 'mood', 'attitude', 'diction',
+      'figurative language', 'metaphor', 'simile', 'analogy',
+      'alliteration', 'imagery', 'symbolism',
+      'rhetoric', 'rhetorical devices', 'rhetorical strategy',
+      'ethos', 'pathos', 'logos', 'persuasion',
+      'structure', 'text structure', 'organizational pattern',
+      'cause and effect', 'compare and contrast', 'problem solution',
+      'chronological order', 'sequence of events',
+      'passage type', 'literary', 'informational', 'narrative',
+      'social studies passage', 'science passage', 'history passage',
+      'paired passages', 'dual passages', 'comparing passages',
+      'graphs in passages', 'data in passages', 'charts in passages',
+      'summarizing', 'summary', 'paraphrasing',
+      'finding evidence', 'evidence questions', 'command of evidence',
+      'words in context', 'vocabulary in context', 'word meaning',
+      'connotation', 'denotation',
+
+      // ── GRAMMAR & WRITING ────────────────────────────────────────────
+      'grammar', 'grammar rules',
+      'punctuation', 'punctuation rules',
+      'commas', 'comma', 'comma usage', 'comma splice', 'comma rules',
+      'semicolons', 'semicolon', 'colon', 'colons', 'colon usage',
+      'apostrophes', 'apostrophe', 'apostrophe usage',
+      'quotation marks', 'dashes', 'parentheses', 'hyphens',
+      'end punctuation', 'periods', 'exclamation', 'question marks',
+      'subject verb agreement', 'subject and verb', 'verb agreement',
+      'pronoun agreement', 'pronoun reference', 'pronoun case',
+      'antecedent', 'ambiguous pronoun',
+      'verb tense', 'tense consistency', 'tense shifts', 'past tense',
+      'present tense', 'future tense', 'perfect tense', 'progressive tense',
+      'parallel structure', 'parallelism', 'parallel form',
+      'modifiers', 'misplaced modifiers', 'dangling modifiers',
+      'adjectives', 'adverbs', 'adjective vs adverb',
+      'comparatives', 'superlatives',
+      'sentence structure', 'sentence types',
+      'independent clause', 'dependent clause', 'subordinate clause',
+      'run on sentences', 'run ons', 'fused sentences',
+      'sentence fragments', 'fragments', 'incomplete sentences',
+      'coordination', 'subordination', 'conjunctions',
+      'coordinating conjunctions', 'subordinating conjunctions',
+      'transition words', 'transitions', 'transitional phrases',
+      'logical transitions', 'adding information', 'contrasting',
+      'conciseness', 'wordiness', 'redundancy', 'eliminating wordiness',
+      'precision', 'word choice', 'diction',
+      'sentence combining', 'combining sentences',
+      'adding information', 'inserting sentences', 'deleting sentences',
+      'reordering sentences', 'passage organization',
+      'introductions', 'conclusions', 'topic sentences',
+      'supporting evidence in writing', 'relevance',
+      'style and tone', 'formal tone', 'informal tone', 'consistent tone',
+      'active voice', 'passive voice', 'voice',
+      'idioms', 'idiomatic expression', 'prepositions',
+
+      // ── VOCABULARY ───────────────────────────────────────────────────
+      'vocabulary', 'vocab', 'word meaning', 'word meanings',
+      'context clues', 'using context', 'context clue',
+      'roots', 'prefixes', 'suffixes', 'word roots', 'etymology',
+      'synonyms', 'antonyms', 'nuance', 'connotation',
+      'academic vocabulary', 'tier two words', 'domain vocabulary',
+      'multiple meaning words', 'homonyms', 'homophones',
+
+      // ── TEST STRATEGY ────────────────────────────────────────────────
+      'time management', 'timing', 'pacing', 'running out of time',
+      'time pressure', 'finishing the section', 'section timing',
+      'process of elimination', 'poe', 'eliminating answers',
+      'wrong answers', 'trap answers', 'distractors',
+      'guessing', 'guessing strategy', 'educated guess',
+      'skipping questions', 'flagging questions', 'coming back',
+      'checking work', 'checking answers', 'reviewing answers',
+      'careless errors', 'careless mistakes', 'silly mistakes',
+      'reading carefully', 'misreading', 'misread the question',
+      'question type', 'question types', 'recognizing question type',
+      'hard questions', 'difficult questions', 'question difficulty',
+      'easy questions', 'medium questions',
+      'test anxiety', 'anxiety', 'nerves', 'stress',
+      'focus', 'concentration', 'staying focused', 'losing focus',
+      'fatigue', 'stamina', 'mental endurance',
+      'confidence', 'second guessing', 'overthinking',
+      'partial credit', 'showing work',
+      'using the test booklet', 'scratch work', 'annotating',
+      'plugging in', 'plug in numbers', 'back solving',
+      'picking numbers', 'number picking strategy',
+      'calculator use', 'calculator strategy', 'when to use calculator',
+      'bluebook', 'digital sat', 'testing interface', 'adaptive test',
+      'module 1', 'module 2', 'adaptive difficulty',
+      'test format', 'section order', 'breaks',
+
+      // ── STUDY HABITS ─────────────────────────────────────────────────
+      'practice', 'practice problems', 'homework', 'assignments',
+      'completing assignments', 'not completing work',
+      'review', 'reviewing mistakes', 'error log', 'mistake log',
+      'memorization', 'memorizing formulas', 'formula sheet',
+      'notes', 'note taking', 'organizing notes',
+      'study habits', 'studying', 'preparation',
+      'motivation', 'engagement', 'effort', 'participation',
+      'asking questions', 'showing work', 'explaining reasoning',
+      'speed', 'accuracy', 'accuracy vs speed',
+    ];
+
+    // Build a lookup: normalized phrase -> display label
+    const TOPIC_LOOKUP = {};
+    SAT_TOPICS.forEach(t => { TOPIC_LOOKUP[t.toLowerCase()] = t.split(' ').map(w => w.charAt(0).toUpperCase()+w.slice(1)).join(' '); });
 
     logs.forEach(l => {
       if (!l.struggles) return;
-      const clauses = l.struggles.split(/[.;\n]+/).map(s => s.trim()).filter(s => s.length > 4);
-      clauses.forEach(clause => {
-        const words = clause.toLowerCase()
-          .replace(/[^a-z\s\-]/g, '')
-          .split(/\s+/)
-          .filter(w => w.length > 2 && !STOPWORDS.has(w));
-
-        // 2-word collocations
-        for (let i = 0; i < words.length - 1; i++) {
-          const phrase = words[i] + ' ' + words[i + 1];
-          if (words[i].length < 3 || words[i + 1].length < 3) continue;
-          if (/\d/.test(phrase)) continue;
-          const display = phrase.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      const text = l.struggles.toLowerCase();
+      SAT_TOPICS.forEach(topic => {
+        if (text.includes(topic.toLowerCase())) {
+          const display = TOPIC_LOOKUP[topic.toLowerCase()];
           strugglePhrases[display] = (strugglePhrases[display] || 0) + 1;
         }
-
-        // Single words 5+ chars — catches "slope", "ratio", "verbs", "algebra", etc.
-        words.filter(w => w.length >= 5 && !STOPWORDS.has(w)).forEach(w => {
-          const display = w.charAt(0).toUpperCase() + w.slice(1);
-          if (!strugglePhrases[display]) strugglePhrases[display] = 0;
-          strugglePhrases[display] += 0.6;
-        });
       });
     });
 
-    // Scale threshold with data — show anything with 1+ hit when sparse
+    // Scale threshold with data volume
     const minCount = logs.length <= 5 ? 0.5 : logs.length <= 15 ? 1 : 1.5;
     const subjectEl = document.getElementById('log-subjects-breakdown');
     if (subjectEl) {
