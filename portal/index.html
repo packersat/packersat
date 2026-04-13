@@ -4712,40 +4712,33 @@ Good luck!`,
 
     logs.forEach(l => {
       if (!l.struggles) return;
-      // Split on . ; and newlines to get clauses
-      const clauses = l.struggles.split(/[.;\n]+/).map(s => s.trim()).filter(s => s.length > 8);
+      const clauses = l.struggles.split(/[.;\n]+/).map(s => s.trim()).filter(s => s.length > 4);
       clauses.forEach(clause => {
-        // Look for subject-like noun phrases: 2-5 word chunks that aren't stopwords
-        // Extract 2-3 word meaningful sequences
         const words = clause.toLowerCase()
-          .replace(/[^a-z\s\-\/]/g, '')
+          .replace(/[^a-z\s\-]/g, '')
           .split(/\s+/)
           .filter(w => w.length > 2 && !STOPWORDS.has(w));
 
-        // Use 2-word collocations as the phrase unit
+        // 2-word collocations
         for (let i = 0; i < words.length - 1; i++) {
           const phrase = words[i] + ' ' + words[i + 1];
-          // Skip if either word is too generic
           if (words[i].length < 3 || words[i + 1].length < 3) continue;
-          // Skip phrases with slashes or numbers (artifacts)
-          if (/[\/\d]/.test(phrase)) continue;
+          if (/\d/.test(phrase)) continue;
           const display = phrase.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
           strugglePhrases[display] = (strugglePhrases[display] || 0) + 1;
         }
 
-        // Also capture single meaningful topic words (3+ syllables / 8+ chars)
-        words.filter(w => w.length >= 8 && !STOPWORDS.has(w)).forEach(w => {
+        // Single words 5+ chars — catches "slope", "ratio", "verbs", "algebra", etc.
+        words.filter(w => w.length >= 5 && !STOPWORDS.has(w)).forEach(w => {
           const display = w.charAt(0).toUpperCase() + w.slice(1);
-          // Only count singletons if they appear in multiple logs (avoid noise)
           if (!strugglePhrases[display]) strugglePhrases[display] = 0;
-          strugglePhrases[display] += 0.5; // half weight so pairs rank higher
+          strugglePhrases[display] += 0.6;
         });
       });
     });
 
-    // Filter to only phrases that appear more than once OR are from multiple students
-    const minCount = logs.length <= 3 ? 1 : 1.5;
-
+    // Scale threshold with data — show anything with 1+ hit when sparse
+    const minCount = logs.length <= 5 ? 0.5 : logs.length <= 15 ? 1 : 1.5;
     const subjectEl = document.getElementById('log-subjects-breakdown');
     if (subjectEl) {
       const sorted = Object.entries(subjectCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
