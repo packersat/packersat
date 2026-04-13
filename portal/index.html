@@ -3825,7 +3825,7 @@ Good luck!`,
 
 
   // ── Newsletter AI generation ─────────────────────────────────
-  async function generateNewsletterWithAI() {
+  window.generateNewsletterWithAI = async function() {
     const btn  = document.getElementById('newsletter-gen-btn');
     const body = document.getElementById('email-body');
     if (!btn || !body) return;
@@ -3934,7 +3934,7 @@ Good luck!`,
     const genBtn = document.getElementById('newsletter-gen-btn');
     if (genBtn) {
       genBtn.style.display = key === 'newsletter' ? 'inline-block' : 'none';
-      if (key === 'newsletter') generateNewsletterWithAI();
+      if (key === 'newsletter') window.generateNewsletterWithAI();
     }
     updateEmailPreview();
   };
