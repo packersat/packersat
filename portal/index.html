@@ -4198,187 +4198,302 @@ Good luck!`,
     const student = allUsers[studentId];
     if (!student) return;
 
-    const [scoreSnap, sessSnap, assignSnap, logSnap] = await Promise.all([
+    const [scoreSnap, sessSnap, assignSnap, logSnap, noteSnap] = await Promise.all([
       getDocs(query(collection(db,'scores'), where('studentId','==',studentId))),
       getDocs(collection(db,'sessions')),
       getDocs(query(collection(db,'assignments'), where('studentId','==',studentId))),
-      getDocs(query(collection(db,'sessionLogs'), where('studentId','==',studentId)))
+      getDocs(query(collection(db,'sessionLogs'), where('studentId','==',studentId))),
+      getDocs(query(collection(db,'notes'), where('studentId','==',studentId)))
     ]);
 
     const scores   = scoreSnap.docs.map(d=>d.data()).sort((a,b)=>a.date.localeCompare(b.date));
-    const sessions = sessSnap.docs.filter(d=>(d.data().studentIds||[]).includes(studentId));
+    const sessions = sessSnap.docs.map(d=>d.data()).filter(d=>(d.studentIds||[]).includes(studentId));
     const assigns  = assignSnap.docs.map(d=>d.data());
     const logs     = logSnap.docs.map(d=>d.data()).sort((a,b)=>b.date.localeCompare(a.date));
-    const today    = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-    const doneCount = assigns.filter(a=>a.completed).length;
+    const notes    = noteSnap.docs.map(d=>d.data()).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+    const tutorName = CU.name || 'Tutor';
+    const today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 
-    // Score analysis
-    const firstScore  = scores.length ? scores[0] : null;
-    const lastScore   = scores.length ? scores[scores.length-1] : null;
-    const firstTotal  = firstScore  ? ((firstScore.math||0)+(firstScore.rw||0))  : null;
-    const lastTotal   = lastScore   ? ((lastScore.math||0)+(lastScore.rw||0))    : null;
+    // ── Score analysis ────────────────────────────────────────────
+    const firstScore = scores.length ? scores[0] : null;
+    const lastScore  = scores.length ? scores[scores.length-1] : null;
+    const firstTotal = firstScore ? ((firstScore.math||0)+(firstScore.rw||0)) : null;
+    const lastTotal  = lastScore  ? ((lastScore.math||0)+(lastScore.rw||0))   : null;
     const improvement = (firstTotal && lastTotal && scores.length > 1) ? lastTotal - firstTotal : null;
-    const bestMath    = scores.length ? Math.max(...scores.map(s=>s.math||0))  : null;
-    const bestRW      = scores.length ? Math.max(...scores.map(s=>s.rw||0))    : null;
+    const bestTotal  = scores.length ? Math.max(...scores.map(s=>(s.math||0)+(s.rw||0))) : null;
+    const bestMath   = scores.length ? Math.max(...scores.map(s=>s.math||0)) : null;
+    const bestRW     = scores.length ? Math.max(...scores.map(s=>s.rw||0))   : null;
+    const mathDelta  = (firstScore&&lastScore) ? (lastScore.math||0)-(firstScore.math||0) : null;
+    const rwDelta    = (firstScore&&lastScore) ? (lastScore.rw||0)-(firstScore.rw||0)     : null;
+    const scoreCount = scores.length;
+    const avgTotal   = scores.length ? Math.round(scores.reduce((s,x)=>(s+(x.math||0)+(x.rw||0)),0)/scores.length) : null;
 
-    // Math vs RW trend — which improved more
-    const mathDelta = (firstScore && lastScore) ? (lastScore.math||0) - (firstScore.math||0) : null;
-    const rwDelta   = (firstScore && lastScore) ? (lastScore.rw||0)   - (firstScore.rw||0)   : null;
+    // ── Session analysis ──────────────────────────────────────────
+    const sessCount    = sessions.length;
+    const loggedCount  = logs.length;
+    const upcomingSess = sessions.filter(s=>s.date>=today.slice(0,10)).length;
+    const pastSess     = sessions.filter(s=>s.date<today.slice(0,10)).length;
 
-    // Session log analysis — subjects and struggles
-    const subjectFreq  = {};
+    // Subjects logged
+    const subjectFreq = {};
+    logs.forEach(l=>(l.subjects||[]).forEach(s=>{ const k=s.trim(); if(k) subjectFreq[k]=(subjectFreq[k]||0)+1; }));
+    const topSubjects = Object.entries(subjectFreq).sort((a,b)=>b[1]-a[1]);
+
+    // Struggles — use keyword matching
+    const SAT_TOPICS_REPORT = [
+      'linear equations','systems of equations','quadratic equations','quadratic formula','factoring',
+      'polynomials','exponents','radicals','absolute value','functions','slope','word problems',
+      'ratios','proportions','percentages','trigonometry','geometry','angles','triangles','circles',
+      'area','volume','statistics','probability','mean','median','standard deviation','scatter plots',
+      'data analysis','fractions','decimals','order of operations','reading comprehension','main idea',
+      'inference','evidence','vocabulary','rhetoric','tone','grammar','punctuation','commas',
+      'semicolons','subject verb agreement','pronoun agreement','verb tense','parallel structure',
+      'modifiers','run on sentences','fragments','transition words','conciseness','time management',
+      'pacing','process of elimination','test anxiety','careless errors','checking answers',
+      'completing the square','factored form','vertex form','logarithms','exponential',
+      'sequences','coordinate geometry','pythagorean theorem','special right triangles',
+      'complex numbers','matrices','sentence structure','word choice','apostrophes',
+      'number line','inequalities','domain','range','slope intercept','point slope',
+      'context clues','author purpose','supporting details','cause and effect','figurative language',
+      'active voice','passive voice','dangling modifiers','misplaced modifiers',
+    ];
     const struggleFreq = {};
-    const STOPWORDS = new Set(['the','and','but','for','with','that','this','they','have','from',
-      'their','also','when','were','been','more','some','into','than','then','very','just','about',
-      'which','would','could','should','there','where','after','before','because','student','students',
-      'during','often','still','seems','seemed','needs','need','understanding','understand','working',
-      'practice','having','getting','issues','issue','area','areas','help','helps','difficulty',
-      'difficult','struggled','struggling','problem','problems','trouble','tends','tend']);
-
-    logs.forEach(l => {
-      (l.subjects||[]).forEach(s => {
-        const k = s.trim();
-        if (k) subjectFreq[k] = (subjectFreq[k]||0) + 1;
-      });
-      if (l.struggles) {
-        const words = l.struggles.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/)
-          .filter(w => w.length > 3 && !STOPWORDS.has(w));
-        for (let i = 0; i < words.length - 1; i++) {
-          const phrase = words[i] + ' ' + words[i+1];
-          if (words[i].length >= 3 && words[i+1].length >= 3 && !/\d/.test(phrase)) {
-            struggleFreq[phrase] = (struggleFreq[phrase]||0) + 1;
-          }
-        }
-        words.filter(w=>w.length>=7).forEach(w=>{
-          struggleFreq[w] = (struggleFreq[w]||0) + 0.5;
-        });
-      }
+    logs.forEach(l=>{
+      if(!l.struggles) return;
+      const text = l.struggles.toLowerCase();
+      SAT_TOPICS_REPORT.forEach(t=>{ if(text.includes(t)) struggleFreq[t]=(struggleFreq[t]||0)+1; });
     });
+    const topStruggles = Object.entries(struggleFreq).sort((a,b)=>b[1]-a[1]).slice(0,8);
 
-    const topSubjects  = Object.entries(subjectFreq).sort((a,b)=>b[1]-a[1]).slice(0,6);
-    const topStruggles = Object.entries(struggleFreq).filter(([,n])=>n>=1).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    // Goals mentioned
+    const allGoals = logs.filter(l=>l.goals&&l.goals.trim()).map(l=>l.goals.trim());
 
-    // Build score history table rows
-    const scoresRows = scores.map((s,i) => {
-      const total = (s.math||0)+(s.rw||0);
-      const prev  = i > 0 ? (scores[i-1].math||0)+(scores[i-1].rw||0) : null;
-      const delta = (prev !== null && total && prev) ? total - prev : null;
-      const deltaStr = delta !== null ? (delta > 0 ? '<span style="color:#1a6e3a">+'+delta+'</span>' : delta < 0 ? '<span style="color:#b81c2a">'+delta+'</span>' : '<span style="color:#999">—</span>') : '';
-      return '<tr>' +
-        '<td>'+formatDate(s.date)+'</td>' +
-        '<td style="text-align:center">'+(s.math||'—')+'</td>' +
-        '<td style="text-align:center">'+(s.rw||'—')+'</td>' +
-        '<td style="text-align:center;font-weight:600">'+(total||'—')+'</td>' +
-        '<td style="text-align:center">'+deltaStr+'</td>' +
-        (s.notes ? '<td style="color:#666;font-size:11px">'+s.notes+'</td>' : '<td style="color:#ccc">—</td>') +
-      '</tr>';
-    }).join('');
+    // ── Assignment analysis ───────────────────────────────────────
+    const totalAssigns    = assigns.length;
+    const doneAssigns     = assigns.filter(a=>a.completed).length;
+    const pendingAssigns  = assigns.filter(a=>!a.completed&&!a.submissionUrl).length;
+    const submittedAssigns= assigns.filter(a=>a.submissionUrl&&!a.completed).length;
+    const completionRate  = totalAssigns ? Math.round(doneAssigns/totalAssigns*100) : null;
+    const recentAssigns   = [...assigns].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,8);
 
-    // Build session log rows (last 8)
-    const logsRows = logs.slice(0,8).map(l =>
-      '<tr>' +
-        '<td>'+formatDate(l.date)+'</td>' +
-        '<td>'+(l.subjects?.join(', ')||'—')+'</td>' +
-        '<td>'+(l.struggles||'—')+'</td>' +
-        '<td>'+(l.goals||'—')+'</td>' +
-      '</tr>'
-    ).join('');
-
-    // Strengths = subjects that appear most frequently
-    const strengthsHTML = topSubjects.length
-      ? topSubjects.map(([s,n]) =>
-          '<span style="display:inline-block;background:#eef7ee;border:1px solid #9ecf9e;color:#1a5c1a;font-size:11px;padding:3px 10px;border-radius:3px;margin:2px">' +
-          s + (n > 1 ? ' ('+n+'×)' : '') + '</span>'
-        ).join(' ')
-      : '<span style="color:#aaa">Not enough data yet</span>';
-
-    const weaknessesHTML = topStruggles.length
-      ? topStruggles.map(([s]) => {
-          const display = s.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
-          return '<span style="display:inline-block;background:#fdf0f0;border:1px solid #e8a8a8;color:#8b1520;font-size:11px;padding:3px 10px;border-radius:3px;margin:2px">'+display+'</span>';
-        }).join(' ')
-      : '<span style="color:#aaa">Not enough data yet</span>';
-
-    // Math vs RW comparison note
-    let sectionNote = '';
-    if (mathDelta !== null && rwDelta !== null && scores.length > 1) {
-      if (Math.abs(mathDelta) > 5 || Math.abs(rwDelta) > 5) {
-        const stronger = mathDelta >= rwDelta ? 'Math' : 'Reading & Writing';
-        const weaker   = mathDelta >= rwDelta ? 'Reading & Writing' : 'Math';
-        const strongDelta = Math.max(mathDelta, rwDelta);
-        const weakDelta   = Math.min(mathDelta, rwDelta);
-        sectionNote = stronger + ' has improved more (+' + strongDelta + ' pts). ' +
-          weaker + (weakDelta >= 0 ? ' also improved (+'+weakDelta+' pts).' : ' needs attention ('+weakDelta+' pts).');
+    // ── Narrative sections ────────────────────────────────────────
+    // Overall progress narrative
+    let progressNarrative = '';
+    if (scores.length === 0) {
+      progressNarrative = student.name + ' has not yet had a score logged in the portal. As sessions continue and practice tests are completed, scores will be recorded here to track progress over time.';
+    } else if (scores.length === 1) {
+      progressNarrative = student.name + ' has one score on record: a ' + lastTotal + ' (Math: ' + (lastScore.math||'—') + ', Reading &amp; Writing: ' + (lastScore.rw||'—') + '), logged on ' + formatDate(lastScore.date) + '. This establishes a baseline. As additional practice tests and official exams are taken, score trends will become visible here.';
+    } else {
+      const trend = improvement > 0 ? 'a positive trajectory' : improvement < 0 ? 'a downward trend that warrants attention' : 'a stable performance level';
+      progressNarrative = student.name + ' has taken ' + scoreCount + ' scored assessments since beginning the program, showing ' + trend + '. Starting from a ' + firstTotal + ' on ' + formatDate(firstScore.date) + ', the most recent score of ' + lastTotal + ' on ' + formatDate(lastScore.date) + ' represents a ' + (improvement > 0 ? 'gain of +' + improvement : improvement < 0 ? 'change of ' + improvement : 'no change') + ' points overall. ';
+      if (mathDelta !== null && rwDelta !== null) {
+        if (mathDelta > rwDelta) {
+          progressNarrative += 'Math has been the stronger area of growth, improving by ' + mathDelta + ' points, while Reading &amp; Writing has ' + (rwDelta >= 0 ? 'also improved by ' + rwDelta + ' points.' : 'declined by ' + Math.abs(rwDelta) + ' points and represents the primary area of focus going forward.');
+        } else if (rwDelta > mathDelta) {
+          progressNarrative += 'Reading &amp; Writing has shown stronger growth, improving by ' + rwDelta + ' points, while Math has ' + (mathDelta >= 0 ? 'also improved by ' + mathDelta + ' points.' : 'declined by ' + Math.abs(mathDelta) + ' points and should be prioritized in upcoming sessions.');
+        } else {
+          progressNarrative += 'Both sections have shown similar trends, with Math ' + (mathDelta >= 0 ? 'up ' + mathDelta : 'down ' + Math.abs(mathDelta)) + ' points and Reading &amp; Writing ' + (rwDelta >= 0 ? 'up ' + rwDelta : 'down ' + Math.abs(rwDelta)) + ' points.';
+        }
+      }
+      if (bestTotal > lastTotal) {
+        progressNarrative += ' The best score on record is a ' + bestTotal + ', indicating that the potential is there and that consistency is the next goal.';
       }
     }
 
-    const reportHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Progress Report — '+(student.name||student.email)+'</title>' +
-      '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">' +
+    // Sessions narrative
+    let sessionsNarrative = '';
+    if (sessCount === 0) {
+      sessionsNarrative = 'No sessions have been scheduled yet.';
+    } else {
+      sessionsNarrative = student.name + ' has attended ' + sessCount + ' tutoring session' + (sessCount>1?'s':'') + ' in total';
+      if (loggedCount > 0) sessionsNarrative += ', with ' + loggedCount + ' session' + (loggedCount>1?'s':'') + ' fully logged by the tutor';
+      sessionsNarrative += '. ';
+      if (topSubjects.length > 0) {
+        sessionsNarrative += 'The most frequently covered topics across logged sessions have been ' + topSubjects.slice(0,4).map(([s])=>s).join(', ') + '. ';
+      }
+      if (allGoals.length > 0) {
+        sessionsNarrative += 'Goals set in recent sessions include: ' + allGoals.slice(0,3).join('; ') + '.';
+      }
+    }
+
+    // Assignments narrative
+    let assignNarrative = '';
+    if (totalAssigns === 0) {
+      assignNarrative = 'No assignments have been created for ' + student.name + ' yet.';
+    } else {
+      assignNarrative = student.name + ' has been assigned ' + totalAssigns + ' task' + (totalAssigns>1?'s':'') + ' by the tutor. ';
+      assignNarrative += doneAssigns + ' ' + (doneAssigns===1?'has':'have') + ' been marked complete';
+      if (submittedAssigns > 0) assignNarrative += ', ' + submittedAssigns + ' ' + (submittedAssigns===1?'has':'have') + ' been submitted and are awaiting review';
+      if (pendingAssigns > 0) assignNarrative += ', and ' + pendingAssigns + ' ' + (pendingAssigns===1?'remains':'remain') + ' pending';
+      assignNarrative += '. ';
+      if (completionRate !== null) {
+        if (completionRate >= 80) assignNarrative += 'The completion rate of ' + completionRate + '% reflects a strong commitment to independent practice between sessions.';
+        else if (completionRate >= 50) assignNarrative += 'The completion rate of ' + completionRate + '% is moderate. Completing assigned work between sessions is one of the most important factors in score improvement.';
+        else assignNarrative += 'The completion rate of ' + completionRate + '% is an area of concern. Consistent completion of assigned practice is critical to progress.';
+      }
+    }
+
+    // Struggles narrative
+    let strugglesNarrative = '';
+    if (topStruggles.length === 0) {
+      strugglesNarrative = 'Not enough session log data is available yet to identify specific recurring struggle areas. As more sessions are logged, patterns will emerge here.';
+    } else {
+      strugglesNarrative = 'Based on tutor session logs, the most consistently noted areas of difficulty for ' + student.name + ' are: ';
+      strugglesNarrative += topStruggles.map(([t,n])=>'<strong>' + t.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ') + '</strong>' + (n>1?' (noted '+n+' times)':'')).join(', ') + '. ';
+      strugglesNarrative += 'These are the topics that have appeared most frequently in the struggles field of session logs and should receive continued attention in upcoming sessions.';
+    }
+
+    // ── Build HTML ────────────────────────────────────────────────
+    const scoresRows = scores.map((s,i) => {
+      const total = (s.math||0)+(s.rw||0);
+      const prev  = i>0 ? (scores[i-1].math||0)+(scores[i-1].rw||0) : null;
+      const delta = (prev!==null&&total&&prev) ? total-prev : null;
+      const deltaStr = delta!==null ? (delta>0?'<span style="color:#1a6e3a;font-weight:600">+'+delta+'</span>':delta<0?'<span style="color:#b81c2a;font-weight:600">'+delta+'</span>':'—') : '—';
+      return '<tr><td>'+formatDate(s.date)+'</td><td style="text-align:center">'+(s.math||'—')+'</td><td style="text-align:center">'+(s.rw||'—')+'</td><td style="text-align:center;font-weight:700;color:#1a0508">'+(total||'—')+'</td><td style="text-align:center">'+deltaStr+'</td><td style="color:#555;font-size:11px;line-height:1.5">'+(s.notes||'—')+'</td></tr>';
+    }).join('');
+
+    const logsRows = logs.map(l =>
+      '<tr><td style="white-space:nowrap">'+formatDate(l.date)+'</td>' +
+      '<td>'+(l.subjects?.join(', ')||'—')+'</td>' +
+      '<td style="color:#555">'+(l.struggles||'—')+'</td>' +
+      '<td style="color:#555">'+(l.goals||'—')+'</td>' +
+      '<td style="color:#555">'+(l.notes||'—')+'</td></tr>'
+    ).join('');
+
+    const assignRows = recentAssigns.map(a =>
+      '<tr><td>'+a.title+'</td>' +
+      '<td>'+(a.type||'—')+'</td>' +
+      '<td>'+(a.due?formatDate(a.due):'—')+'</td>' +
+      '<td>'+(a.completed?'<span style="color:#1a6e3a;font-weight:600">Complete</span>':a.submissionUrl?'<span style="color:#b87a00;font-weight:600">Submitted</span>':'<span style="color:#b81c2a">Pending</span>')+'</td></tr>'
+    ).join('');
+
+    const notesRows = notes.slice(0,5).map(n =>
+      '<tr><td style="white-space:nowrap">'+(n.createdAt?n.createdAt.slice(0,10):'—')+'</td>' +
+      '<td style="color:#555;line-height:1.6">'+(n.content||n.text||'—')+'</td></tr>'
+    ).join('');
+
+    const reportHTML =
+      '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+      '<title>Progress Report — '+(student.name||student.email)+'</title>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">' +
       '<style>' +
-      '*{margin:0;padding:0;box-sizing:border-box}' +
-      'body{font-family:"DM Sans",sans-serif;font-size:13px;color:#1a0508;background:#fff;padding:48px 56px}' +
-      '.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #C0182B;padding-bottom:16px;margin-bottom:28px}' +
-      '.logo{font-family:"Playfair Display",serif;font-size:22px}.logo span{color:#C0182B}' +
-      '.meta{text-align:right;font-size:11px;color:#666;line-height:1.8}' +
-      'h2{font-family:"Playfair Display",serif;font-size:15px;color:#1a0508;margin:24px 0 10px;border-bottom:1px solid #eee;padding-bottom:5px}' +
-      '.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:8px}' +
-      '.stat{border:1px solid #eee;border-radius:4px;padding:10px 8px;text-align:center}' +
-      '.stat .n{font-family:"Playfair Display",serif;font-size:22px;color:#C0182B;line-height:1}' +
-      '.stat .l{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#999;margin-top:4px}' +
-      'table{width:100%;border-collapse:collapse;margin-bottom:16px}' +
-      'th{background:#f9f3f3;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:7px 10px;color:#888}' +
-      'th.c,td.c{text-align:center}' +
-      'td{padding:7px 10px;border-bottom:1px solid #f5eeee;font-size:12px;color:#444;vertical-align:top}' +
-      '.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:8px}' +
-      '.insight-box{border:1px solid #eee;border-radius:4px;padding:12px}' +
-      '.insight-box h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:8px}' +
-      '.note-box{background:#fdf8f0;border:1px solid #e8d8a8;border-radius:4px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#5a3e00;line-height:1.6}' +
-      '.footer{margin-top:32px;border-top:1px solid #eee;padding-top:12px;font-size:10px;color:#aaa;display:flex;justify-content:space-between}' +
-      '@media print{body{padding:0}}' +
+        '*{margin:0;padding:0;box-sizing:border-box}' +
+        'body{font-family:"DM Sans",sans-serif;font-size:13px;color:#1a0508;background:#fff;padding:52px 64px;line-height:1.6}' +
+        '.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #C0182B;padding-bottom:20px;margin-bottom:32px}' +
+        '.logo{font-family:"Playfair Display",serif;font-size:26px;color:#1a0508}.logo span{color:#C0182B}' +
+        '.logo-sub{font-size:11px;color:#999;margin-top:4px;letter-spacing:0.06em;text-transform:uppercase}' +
+        '.meta-block{text-align:right;font-size:12px;color:#555;line-height:2}' +
+        '.meta-block strong{color:#1a0508;font-size:15px;display:block;margin-bottom:2px}' +
+        '.stat-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:28px}' +
+        '.stat{border:1px solid #eee;border-radius:6px;padding:12px 8px;text-align:center;background:#fdf8f8}' +
+        '.stat .n{font-family:"Playfair Display",serif;font-size:26px;color:#C0182B;line-height:1;margin-bottom:4px}' +
+        '.stat .l{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#999}' +
+        'h2{font-family:"Playfair Display",serif;font-size:17px;color:#1a0508;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid #e8d0d0}' +
+        'h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#888;margin-bottom:8px}' +
+        'p{font-size:13px;color:#333;line-height:1.8;margin-bottom:10px}' +
+        'p strong{color:#1a0508}' +
+        '.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}' +
+        '.box{border:1px solid #eee;border-radius:6px;padding:16px;background:#fafafa}' +
+        '.tag-green{display:inline-block;background:#eef7ee;border:1px solid #9ecf9e;color:#1a5c1a;font-size:11px;padding:3px 10px;border-radius:3px;margin:2px 2px 2px 0}' +
+        '.tag-red{display:inline-block;background:#fdf0f0;border:1px solid #e8a8a8;color:#8b1520;font-size:11px;padding:3px 10px;border-radius:3px;margin:2px 2px 2px 0}' +
+        '.highlight{background:#fdf8f0;border-left:3px solid #C0182B;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#3a1a00;line-height:1.8;border-radius:0 4px 4px 0}' +
+        'table{width:100%;border-collapse:collapse;margin-bottom:4px;font-size:12px}' +
+        'th{background:#f5ecec;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:8px 10px;color:#888;border-bottom:1px solid #e8d0d0}' +
+        'td{padding:8px 10px;border-bottom:1px solid #f5eeee;color:#333;vertical-align:top}' +
+        'tr:last-child td{border-bottom:none}' +
+        '.footer{margin-top:40px;border-top:1px solid #eee;padding-top:14px;font-size:10px;color:#aaa;display:flex;justify-content:space-between}' +
+        '@media print{body{padding:0.4in} .pagebreak{page-break-before:always}}' +
       '</style></head><body>' +
 
+      // Header
       '<div class="hdr">' +
-        '<div><div class="logo">Packer <span>SAT</span> Prep</div><div style="font-size:12px;color:#999;margin-top:4px">Student Progress Report</div></div>' +
-        '<div class="meta"><strong>'+(student.name||student.email)+'</strong><br>Tutor: '+(CU.name||'')+'<br>Generated: '+today+'</div>' +
+        '<div><div class="logo">Packer <span>SAT</span> Prep</div><div class="logo-sub">The Packer Collegiate Institute &middot; Brooklyn, NY</div></div>' +
+        '<div class="meta-block">' +
+          '<strong>'+(student.name||student.email)+'</strong>' +
+          (student.grade ? 'Grade: '+student.grade+'<br>' : '') +
+          'Tutor: '+tutorName+'<br>' +
+          'Report Date: '+today+
+        '</div>' +
       '</div>' +
 
-      '<div class="stats">' +
+      // Stats row
+      '<div class="stat-row">' +
         '<div class="stat"><div class="n">'+(lastScore?.math||'—')+'</div><div class="l">Latest Math</div></div>' +
         '<div class="stat"><div class="n">'+(lastScore?.rw||'—')+'</div><div class="l">Latest R&amp;W</div></div>' +
         '<div class="stat"><div class="n">'+(lastTotal||'—')+'</div><div class="l">Latest Total</div></div>' +
-        '<div class="stat"><div class="n" style="color:'+(improvement>0?'#1a6e3a':improvement<0?'#C0182B':'#999')+'">'+(improvement!=null?(improvement>0?'+':'')+improvement:'—')+'</div><div class="l">Total Change</div></div>' +
-        '<div class="stat"><div class="n">'+(sessions.length)+'</div><div class="l">Sessions</div></div>' +
+        '<div class="stat"><div class="n" style="color:'+(improvement>0?'#1a6e3a':improvement<0?'#C0182B':'#777')+'">'+(improvement!=null?(improvement>0?'+':'')+improvement:'—')+'</div><div class="l">Total Change</div></div>' +
+        '<div class="stat"><div class="n">'+sessCount+'</div><div class="l">Sessions</div></div>' +
+        '<div class="stat"><div class="n">'+(completionRate!=null?completionRate+'%':'—')+'</div><div class="l">Assign. Done</div></div>' +
       '</div>' +
 
-      (sectionNote ? '<div class="note-box">&#128200; '+sectionNote+'</div>' : '') +
+      // Score progress
+      '<h2>Score Progress &amp; Analysis</h2>' +
+      '<div class="highlight"><p>'+progressNarrative+'</p></div>' +
+      (scores.length ? '<table><thead><tr><th>Date</th><th>Math</th><th>R&amp;W</th><th>Total</th><th>Change</th><th>Tutor Notes</th></tr></thead><tbody>'+scoresRows+'</tbody></table>' : '<p style="color:#999;font-style:italic">No scores have been logged yet.</p>') +
 
+      // Strengths and struggles
+      '<h2>Academic Profile</h2>' +
       '<div class="two-col">' +
-        '<div class="insight-box"><h3>Topics Most Practiced</h3>'+strengthsHTML+'</div>' +
-        '<div class="insight-box"><h3>Areas Needing Work</h3>'+weaknessesHTML+'</div>' +
+        '<div class="box"><h3>Frequently Practiced Topics</h3>' +
+          (topSubjects.length ? topSubjects.map(([s,n])=>'<span class="tag-green">'+s+(n>1?' &times;'+n:'')+'</span>').join('') : '<p style="color:#aaa;font-style:italic;font-size:12px">Not enough session data yet.</p>') +
+        '</div>' +
+        '<div class="box"><h3>Recurring Challenge Areas</h3>' +
+          (topStruggles.length ? topStruggles.map(([s,n])=>'<span class="tag-red">'+s.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')+(n>1?' &times;'+n:'')+'</span>').join('') : '<p style="color:#aaa;font-style:italic;font-size:12px">Not enough session data yet.</p>') +
+        '</div>' +
       '</div>' +
+      '<p>'+strugglesNarrative+'</p>' +
 
-      (scores.length ? '<h2>Full Score History</h2>' +
-        '<table><thead><tr>' +
-          '<th>Date</th><th class="c">Math</th><th class="c">R&amp;W</th><th class="c">Total</th><th class="c">Change</th><th>Notes</th>' +
-        '</tr></thead><tbody>'+scoresRows+'</tbody></table>' : '') +
+      // Sessions
+      '<h2>Session History</h2>' +
+      '<p>'+sessionsNarrative+'</p>' +
+      (logs.length ?
+        '<table><thead><tr><th>Date</th><th>Topics Covered</th><th>Struggles Noted</th><th>Goals Set</th><th>Tutor Notes</th></tr></thead><tbody>'+logsRows+'</tbody></table>' :
+        '<p style="color:#999;font-style:italic">No sessions have been logged yet.</p>') +
 
-      (logs.length ? '<h2>Session Log History</h2>' +
-        '<table><thead><tr>' +
-          '<th>Date</th><th>Topics Covered</th><th>Struggles / Focus Areas</th><th>Goals</th>' +
-        '</tr></thead><tbody>'+logsRows+'</tbody></table>' : '') +
+      // Assignments
+      '<h2>Assignments</h2>' +
+      '<p>'+assignNarrative+'</p>' +
+      (totalAssigns ?
+        '<table><thead><tr><th>Assignment</th><th>Type</th><th>Due</th><th>Status</th></tr></thead><tbody>'+assignRows+'</tbody></table>' :
+        '<p style="color:#999;font-style:italic">No assignments have been created yet.</p>') +
+
+      // Tutor notes
+      (notes.length ?
+        '<h2>Tutor Notes</h2>' +
+        '<p>The following notes were recorded by the tutor outside of session logs.</p>' +
+        '<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody>'+notesRows+'</tbody></table>'
+        : '') +
+
+      // Summary for parents
+      '<div class="pagebreak"></div>' +
+      '<h2>Summary for Parents &amp; Guardians</h2>' +
+      '<div class="highlight">' +
+        '<p>This report summarizes '+(student.name||'your student')+"'s participation and progress in the Packer SAT Tutoring Program as of "+today+'. The program provides free, one-on-one SAT preparation led by high-scoring Packer upperclassmen.</p>' +
+        '<p>' +
+          (sessCount > 0 ? (student.name||'Your student')+' has completed <strong>'+sessCount+' tutoring session'+(sessCount>1?'s':'')+'</strong> with tutor <strong>'+tutorName+'</strong>. ' : '') +
+          (lastTotal ? 'The most recent SAT score on record is <strong>'+lastTotal+' out of 1600</strong> (Math: '+lastScore.math+', Reading &amp; Writing: '+lastScore.rw+'). ' : '') +
+          (improvement > 0 ? 'This represents an improvement of <strong>+'+improvement+' points</strong> since the first recorded score. ' : '') +
+          (improvement < 0 ? 'Scores have decreased by '+Math.abs(improvement)+' points since the baseline. The tutor is aware and is addressing this. ' : '') +
+        '</p>' +
+        '<p>' +
+          (totalAssigns > 0 ? (student.name||'Your student')+' has been assigned <strong>'+totalAssigns+' practice task'+(totalAssigns>1?'s':'')+'</strong>. <strong>'+doneAssigns+'</strong> '+(doneAssigns===1?'has':'have')+' been completed ('+completionRate+'% completion rate). Completing assigned practice between sessions is one of the most important drivers of score improvement and we encourage families to support this habit at home. ' : '') +
+          (topStruggles.length > 0 ? 'Key areas the tutor has identified for continued focus include: <strong>'+topStruggles.slice(0,3).map(([t])=>t.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')).join(', ')+'</strong>. ' : '') +
+        '</p>' +
+        '<p>If you have any questions about this report or your student\'s progress, please reach out through the portal or contact the program admin directly.</p>' +
+      '</div>' +
 
       '<div class="footer">' +
-        '<span>Packer SAT Tutoring &middot; The Packer Collegiate Institute &middot; Brooklyn, NY</span>' +
-        '<span>Confidential &middot; For student and family use only</span>' +
+        '<span>Packer SAT Tutoring &middot; The Packer Collegiate Institute &middot; Brooklyn, NY &middot; packersat.org</span>' +
+        '<span>Confidential &middot; For student, family, and tutor use only</span>' +
       '</div>' +
       '</body></html>';
 
-    const win = window.open('','_blank','width=900,height=1200');
+    const win = window.open('','_blank','width=960,height=1200');
     if (!win) { alert('Please allow pop-ups to print reports.'); return; }
     win.document.write(reportHTML);
     win.document.close();
     win.focus();
-    setTimeout(() => win.print(), 700);
+    setTimeout(() => win.print(), 800);
   };
 
   async function loadReminderToggle() {
