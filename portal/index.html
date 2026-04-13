@@ -3912,7 +3912,7 @@ Good luck!`,
     } catch(e) {
       console.error('Newsletter AI failed:', e);
       body.value = '';
-      body.placeholder = 'Generation failed — write your newsletter manually.';
+      body.placeholder = 'Generation failed: ' + (e.message || 'unknown error') + ' — check the browser console for details.';
     } finally {
       btn.disabled = false;
       btn.textContent = '✦ Regenerate';
