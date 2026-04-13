@@ -1153,14 +1153,25 @@
                     <option value="program_update">Program Update</option>
                     <option value="general_tutor">General Announcement (Tutor)</option>
                   </optgroup>
+                  <optgroup label="— General Templates —">
+                    <option value="newsletter">Program Newsletter</option>
+                  </optgroup>
                 </select>
               </div>
 
               <div style="margin-bottom:0.9rem">
                 <div class="field-label">To</div>
-                <select class="input-field" id="email-recipient" onchange="updateEmailPreview()">
+                <select class="input-field" id="email-recipient" onchange="onRecipientChange()">
                   <option value="__all_students__">All students</option>
                 </select>
+              </div>
+
+              <div style="margin-bottom:0.9rem;display:none" id="custom-email-row">
+                <div class="field-label">Custom email address</div>
+                <div style="display:flex;gap:0.5rem;align-items:center">
+                  <input class="input-field" type="email" id="custom-email-input" placeholder="e.g. parent@email.com" oninput="updateEmailPreview()" style="flex:1" />
+                  <input class="input-field" type="text" id="custom-email-name" placeholder="Name (optional)" oninput="updateEmailPreview()" style="width:160px" />
+                </div>
               </div>
 
               <div style="margin-bottom:0.9rem">
@@ -3705,6 +3716,14 @@ Good luck!`,
       subject: 'A message from Packer SAT Tutoring',
       body: `Hi [Name],\n\nWe wanted to reach out with a quick message.\n\n[Write your message here]`,
       btnLabel: 'Open the Portal', btnUrl: 'https://www.packersat.org/portal'
+    },
+
+    newsletter: {
+      audience: 'everyone',
+      subject: 'Packer SAT Tutoring — Program Update',
+      body: `Hi [Name],\n\nHere is the latest from the Packer SAT Tutoring Program.\n\n[HEADLINE]\n[Write your main update here. Two to three paragraphs is ideal.]\n\n[SECTION 2 — optional]\n[Write a second update or announcement here if needed.]\n\nIf you have any questions, feel free to reach out through the portal or reply to this email.\n\nThank you for being part of the program!`,
+      btnLabel: 'Visit the Portal',
+      btnUrl: 'https://www.packersat.org/portal'
     }
   };
 
@@ -3752,7 +3771,17 @@ Good luck!`,
         .sort((a,b) => (a[1].name||'').localeCompare(b[1].name||''))
         .forEach(([uid, u]) => { sel.innerHTML += `<option value="${uid}">${u.name || u.email} (${u.role})</option>`; });
     }
+    // Always add custom option at bottom
+    sel.innerHTML += '<option value="__custom__">Custom email address...</option>';
+    onRecipientChange();
   }
+
+  window.onRecipientChange = function() {
+    const val = document.getElementById('email-recipient')?.value;
+    const row = document.getElementById('custom-email-row');
+    if (row) row.style.display = val === '__custom__' ? 'block' : 'none';
+    updateEmailPreview();
+  };
 
   function buildEmailHTML(recipientName, subject, body, btnLabel, btnUrl) {
     const bodyHtml = body
@@ -3809,7 +3838,12 @@ Good luck!`,
     const btnLabel = document.getElementById('email-btn-label')?.value || '';
     const btnUrl   = document.getElementById('email-btn-url')?.value || '';
     const recipVal = document.getElementById('email-recipient')?.value || '';
-    const previewName = recipVal.startsWith('__') ? '[Name]' : (allUsers[recipVal]?.name || allUsers[recipVal]?.email || '[Name]');
+    let previewName = '[Name]';
+    if (recipVal === '__custom__') {
+      previewName = document.getElementById('custom-email-name')?.value.trim() || '[Name]';
+    } else if (!recipVal.startsWith('__')) {
+      previewName = allUsers[recipVal]?.name || allUsers[recipVal]?.email || '[Name]';
+    }
     const html = buildEmailHTML(previewName, subject, body.replace(/\[Name\]/g, previewName), btnLabel, btnUrl);
     const frame = document.getElementById('email-preview-inner');
     if (frame) frame.innerHTML = html;
@@ -3831,10 +3865,20 @@ Good luck!`,
     const fromEmail = document.getElementById('email-from')?.value || 'noreply@packersat.org';
     const msg       = document.getElementById('admin-email-msg');
     const btn       = document.getElementById('send-email-btn');
+
     if (!subject) { showMsg(msg, 'Please enter a subject.', 'error'); return; }
     if (!body)    { showMsg(msg, 'Please enter a message body.', 'error'); return; }
+
     let recipients = [];
-    if (recipVal === '__all_students__') {
+
+    if (recipVal === '__custom__') {
+      const customEmail = document.getElementById('custom-email-input')?.value.trim();
+      const customName  = document.getElementById('custom-email-name')?.value.trim() || customEmail;
+      if (!customEmail || !customEmail.includes('@')) {
+        showMsg(msg, 'Please enter a valid email address.', 'error'); return;
+      }
+      recipients = [[null, { email: customEmail, name: customName }]];
+    } else if (recipVal === '__all_students__') {
       recipients = Object.entries(allUsers).filter(([,u]) => u.role === 'student' && u.email);
     } else if (recipVal === '__all_tutors__') {
       recipients = Object.entries(allUsers).filter(([,u]) => u.role === 'tutor' && u.email);
@@ -3843,6 +3887,7 @@ Good luck!`,
     } else {
       recipients = [[recipVal, allUsers[recipVal]]].filter(([,u]) => u?.email);
     }
+
     if (!recipients.length) { showMsg(msg, 'No valid recipients found.', 'error'); return; }
     const total = recipients.length;
     btn.disabled = true;
@@ -5710,6 +5755,7 @@ Good luck!`,
   function applyEmailTemplate() { window.applyEmailTemplate && window.applyEmailTemplate(); }
   function updateEmailPreview() { window.updateEmailPreview && window.updateEmailPreview(); }
   function sendAdminEmail() { window.sendAdminEmail && window.sendAdminEmail(); }
+  function onRecipientChange() { window.onRecipientChange && window.onRecipientChange(); }
   function mobileNavTo(s) { window.mobileNavTo && window.mobileNavTo(s); }
   function toggleMobileSidebar() { window.toggleMobileSidebar && window.toggleMobileSidebar(); }
   function saveAssignmentTemplate() { window.saveAssignmentTemplate && window.saveAssignmentTemplate(); }
