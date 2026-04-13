@@ -3329,6 +3329,14 @@
               ${improvementHtml}
             </div>
           </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid rgba(250,250,248,0.06)">
+            <button class="action-btn" onclick="openScoreModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Score</button>
+            <button class="action-btn" onclick="openNoteModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Note</button>
+            <button class="action-btn" onclick="openAssignmentModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Assign</button>
+            <button class="action-btn" onclick="openManualLogModal('${uid}')">+ Session Log</button>
+            <button class="action-btn" onclick="openGroupSessionModal('${uid}')">+ Group Session</button>
+            <button class="action-btn" onclick="printStudentReport('${uid}')">&#128438; Print Report</button>
+          </div>
           <div class="grid-2">
             <div>
               <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Scores (${scores.length})</div>
@@ -4198,19 +4206,17 @@ Good luck!`,
     const student = allUsers[studentId];
     if (!student) return;
 
-    const [scoreSnap, sessSnap, assignSnap, logSnap, noteSnap] = await Promise.all([
+    const [scoreSnap, sessSnap, assignSnap, logSnap] = await Promise.all([
       getDocs(query(collection(db,'scores'), where('studentId','==',studentId))),
       getDocs(collection(db,'sessions')),
       getDocs(query(collection(db,'assignments'), where('studentId','==',studentId))),
-      getDocs(query(collection(db,'sessionLogs'), where('studentId','==',studentId))),
-      getDocs(query(collection(db,'notes'), where('studentId','==',studentId)))
+      getDocs(query(collection(db,'sessionLogs'), where('studentId','==',studentId)))
     ]);
 
     const scores   = scoreSnap.docs.map(d=>d.data()).sort((a,b)=>a.date.localeCompare(b.date));
     const sessions = sessSnap.docs.map(d=>d.data()).filter(d=>(d.studentIds||[]).includes(studentId));
     const assigns  = assignSnap.docs.map(d=>d.data());
     const logs     = logSnap.docs.map(d=>d.data()).sort((a,b)=>b.date.localeCompare(a.date));
-    const notes    = noteSnap.docs.map(d=>d.data()).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
     const tutorName = CU.name || 'Tutor';
     const today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 
@@ -4367,11 +4373,6 @@ Good luck!`,
       '<td>'+(a.completed?'<span style="color:#1a6e3a;font-weight:600">Complete</span>':a.submissionUrl?'<span style="color:#b87a00;font-weight:600">Submitted</span>':'<span style="color:#b81c2a">Pending</span>')+'</td></tr>'
     ).join('');
 
-    const notesRows = notes.slice(0,5).map(n =>
-      '<tr><td style="white-space:nowrap">'+(n.createdAt?n.createdAt.slice(0,10):'—')+'</td>' +
-      '<td style="color:#555;line-height:1.6">'+(n.content||n.text||'—')+'</td></tr>'
-    ).join('');
-
     const reportHTML =
       '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
       '<title>Progress Report — '+(student.name||student.email)+'</title>' +
@@ -4457,12 +4458,7 @@ Good luck!`,
         '<table><thead><tr><th>Assignment</th><th>Type</th><th>Due</th><th>Status</th></tr></thead><tbody>'+assignRows+'</tbody></table>' :
         '<p style="color:#999;font-style:italic">No assignments have been created yet.</p>') +
 
-      // Tutor notes
-      (notes.length ?
-        '<h2>Tutor Notes</h2>' +
-        '<p>The following notes were recorded by the tutor outside of session logs.</p>' +
-        '<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody>'+notesRows+'</tbody></table>'
-        : '') +
+      // Tutor notes intentionally excluded from printed report
 
       // Summary for parents
       '<div class="pagebreak"></div>' +
