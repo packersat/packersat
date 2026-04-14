@@ -4362,8 +4362,7 @@ Good luck!`,
       '<tr><td style="white-space:nowrap">'+formatDate(l.date)+'</td>' +
       '<td>'+(l.subjects?.join(', ')||'—')+'</td>' +
       '<td style="color:#555">'+(l.struggles||'—')+'</td>' +
-      '<td style="color:#555">'+(l.goals||'—')+'</td>' +
-      '<td style="color:#555">'+(l.notes||'—')+'</td></tr>'
+      '<td style="color:#555">'+(l.goals||'—')+'</td></tr>'
     ).join('');
 
     const assignRows = recentAssigns.map(a =>
@@ -4448,7 +4447,7 @@ Good luck!`,
       '<h2>Session History</h2>' +
       '<p>'+sessionsNarrative+'</p>' +
       (logs.length ?
-        '<table><thead><tr><th>Date</th><th>Topics Covered</th><th>Struggles Noted</th><th>Goals Set</th><th>Tutor Notes</th></tr></thead><tbody>'+logsRows+'</tbody></table>' :
+        '<table><thead><tr><th>Date</th><th>Topics Covered</th><th>Struggles Noted</th><th>Goals Set</th></tr></thead><tbody>'+logsRows+'</tbody></table>' :
         '<p style="color:#999;font-style:italic">No sessions have been logged yet.</p>') +
 
       // Assignments
