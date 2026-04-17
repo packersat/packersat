@@ -4697,27 +4697,106 @@ Good luck!`,
   };
 
   // ── Session state ─────────────────────────────────────────────
-  let _pracSubject = 'math';
-  let _pracDiff    = 'medium';
-  let _pracActive  = false;
-  let _pracQ       = null;       // current question object
-  let _pracQIndex  = 0;
-  let _pracUsed    = new Set();  // indices used this session
-  let _pracCorrect = [];
-  let _pracWrong   = [];
+  let _pracSubject  = 'math';
+  let _pracDiff     = 'medium';
+  let _pracActive   = false;
+  let _pracQ        = null;
+  let _pracQIndex   = 0;
+  let _pracPool     = [];      // fetched from OpenSAT or local fallback
+  let _pracPoolUsed = new Set();
+  let _pracCorrect  = [];
+  let _pracWrong    = [];
   let _pracHintLevel = 0;
   let _pracAnswered  = false;
   let _pracStartTime = null;
+  let _pracLoading   = false;
+
+  // ── OpenSAT API fetch ────────────────────────────────────────
+  // Maps OpenSAT difficulty estimate by domain — we classify by section
+  const OPENSAT_BASE = 'https://pinesat.com/api/questions';
+
+  async function fetchOpenSATQuestions(subject, difficulty) {
+    // OpenSAT uses "math" and "english" as section names
+    const section = subject === 'math' ? 'MATH' : 'ENGLISH';
+    const limit   = 200;
+    try {
+      const res  = await fetch(`${OPENSAT_BASE}?section=${section}&limit=${limit}`);
+      if (!res.ok) throw new Error('API error ' + res.status);
+      const data = await res.json();
+      // data is an array of question objects
+      // Map to our internal format and filter/classify by difficulty
+      return mapOpenSATQuestions(data, subject, difficulty);
+    } catch(e) {
+      console.warn('OpenSAT fetch failed, using local bank:', e);
+      return null;
+    }
+  }
+
+  function mapOpenSATQuestions(data, subject, difficulty) {
+    if (!Array.isArray(data) || !data.length) return null;
+    const mapped = [];
+
+    for (const item of data) {
+      try {
+        const q = item.question;
+        if (!q || !q.question || !q.choices || !q.correct_answer) continue;
+
+        const choices = ['A','B','C','D'].map(k => q.choices[k]).filter(Boolean);
+        if (choices.length !== 4) continue;
+
+        const answerIdx = ['A','B','C','D'].indexOf(q.correct_answer);
+        if (answerIdx === -1) continue;
+
+        // Build progressive hints from explanation
+        const explanation = q.explanation || '';
+        const sentences   = explanation.match(/[^.!?]+[.!?]+/g) || [];
+        const hint1 = sentences[0]?.trim() || 'Re-read the question carefully and eliminate obviously wrong answers.';
+        const hint2 = sentences[1]?.trim() || 'Consider each answer choice against the question.';
+        const hint3 = `The correct answer is ${q.correct_answer}: ${choices[answerIdx]}. ${sentences[2]?.trim() || explanation.slice(0, 120)}`;
+
+        mapped.push({
+          q:       q.question,
+          ctx:     q.paragraph || null,
+          choices,
+          answer:  answerIdx,
+          tag:     item.domain || (subject === 'math' ? 'Math' : 'Reading & Writing'),
+          hints:   [hint1, hint2, hint3],
+          _diff:   estimateDifficulty(item, subject),
+        });
+      } catch(e) { continue; }
+    }
+
+    // Filter by difficulty if we have enough questions
+    const filtered = mapped.filter(q => q._diff === difficulty);
+    return filtered.length >= 10 ? filtered : mapped; // fall back to all if not enough
+  }
+
+  function estimateDifficulty(item, subject) {
+    // OpenSAT doesn't tag difficulty directly — estimate by domain
+    const domain = (item.domain || '').toLowerCase();
+    const hardMathDomains   = ['advanced math', 'geometry', 'trigonometry', 'complex numbers'];
+    const easyMathDomains   = ['linear equations in one variable', 'ratios', 'percentages', 'proportions'];
+    const hardEngDomains    = ['cross-text connections', 'central ideas and details', 'rhetoric'];
+    const easyEngDomains    = ['standard english conventions', 'form structure and sense'];
+    if (subject === 'math') {
+      if (hardMathDomains.some(d => domain.includes(d))) return 'hard';
+      if (easyMathDomains.some(d => domain.includes(d))) return 'easy';
+      return 'medium';
+    } else {
+      if (hardEngDomains.some(d => domain.includes(d))) return 'hard';
+      if (easyEngDomains.some(d => domain.includes(d))) return 'easy';
+      return 'medium';
+    }
+  }
 
   window.setPracSubject = function(subj) {
     _pracSubject = subj;
     ['math','rw'].forEach(s => {
       const btn = document.getElementById('prac-btn-' + s);
-      if (btn) {
-        btn.style.background = s === subj ? 'rgba(192,24,43,0.2)' : '';
-        btn.style.borderColor = s === subj ? 'rgba(192,24,43,0.5)' : '';
-        btn.style.color = s === subj ? '#FAFAF8' : '';
-      }
+      if (!btn) return;
+      btn.style.background  = s === subj ? 'rgba(192,24,43,0.2)' : '';
+      btn.style.borderColor = s === subj ? 'rgba(192,24,43,0.5)' : '';
+      btn.style.color       = s === subj ? '#FAFAF8' : '';
     });
   };
 
@@ -4725,25 +4804,45 @@ Good luck!`,
     _pracDiff = diff;
     ['easy','medium','hard'].forEach(d => {
       const btn = document.getElementById('prac-btn-' + d);
-      if (btn) {
-        btn.style.background = d === diff ? 'rgba(192,24,43,0.2)' : '';
-        btn.style.borderColor = d === diff ? 'rgba(192,24,43,0.5)' : '';
-        btn.style.color = d === diff ? '#FAFAF8' : '';
-      }
+      if (!btn) return;
+      btn.style.background  = d === diff ? 'rgba(192,24,43,0.2)' : '';
+      btn.style.borderColor = d === diff ? 'rgba(192,24,43,0.5)' : '';
+      btn.style.color       = d === diff ? '#FAFAF8' : '';
     });
   };
 
-  window.startPracSession = function() {
-    _pracActive = true;
-    _pracUsed.clear();
-    _pracCorrect = [];
-    _pracWrong   = [];
-    _pracQIndex  = 0;
+  window.startPracSession = async function() {
+    _pracActive   = true;
+    _pracPoolUsed.clear();
+    _pracCorrect  = [];
+    _pracWrong    = [];
+    _pracQIndex   = 0;
+    _pracPool     = [];
     _pracStartTime = Date.now();
+
+    const startBtn = document.getElementById('prac-start-btn');
+    const endBtn   = document.getElementById('prac-end-btn');
+    if (startBtn) { startBtn.disabled = true; startBtn.textContent = 'Loading questions…'; }
+
     document.getElementById('prac-idle').style.display = 'none';
+    document.getElementById('prac-question-area').style.display = 'none';
+
+    // Try OpenSAT first
+    const fetched = await fetchOpenSATQuestions(_pracSubject, _pracDiff);
+    if (fetched && fetched.length >= 5) {
+      _pracPool = fetched;
+      console.log(`Loaded ${_pracPool.length} questions from OpenSAT`);
+    } else {
+      // Fall back to local bank
+      _pracPool = [...(QUESTION_BANK[_pracSubject]?.[_pracDiff] || [])];
+      console.log(`Using local bank: ${_pracPool.length} questions`);
+    }
+
+    if (startBtn) { startBtn.disabled = false; startBtn.textContent = 'Start Session'; }
+    if (endBtn) endBtn.style.display = 'inline-block';
+    if (startBtn) startBtn.style.display = 'none';
+
     document.getElementById('prac-question-area').style.display = 'block';
-    document.getElementById('prac-start-btn').style.display = 'none';
-    document.getElementById('prac-end-btn').style.display = 'inline-block';
     updateSessionBadge();
     loadNextQuestion();
   };
@@ -4753,127 +4852,121 @@ Good luck!`,
     if (!badge) return;
     const total = _pracCorrect.length + _pracWrong.length;
     badge.style.display = total > 0 ? 'block' : 'none';
-    badge.textContent = `${_pracCorrect.length} correct · ${_pracWrong.length} wrong · ${total} answered`;
+    badge.textContent   = `${_pracCorrect.length} correct · ${_pracWrong.length} wrong · ${total} answered`;
   }
 
-  function getPool() {
-    return QUESTION_BANK[_pracSubject]?.[_pracDiff] || [];
+  function getNextQuestion() {
+    if (!_pracPool.length) return null;
+    if (_pracPoolUsed.size >= _pracPool.length) _pracPoolUsed.clear();
+    let idx;
+    let attempts = 0;
+    do { idx = Math.floor(Math.random() * _pracPool.length); attempts++; }
+    while (_pracPoolUsed.has(idx) && attempts < 200);
+    _pracPoolUsed.add(idx);
+    return _pracPool[idx];
   }
 
   function loadNextQuestion() {
-    const pool = getPool();
-    if (!pool.length) return;
-
-    // If we've used all questions, reset the used set (loop infinitely)
-    if (_pracUsed.size >= pool.length) _pracUsed.clear();
-
-    // Pick a random unused question
-    let idx;
-    do { idx = Math.floor(Math.random() * pool.length); } while (_pracUsed.has(idx));
-    _pracUsed.add(idx);
-    _pracQ = pool[idx];
+    _pracQ = getNextQuestion();
+    if (!_pracQ) {
+      document.getElementById('prac-question-area').innerHTML =
+        '<div class="card" style="text-align:center;padding:2rem">No questions available. Try a different subject or difficulty.</div>';
+      return;
+    }
     _pracQIndex++;
-    _pracAnswered = false;
+    _pracAnswered  = false;
     _pracHintLevel = 0;
 
-    // Render
-    document.getElementById('prac-q-num').textContent = `Question ${_pracQIndex}`;
-    document.getElementById('prac-q-tag').textContent = _pracQ.tag;
-    document.getElementById('prac-q-text').textContent = _pracQ.q;
+    document.getElementById('prac-q-num').textContent  = `Question ${_pracQIndex}`;
+    document.getElementById('prac-q-tag').textContent  = _pracQ.tag || '';
+    document.getElementById('prac-q-text').textContent = _pracQ.q || '';
     document.getElementById('prac-correct-count').textContent = _pracCorrect.length;
-    document.getElementById('prac-wrong-count').textContent = _pracWrong.length;
+    document.getElementById('prac-wrong-count').textContent   = _pracWrong.length;
 
     const ctx = document.getElementById('prac-q-context');
     if (_pracQ.ctx) { ctx.textContent = _pracQ.ctx; ctx.style.display = 'block'; }
-    else { ctx.style.display = 'none'; }
+    else            { ctx.style.display = 'none'; }
 
-    // Choices
     const choicesEl = document.getElementById('prac-choices');
-    choicesEl.innerHTML = _pracQ.choices.map((c, i) => `
-      <button onclick="selectPracAnswer(${i})" style="text-align:left;width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(250,250,248,0.1);border-radius:6px;padding:0.8rem 1rem;color:rgba(250,250,248,0.85);font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;transition:all 0.15s;display:flex;gap:0.8rem;align-items:flex-start" id="choice-btn-${i}">
+    choicesEl.innerHTML = (_pracQ.choices || []).map((c, i) => `
+      <button onclick="selectPracAnswer(${i})"
+        id="choice-btn-${i}"
+        style="text-align:left;width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(250,250,248,0.1);border-radius:6px;padding:0.8rem 1rem;color:rgba(250,250,248,0.85);font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;transition:all 0.15s;display:flex;gap:0.8rem;align-items:flex-start">
         <span style="background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:var(--red);font-size:0.72rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:4px;flex-shrink:0;margin-top:0.05rem">${'ABCD'[i]}</span>
         <span>${c}</span>
       </button>`).join('');
 
-    // Reset feedback and hints
     const fb = document.getElementById('prac-feedback');
-    fb.style.display = 'none'; fb.textContent = '';
+    fb.style.display = 'none';
     document.getElementById('prac-hints').style.display = 'none';
     document.getElementById('prac-hint-text').style.display = 'none';
     document.getElementById('prac-next-btn').style.display = 'none';
-    document.getElementById('hint-btn-1').style.display = 'inline-block';
-    document.getElementById('hint-btn-2').style.display = 'none';
-    document.getElementById('hint-btn-3').style.display = 'none';
+    const h1 = document.getElementById('hint-btn-1');
+    const h2 = document.getElementById('hint-btn-2');
+    const h3 = document.getElementById('hint-btn-3');
+    if (h1) { h1.style.display = 'inline-block'; h1.disabled = false; h1.style.opacity = '1'; }
+    if (h2) { h2.style.display = 'none'; }
+    if (h3) { h3.style.display = 'none'; }
   }
 
   window.selectPracAnswer = function(choiceIdx) {
-    if (_pracAnswered) return;
+    if (_pracAnswered || !_pracQ) return;
     _pracAnswered = true;
     const correct = choiceIdx === _pracQ.answer;
     const fb = document.getElementById('prac-feedback');
 
-    // Color the buttons
-    _pracQ.choices.forEach((_, i) => {
+    (_pracQ.choices || []).forEach((_, i) => {
       const btn = document.getElementById('choice-btn-' + i);
       if (!btn) return;
       btn.style.cursor = 'default';
       if (i === _pracQ.answer) {
-        btn.style.background = 'rgba(46,204,113,0.15)';
+        btn.style.background  = 'rgba(46,204,113,0.15)';
         btn.style.borderColor = 'rgba(46,204,113,0.5)';
-        btn.style.color = '#7dffaa';
+        btn.style.color       = '#7dffaa';
       } else if (i === choiceIdx && !correct) {
-        btn.style.background = 'rgba(192,24,43,0.18)';
+        btn.style.background  = 'rgba(192,24,43,0.18)';
         btn.style.borderColor = 'rgba(192,24,43,0.5)';
-        btn.style.color = '#ff8a8a';
+        btn.style.color       = '#ff8a8a';
       }
     });
 
     if (correct) {
       fb.style.cssText = 'display:block;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);color:#7dffaa';
-      fb.textContent = '✓ Correct! Well done.';
-      _pracCorrect.push({ q: _pracQ.q, tag: _pracQ.tag, chosen: _pracQ.choices[choiceIdx] });
+      fb.innerHTML = '&#10003; Correct! Well done.';
+      _pracCorrect.push({ q: _pracQ.q.slice(0,120), tag: _pracQ.tag, chosen: (_pracQ.choices||[])[choiceIdx] });
     } else {
       fb.style.cssText = 'display:block;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6;background:rgba(192,24,43,0.12);border:1px solid rgba(192,24,43,0.3);color:#ff8a8a';
-      fb.textContent = `✗ Not quite. The correct answer is ${_pracQ.choices[_pracQ.answer]}.`;
-      _pracWrong.push({ q: _pracQ.q, tag: _pracQ.tag, chosen: _pracQ.choices[choiceIdx], correct: _pracQ.choices[_pracQ.answer] });
-      // Show hints for wrong answers
+      fb.innerHTML = `&#10007; Not quite. The correct answer is <strong style="color:#fafaf8">${(_pracQ.choices||[])[_pracQ.answer]}</strong>.`;
+      _pracWrong.push({ q: _pracQ.q.slice(0,120), tag: _pracQ.tag, chosen: (_pracQ.choices||[])[choiceIdx], correct: (_pracQ.choices||[])[_pracQ.answer] });
       document.getElementById('prac-hints').style.display = 'block';
     }
 
     document.getElementById('prac-next-btn').style.display = 'inline-block';
     document.getElementById('prac-correct-count').textContent = _pracCorrect.length;
-    document.getElementById('prac-wrong-count').textContent = _pracWrong.length;
+    document.getElementById('prac-wrong-count').textContent   = _pracWrong.length;
     updateSessionBadge();
   };
 
   window.showHint = function(level) {
-    _pracHintLevel = level;
-    const hints = _pracQ.hints || [];
+    const hints  = _pracQ?.hints || [];
     const hintEl = document.getElementById('prac-hint-text');
     hintEl.style.display = 'block';
-    hintEl.textContent = hints[level - 1] || '';
-
-    // Show next hint button
+    hintEl.textContent   = hints[level - 1] || '';
     if (level < hints.length) {
       const nextBtn = document.getElementById(`hint-btn-${level + 1}`);
       if (nextBtn) nextBtn.style.display = 'inline-block';
     }
-    // Disable clicked button
     const btn = document.getElementById(`hint-btn-${level}`);
     if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; }
   };
 
-  window.nextPracQuestion = function() {
-    loadNextQuestion();
-  };
+  window.nextPracQuestion = function() { loadNextQuestion(); };
 
   window.endPracSession = async function() {
     if (!_pracActive) return;
     _pracActive = false;
-
     const duration = Math.round((Date.now() - _pracStartTime) / 1000);
-    const total = _pracCorrect.length + _pracWrong.length;
-
+    const total    = _pracCorrect.length + _pracWrong.length;
     if (total === 0) {
       document.getElementById('prac-question-area').style.display = 'none';
       document.getElementById('prac-idle').style.display = 'block';
@@ -4882,32 +4975,28 @@ Good luck!`,
       document.getElementById('prac-session-badge').style.display = 'none';
       return;
     }
-
-    // Save to Firestore
     try {
       await addDoc(collection(db, 'practiceSessions'), {
-        studentId:  CU.uid,
-        studentName: CU.name || CU.email,
-        tutorId:    CU.tutorId || null,
-        subject:    _pracSubject,
-        difficulty: _pracDiff,
-        correct:    _pracCorrect,
-        wrong:      _pracWrong,
-        totalAnswered: total,
-        score:      Math.round(_pracCorrect.length / total * 100),
+        studentId:      CU.uid,
+        studentName:    CU.name || CU.email,
+        tutorId:        CU.tutorId || null,
+        subject:        _pracSubject,
+        difficulty:     _pracDiff,
+        correct:        _pracCorrect,
+        wrong:          _pracWrong,
+        totalAnswered:  total,
+        score:          Math.round(_pracCorrect.length / total * 100),
         durationSeconds: duration,
-        createdAt:  new Date().toISOString(),
+        createdAt:      new Date().toISOString(),
       });
     } catch(e) { console.error('Failed to save practice session:', e); }
-
-    // Show summary
     const pct = Math.round(_pracCorrect.length / total * 100);
     document.getElementById('prac-question-area').style.display = 'none';
     document.getElementById('prac-idle').innerHTML = `
       <div style="text-align:center;padding:1.5rem 0 0.5rem">
-        <div style="font-size:2.5rem;margin-bottom:0.8rem">${pct >= 80 ? '🎉' : pct >= 60 ? '💪' : '📚'}</div>
+        <div style="font-size:2.5rem;margin-bottom:0.8rem">${pct >= 80 ? '&#127881;' : pct >= 60 ? '&#128170;' : '&#128218;'}</div>
         <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:0.4rem">Session Complete</div>
-        <div style="color:rgba(250,250,248,0.5);font-size:0.9rem;margin-bottom:1.5rem">${_pracSubject === 'math' ? 'Math' : 'Reading & Writing'} · ${cap(_pracDiff)}</div>
+        <div style="color:rgba(250,250,248,0.5);font-size:0.9rem;margin-bottom:1.5rem">${_pracSubject === 'math' ? 'Math' : 'Reading &amp; Writing'} &middot; ${cap(_pracDiff)}</div>
         <div style="display:flex;gap:1.5rem;justify-content:center;margin-bottom:1.5rem">
           <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#7dffaa">${_pracCorrect.length}</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Correct</div></div>
           <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#ff8a8a">${_pracWrong.length}</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Wrong</div></div>
