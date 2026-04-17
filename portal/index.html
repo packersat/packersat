@@ -4713,21 +4713,20 @@ Good luck!`,
 
   // ── OpenSAT API fetch ────────────────────────────────────────
   // Maps OpenSAT difficulty estimate by domain — we classify by section
-  const OPENSAT_BASE = 'https://pinesat.com/api/questions';
+  const OPENSAT_BASE = 'https://packersat.vercel.app/api/sat-questions';
 
   async function fetchOpenSATQuestions(subject, difficulty) {
-    // OpenSAT uses "math" and "english" as section names
     const section = subject === 'math' ? 'MATH' : 'ENGLISH';
     const limit   = 200;
     try {
       const res  = await fetch(`${OPENSAT_BASE}?section=${section}&limit=${limit}`);
       if (!res.ok) throw new Error('API error ' + res.status);
       const data = await res.json();
-      // data is an array of question objects
-      // Map to our internal format and filter/classify by difficulty
+      if (!Array.isArray(data) || data.length === 0) throw new Error('Empty response');
+      console.log(`OpenSAT: received ${data.length} questions for ${section}`);
       return mapOpenSATQuestions(data, subject, difficulty);
     } catch(e) {
-      console.warn('OpenSAT fetch failed, using local bank:', e);
+      console.warn('OpenSAT fetch failed, using local bank:', e.message);
       return null;
     }
   }
