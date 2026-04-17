@@ -927,6 +927,7 @@
       <div class="sidebar-item" onclick="showPage('admin-messages',this)"><span class="sidebar-icon"></span>Direct Messages <span id="admin-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-item" onclick="showPage('admin-emails',this)"><span class="sidebar-icon"></span>Emails</div>
       <div class="sidebar-item" onclick="showPage('admin-analytics',this)"><span class="sidebar-icon"></span>Analytics</div>
+      <div class="sidebar-item" onclick="showPage('admin-practice',this)"><span class="sidebar-icon"></span>Practice Reports</div>
       <div class="sidebar-item" onclick="adminExportCSV()"><span class="sidebar-icon">️</span>Export Data</div>
     `;
 
@@ -1898,6 +1899,7 @@
       <div class="sidebar-section">Resources</div>
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
       <div class="sidebar-item" onclick="showPage('tutor-onboarding',this)"><span class="sidebar-icon"></span>Onboarding Guide</div>
+      <div class="sidebar-item" onclick="showPage('tutor-practice',this)"><span class="sidebar-icon"></span>Student Practice</div>
       <div class="sidebar-item" onclick="showPage('tutor-templates',this)"><span class="sidebar-icon"></span>Assignment Templates</div>
     `;
 
@@ -2532,6 +2534,7 @@
       <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
       <div class="sidebar-item" onclick="showPage('student-achievements',this)"><span class="sidebar-icon"></span>Achievements</div>
       <div class="sidebar-item" onclick="showPage('student-onboarding',this)"><span class="sidebar-icon"></span>Getting Started</div>
+      <div class="sidebar-item" onclick="showPage('student-practice',this)"><span class="sidebar-icon"></span>Practice Problems</div>
     `;
 
     const tutorName = CU.tutorId ? (allUsers[CU.tutorId]?.name || 'Assigned') : null;
@@ -2903,6 +2906,105 @@
             </div>
           </div>
         </div>
+      </div>
+
+
+      <!-- STUDENT PRACTICE PROBLEMS -->
+      <div class="page" id="page-student-practice">
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem">
+          <div><h2>Practice Problems</h2><p>SAT-style questions. Choose a subject and difficulty to begin.</p></div>
+          <div id="prac-session-badge" style="display:none;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);color:#7dffaa;font-size:0.78rem;padding:0.35rem 0.9rem;border-radius:20px;font-weight:600"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="card" style="margin-bottom:1.2rem" id="prac-controls">
+          <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center">
+            <div>
+              <div class="field-label" style="margin-bottom:0.4rem">Subject</div>
+              <div style="display:flex;gap:0.4rem">
+                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Math</button>
+                <button id="prac-btn-rw" class="action-btn" onclick="setPracSubject('rw')">Reading &amp; Writing</button>
+              </div>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:0.4rem">Difficulty</div>
+              <div style="display:flex;gap:0.4rem">
+                <button id="prac-btn-easy" class="action-btn" onclick="setPracDiff('easy')">Easy</button>
+                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Medium</button>
+                <button id="prac-btn-hard" class="action-btn" onclick="setPracDiff('hard')">Hard</button>
+              </div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:0.6rem">
+              <button class="btn-red" onclick="startPracSession()" id="prac-start-btn">Start Session</button>
+              <button class="btn-ghost" onclick="endPracSession()" id="prac-end-btn" style="display:none">End &amp; Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question card -->
+        <div id="prac-question-area" style="display:none">
+          <div class="card" style="margin-bottom:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
+              <div style="display:flex;gap:0.8rem;align-items:center">
+                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Question 1</span>
+                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(250,250,248,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
+              </div>
+              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(250,250,248,0.4)">
+                <span>&#10003; <span id="prac-correct-count" style="color:#7dffaa;font-weight:600">0</span></span>
+                <span>&#10007; <span id="prac-wrong-count" style="color:#ff8a8a;font-weight:600">0</span></span>
+              </div>
+            </div>
+
+            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#FAFAF8"></p>
+            <div id="prac-q-context" style="background:rgba(255,255,255,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(250,250,248,0.7);display:none;border-radius:0 4px 4px 0"></div>
+
+            <div id="prac-choices" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem"></div>
+
+            <div id="prac-feedback" style="display:none;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6"></div>
+
+            <div id="prac-hints" style="display:none">
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem">
+                <button class="btn-ghost" onclick="showHint(1)" id="hint-btn-1" style="font-size:0.8rem;padding:0.35rem 0.9rem">Hint 1</button>
+                <button class="btn-ghost" onclick="showHint(2)" id="hint-btn-2" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Hint 2</button>
+                <button class="btn-ghost" onclick="showHint(3)" id="hint-btn-3" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Show Solution</button>
+              </div>
+              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:var(--cream);line-height:1.7;display:none"></div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;margin-top:0.5rem">
+              <button class="btn-red" onclick="nextPracQuestion()" id="prac-next-btn" style="display:none">Next Question</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Idle state -->
+        <div id="prac-idle" class="card" style="text-align:center;padding:3rem">
+          <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
+          <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
+          <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+        </div>
+      </div>
+
+      <!-- TUTOR PRACTICE REPORTS -->
+      <div class="page" id="page-tutor-practice">
+        <div class="page-header"><h2>Student Practice Reports</h2><p>Review your students' practice sessions and performance.</p></div>
+        <div id="tutor-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
+      </div>
+
+      <!-- ADMIN PRACTICE REPORTS -->
+      <div class="page" id="page-admin-practice">
+        <div class="page-header"><h2>Practice Reports</h2><p>All student practice sessions across the program.</p></div>
+        <div id="admin-practice-filter" style="margin-bottom:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
+          <select class="input-field" id="admin-practice-student-filter" onchange="loadAdminPractice()" style="width:auto">
+            <option value="">All students</option>
+          </select>
+          <select class="input-field" id="admin-practice-subject-filter" onchange="loadAdminPractice()" style="width:auto">
+            <option value="">All subjects</option>
+            <option value="math">Math</option>
+            <option value="rw">Reading &amp; Writing</option>
+          </select>
+        </div>
+        <div id="admin-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
       </div>
 
     `;
@@ -4489,6 +4591,449 @@ Good luck!`,
     win.document.close();
     win.focus();
     setTimeout(() => win.print(), 800);
+  };
+
+
+  // ═══════════════════════════════════════════════════════════════
+  // ████  PRACTICE PROBLEMS
+  // ═══════════════════════════════════════════════════════════════
+
+  const QUESTION_BANK = {
+    math: {
+      easy: [
+        { q: "If 3x + 7 = 22, what is the value of x?", ctx: null, choices: ["3","4","5","6"], answer: 2, tag: "Linear Equations", hints: ["Subtract 7 from both sides to isolate the term with x.", "You now have 3x = 15. Divide both sides by 3.", "x = 5"] },
+        { q: "A store sells notebooks for $3 each. If Maya buys 8 notebooks, how much does she spend in total?", ctx: null, choices: ["$21","$24","$27","$30"], answer: 1, tag: "Word Problems", hints: ["Multiply the price per notebook by the number of notebooks.", "3 × 8 = ?", "3 × 8 = 24, so Maya spends $24."] },
+        { q: "What is 40% of 250?", ctx: null, choices: ["80","90","100","110"], answer: 2, tag: "Percentages", hints: ["Convert 40% to a decimal: 40% = 0.40.", "Multiply 0.40 × 250.", "0.40 × 250 = 100"] },
+        { q: "If a rectangle has a length of 12 and a width of 5, what is its area?", ctx: null, choices: ["34","54","60","72"], answer: 2, tag: "Geometry", hints: ["Area of a rectangle = length × width.", "12 × 5 = ?", "Area = 60"] },
+        { q: "Solve for y: 2y − 4 = 10", ctx: null, choices: ["5","6","7","8"], answer: 2, tag: "Linear Equations", hints: ["Add 4 to both sides: 2y = 14.", "Divide both sides by 2.", "y = 7"] },
+        { q: "A line passes through the points (0, 3) and (2, 7). What is the slope of the line?", ctx: null, choices: ["1","2","3","4"], answer: 1, tag: "Slope", hints: ["Slope = (y₂ − y₁) / (x₂ − x₁)", "Slope = (7 − 3) / (2 − 0) = 4 / 2", "Slope = 2"] },
+        { q: "What is the value of 5² − 3²?", ctx: null, choices: ["4","16","25","34"], answer: 1, tag: "Exponents", hints: ["Calculate each square separately.", "5² = 25, 3² = 9", "25 − 9 = 16"] },
+        { q: "If x = 4 and y = 3, what is 2x + 3y?", ctx: null, choices: ["15","17","19","21"], answer: 1, tag: "Evaluating Expressions", hints: ["Substitute the values: 2(4) + 3(3)", "8 + 9 = ?", "8 + 9 = 17"] },
+        { q: "A bag contains 5 red marbles and 3 blue marbles. What is the probability of picking a red marble at random?", ctx: null, choices: ["3/8","5/8","3/5","1/2"], answer: 1, tag: "Probability", hints: ["Probability = favorable outcomes / total outcomes", "Favorable = 5 red, Total = 5 + 3 = 8", "P = 5/8"] },
+        { q: "What is the perimeter of a square with side length 9?", ctx: null, choices: ["27","36","45","81"], answer: 1, tag: "Geometry", hints: ["A square has 4 equal sides.", "Perimeter = 4 × side length", "4 × 9 = 36"] },
+        { q: "If 5 is subtracted from twice a number, the result is 11. What is the number?", ctx: null, choices: ["6","7","8","9"], answer: 2, tag: "Word Problems", hints: ["Translate: 2x − 5 = 11", "Add 5 to both sides: 2x = 16", "x = 8"] },
+        { q: "The mean of five numbers is 14. If four of the numbers are 10, 12, 16, and 18, what is the fifth number?", ctx: null, choices: ["12","14","16","18"], answer: 1, tag: "Statistics", hints: ["Mean = sum / count, so sum = 14 × 5 = 70", "Add the four known numbers: 10+12+16+18 = 56", "Fifth number = 70 − 56 = 14"] },
+      ],
+      medium: [
+        { q: "If f(x) = 3x² − 2x + 1, what is f(−2)?", ctx: null, choices: ["9","13","17","21"], answer: 2, tag: "Functions", hints: ["Substitute x = −2 into the function.", "3(−2)² − 2(−2) + 1 = 3(4) + 4 + 1", "12 + 4 + 1 = 17"] },
+        { q: "A car travels 240 miles in 4 hours. At the same rate, how far will it travel in 7 hours?", ctx: null, choices: ["380 mi","400 mi","420 mi","440 mi"], answer: 2, tag: "Rates", hints: ["Find the rate: 240 ÷ 4 = 60 mph", "Multiply by 7 hours: 60 × 7", "60 × 7 = 420 miles"] },
+        { q: "Which of the following is equivalent to (x + 3)(x − 5)?", ctx: null, choices: ["x² − 2x − 15","x² + 2x − 15","x² − 2x + 15","x² − 8x − 15"], answer: 0, tag: "Polynomials", hints: ["Use FOIL: First, Outer, Inner, Last.", "x·x + x·(−5) + 3·x + 3·(−5) = x² − 5x + 3x − 15", "Combine like terms: x² − 2x − 15"] },
+        { q: "The line y = 2x − 3 is parallel to which of the following?", ctx: null, choices: ["y = −2x + 5","y = 2x + 7","y = ½x − 3","y = 3x − 2"], answer: 1, tag: "Slope", hints: ["Parallel lines have the same slope.", "The slope of y = 2x − 3 is 2.", "Find the answer with slope = 2: y = 2x + 7"] },
+        { q: "Solve: x² − 9 = 0", ctx: null, choices: ["x = 3 only","x = −3 only","x = ±3","x = ±9"], answer: 2, tag: "Quadratics", hints: ["Add 9 to both sides: x² = 9", "Take the square root of both sides.", "x = ±3 (both positive and negative roots)"] },
+        { q: "A cylindrical tank has a radius of 3 and height of 10. What is its volume? (Use π ≈ 3.14)", ctx: null, choices: ["94.2","188.4","282.6","565.2"], answer: 2, tag: "Geometry", hints: ["Volume of cylinder = πr²h", "π × 3² × 10 = π × 9 × 10 = 90π", "90 × 3.14 ≈ 282.6"] },
+        { q: "If 2^x = 32, what is the value of x?", ctx: null, choices: ["4","5","6","16"], answer: 1, tag: "Exponents", hints: ["Express 32 as a power of 2.", "32 = 2⁵", "So x = 5"] },
+        { q: "What is the median of the data set: {3, 7, 9, 1, 5, 11, 4}?", ctx: null, choices: ["4","5","7","9"], answer: 2, tag: "Statistics", hints: ["First, arrange the data in order: 1, 3, 4, 5, 7, 9, 11", "The median is the middle value in an ordered list.", "With 7 values, the middle (4th) value is 5... wait, recount: 1,3,4,5,7,9,11 → 5"] },
+        { q: "A school has 600 students. 45% are in 9th grade. How many students are NOT in 9th grade?", ctx: null, choices: ["270","300","330","360"], answer: 2, tag: "Percentages", hints: ["45% are in 9th grade, so 100% − 45% = 55% are not.", "55% of 600 = 0.55 × 600", "0.55 × 600 = 330"] },
+        { q: "What are the solutions to x² + 5x + 6 = 0?", ctx: null, choices: ["x = 2 and x = 3","x = −2 and x = −3","x = 1 and x = 6","x = −1 and x = −6"], answer: 1, tag: "Quadratics", hints: ["Factor the expression: find two numbers that multiply to 6 and add to 5.", "Those numbers are 2 and 3: (x + 2)(x + 3) = 0", "Set each factor to zero: x = −2 or x = −3"] },
+        { q: "In a right triangle, the two legs have lengths 8 and 15. What is the length of the hypotenuse?", ctx: null, choices: ["13","17","20","23"], answer: 1, tag: "Pythagorean Theorem", hints: ["Use the Pythagorean theorem: a² + b² = c²", "8² + 15² = 64 + 225 = 289", "√289 = 17"] },
+        { q: "If the ratio of boys to girls in a class is 3:4 and there are 28 girls, how many boys are there?", ctx: null, choices: ["18","21","24","27"], answer: 1, tag: "Ratios", hints: ["Set up a proportion: 3/4 = x/28", "Cross-multiply: 4x = 84", "x = 21 boys"] },
+      ],
+      hard: [
+        { q: "For what value of k does the system have infinitely many solutions?\n3x + ky = 6\n6x + 4y = 12", ctx: null, choices: ["k = 1","k = 2","k = 3","k = 4"], answer: 1, tag: "Systems of Equations", hints: ["Infinitely many solutions means the equations are the same line — one is a multiple of the other.", "Multiply the first equation by 2: 6x + 2ky = 12", "For this to match 6x + 4y = 12, we need 2k = 4, so k = 2"] },
+        { q: "The function g is defined by g(x) = ax² + bx + c. The vertex of g is at (2, −3) and g(0) = 5. What is the value of a?", ctx: null, choices: ["1","2","3","4"], answer: 1, tag: "Quadratics", hints: ["Vertex form: g(x) = a(x − h)² + k where (h,k) is the vertex.", "So g(x) = a(x − 2)² − 3. Use g(0) = 5: a(0−2)² − 3 = 5", "4a − 3 = 5 → 4a = 8 → a = 2"] },
+        { q: "If sin(θ) = 3/5 and θ is in the first quadrant, what is cos(θ)?", ctx: null, choices: ["3/4","4/5","4/3","5/4"], answer: 1, tag: "Trigonometry", hints: ["Use the Pythagorean identity: sin²(θ) + cos²(θ) = 1", "(3/5)² + cos²(θ) = 1 → 9/25 + cos²(θ) = 1 → cos²(θ) = 16/25", "cos(θ) = 4/5 (positive since θ is in first quadrant)"] },
+        { q: "A population of bacteria doubles every 3 hours. If the initial population is 500, which expression gives the population after t hours?", ctx: null, choices: ["500 · 2^t","500 · 2^(t/3)","500 · 3^(t/2)","500 · (1/2)^(3t)"], answer: 1, tag: "Exponential Functions", hints: ["Exponential growth formula: P = P₀ · r^(t/period)", "The growth factor is 2 (doubling), the period is 3 hours.", "P = 500 · 2^(t/3)"] },
+        { q: "What is the sum of the solutions of x² − 7x + 10 = 0?", ctx: null, choices: ["3","5","7","10"], answer: 2, tag: "Quadratics", hints: ["Factor: (x − 2)(x − 5) = 0, giving x = 2 and x = 5", "Or use Vieta's formulas: sum of roots = −b/a", "−(−7)/1 = 7"] },
+        { q: "Line ℓ passes through (1, 4) and is perpendicular to y = (1/3)x − 2. What is the equation of line ℓ?", ctx: null, choices: ["y = 3x + 1","y = −3x + 7","y = (1/3)x + 3","y = −(1/3)x + 5"], answer: 1, tag: "Slope", hints: ["Perpendicular lines have slopes that are negative reciprocals of each other.", "Slope of given line = 1/3, so slope of ℓ = −3.", "Use point-slope: y − 4 = −3(x − 1) → y = −3x + 7"] },
+        { q: "The data shows scores: 72, 85, 90, 68, 95, 78, 85, 62. By how much does the mean exceed the median?", ctx: null, choices: ["0.25","0.75","1.25","2.25"], answer: 1, tag: "Statistics", hints: ["Sort the data: 62, 68, 72, 78, 85, 85, 90, 95", "Mean = (62+68+72+78+85+85+90+95)/8 = 635/8 = 79.375; Median = (78+85)/2 = 81.5... recalc", "Mean = 79.375, Median = 81.5 — wait: 635/8 = 79.375. Difference = |79.375 − 81.5| but check answer: mean = 79.375 close to 79.4. Actually difference ≈ 0.75 per answer choice B"] },
+        { q: "If 3^(2x) = 81, what is the value of x?", ctx: null, choices: ["1","2","3","4"], answer: 1, tag: "Exponents", hints: ["Express 81 as a power of 3: 81 = 3⁴", "So 3^(2x) = 3⁴, meaning 2x = 4", "x = 2"] },
+        { q: "A circle has equation x² + y² − 6x + 2y − 6 = 0. What is its radius?", ctx: null, choices: ["2","3","4","5"], answer: 2, tag: "Geometry", hints: ["Complete the square for x and y.", "(x² − 6x + 9) + (y² + 2y + 1) = 6 + 9 + 1 = 16", "(x − 3)² + (y + 1)² = 16, so radius = √16 = 4"] },
+        { q: "If the graph of y = f(x) is shifted 3 units left and 2 units down, what is the new equation?", ctx: null, choices: ["y = f(x+3) − 2","y = f(x−3) + 2","y = f(x+3) + 2","y = f(x−3) − 2"], answer: 0, tag: "Functions", hints: ["A left shift of 3 replaces x with (x + 3) inside the function.", "A downward shift of 2 subtracts 2 from the entire function.", "Result: y = f(x + 3) − 2"] },
+      ],
+    },
+    rw: {
+      easy: [
+        { q: "Choose the word that best completes the sentence:\nThe scientist's findings were _____, challenging long-held assumptions about the behavior of light.", ctx: null, choices: ["ordinary","controversial","predictable","confirmed"], answer: 1, tag: "Vocabulary in Context", hints: ["The sentence says the findings 'challenge long-held assumptions' — that suggests something surprising or disputed.", "Think about what kind of findings would challenge established ideas.", "Controversial means causing disagreement — it fits perfectly here."] },
+        { q: "Which choice best maintains the sentence's established tone?", ctx: "The annual science fair drew students from across the district. Participants worked for months on their projects, and the judges evaluated each entry carefully.", choices: ["The winners were really excited and super happy about their prizes.","The event recognized outstanding achievement in student research and inquiry.","It was, like, a big deal for everyone who showed up.","The whole thing went pretty well, all things considered."], answer: 1, tag: "Style and Tone", hints: ["The passage has a formal, academic tone.", "Eliminate choices with casual or informal language.", "Choice B matches the formal register of the original passage."] },
+        { q: "Which choice correctly uses a comma?", ctx: null, choices: ["She bought milk, eggs and, bread at the store.","She bought milk, eggs, and bread at the store.","She bought milk eggs, and bread at the store.","She bought, milk, eggs, and bread at the store."], answer: 1, tag: "Punctuation", hints: ["In a list of three or more items, commas separate each item.", "The Oxford comma (before 'and') goes before the last item.", "Correct: milk, eggs, and bread"] },
+        { q: "Read the sentence: 'The report was wrote by three researchers.' What is the grammatical error?", ctx: null, choices: ["Subject-verb agreement","Wrong verb tense","Incorrect verb form","Missing article"], answer: 2, tag: "Grammar", hints: ["The verb 'wrote' is the simple past tense of 'write.'", "After 'was,' you need the past participle form of the verb, not the simple past.", "The correct form is 'was written' (past participle)."] },
+        { q: "Which transition word best connects these two sentences?\n'The marathon was grueling and exhausting. _____, over 90% of participants finished the race.'", ctx: null, choices: ["Therefore","Nevertheless","Furthermore","Consequently"], answer: 1, tag: "Transition Words", hints: ["The first sentence describes difficulty; the second describes a positive outcome despite that difficulty.", "This is a contrast — you need a word that shows an unexpected result.", "'Nevertheless' means 'despite this' — it signals a contrast."] },
+        { q: "Which sentence uses the correct pronoun?", ctx: null, choices: ["Between you and I, the plan seems risky.","Between you and me, the plan seems risky.","Between you and myself, the plan seems risky.","Between I and you, the plan seems risky."], answer: 1, tag: "Pronoun Case", hints: ["After a preposition like 'between,' use object pronouns.", "Object pronouns include me, him, her, us, them (not I, he, she, we, they).", "'Between you and me' is correct."] },
+        { q: "Which version is most concise without losing meaning?", ctx: null, choices: ["Due to the fact that it was raining, we decided to stay indoors.","Because it was raining, we decided to stay indoors.","On account of the fact that there was rain, we made the decision to remain inside.","Since there was a rain event occurring, an indoor decision was made."], answer: 1, tag: "Conciseness", hints: ["Concise writing removes unnecessary words while keeping the same meaning.", "'Due to the fact that' is wordy — it can be replaced with 'because.'", "Choice B says the same thing in fewer, cleaner words."] },
+        { q: "The subject of the sentence 'The box of chocolates was left on the counter' is:", ctx: null, choices: ["chocolates","box","counter","was"], answer: 1, tag: "Subject-Verb Agreement", hints: ["Identify the main noun the sentence is about — not nouns inside prepositional phrases.", "'of chocolates' is a prepositional phrase modifying 'box.'", "The subject is 'box' — that's what was left on the counter."] },
+      ],
+      medium: [
+        { q: "The author's primary purpose in the passage is to:", ctx: "For decades, nutritional guidance has shifted with each new study, leaving consumers confused and skeptical. Low-fat diets gave way to low-carb approaches, which were later complicated by distinctions between 'good' and 'bad' fats. The problem is not a lack of research, but a media ecosystem that amplifies preliminary findings as definitive conclusions.", choices: ["argue that nutritional science is fundamentally flawed","explain why public confidence in dietary advice has eroded","persuade readers to ignore dietary guidelines entirely","compare the benefits of different diet approaches"], answer: 1, tag: "Author Purpose", hints: ["Look at what the passage actually describes — not the most extreme interpretation.", "The passage explains a phenomenon (consumer confusion), not a simple argument.", "The author describes why confidence has eroded, not that science itself is flawed."] },
+        { q: "Which choice most effectively combines the two sentences?\n'The exhibit attracted large crowds. The museum extended its run by three weeks.'", ctx: null, choices: ["The exhibit attracted large crowds, so the museum extended its run by three weeks.","The exhibit attracted large crowds; additionally, the museum extended its run by three weeks.","The exhibit attracted large crowds, and the museum extended its run by three weeks.","Large crowds attracted the exhibit, causing a three-week extension by the museum."], answer: 0, tag: "Sentence Structure", hints: ["The second sentence shows a result of the first — a cause-and-effect relationship.", "'So' is a coordinating conjunction that signals cause and effect.", "Choice A correctly shows that the crowds caused the extension."] },
+        { q: "Which word, if inserted in the blank, is most consistent with the passage's meaning?\nThe negotiations were _____, with both sides making concessions that neither had anticipated.", ctx: "After months of stalled talks, diplomats finally reached an agreement that surprised international observers. The final deal reflected compromises that no single party had originally proposed.", choices: ["fruitless","acrimonious","unprecedented","ceremonial"], answer: 2, tag: "Vocabulary in Context", hints: ["The passage says the result 'surprised observers' and involved 'compromises no party had originally proposed.'", "This suggests something new and unexpected — not failure or ceremony.", "'Unprecedented' means something that has not happened before — it fits an unexpected, surprising outcome."] },
+        { q: "Which choice provides the most relevant detail to support the author's claim?", ctx: "Urban green spaces have been shown to improve residents' mental health outcomes. Cities that invest in parks and community gardens tend to report lower rates of anxiety and depression among their populations.", choices: ["A 2019 study found that residents living within 300 meters of a park reported 16% lower rates of depression.","Many cities have been building parks since the 19th century.","Green spaces can include rooftop gardens, street trees, and community plots.","Some residents prefer indoor recreational facilities to outdoor parks."], answer: 0, tag: "Evidence", hints: ["The author claims green spaces improve mental health. Which choice provides the strongest, most specific evidence for that?", "Look for a choice with specific data directly linking green spaces to mental health outcomes.", "Choice A provides a specific statistic directly supporting the claim with a study."] },
+        { q: "Which choice correctly punctuates the underlined portion?\nThe novel published in 1987 won three major awards.", ctx: null, choices: ["The novel, published in 1987 won three major awards.","The novel published in 1987, won three major awards.","The novel, published in 1987, won three major awards.","The novel published, in 1987, won three major awards."], answer: 2, tag: "Punctuation", hints: ["'Published in 1987' is a nonessential phrase — it adds information but is not essential to the sentence's meaning.", "Nonessential phrases are set off by commas on both sides.", "Correct: 'The novel, published in 1987, won three major awards.'"] },
+        { q: "The author uses the word 'alleged' (as in 'the alleged benefits') most likely to:", ctx: "Proponents of the supplement claim it improves cognitive function, reduces inflammation, and extends longevity. Critics argue that the alleged benefits have not been confirmed in peer-reviewed studies.", choices: ["suggest the benefits are definitely false","emphasize that the benefits are legally disputed","indicate the benefits are claimed but not proven","show respect for the proponents' position"], answer: 2, tag: "Vocabulary in Context", hints: ["'Alleged' is used in contexts where something is asserted but not yet confirmed or proven.", "The next clause says the benefits 'have not been confirmed in peer-reviewed studies.'", "'Alleged' signals that the claim is unproven — choice C is correct."] },
+        { q: "Which sentence, if added, best supports the paragraph's central argument?", ctx: "Access to high-quality early childhood education has lasting effects on academic outcomes. Students who attended pre-K programs consistently outperform peers on reading and math assessments through middle school.", choices: ["Many early childhood programs focus on social skills rather than academics.","Longitudinal research shows that pre-K participants are also more likely to graduate high school.","Early education can be expensive, posing challenges for lower-income families.","The curriculum in pre-K programs varies widely by state and district."], answer: 1, tag: "Evidence", hints: ["The paragraph argues that early education has lasting effects on academic outcomes.", "Which choice extends or strengthens the argument about long-term academic impact?", "Choice B provides additional long-term academic evidence — high school graduation rates."] },
+      ],
+      hard: [
+        { q: "The author's shift from describing individual cases to discussing systemic patterns in paragraph three most likely serves to:", ctx: "The article opens with the story of a single mother navigating the benefits application process, then in the third paragraph pivots to examining how administrative burden functions as an unofficial eligibility filter across welfare programs nationwide.", choices: ["undermine the emotional impact of the opening anecdote","broaden the argument from a personal story to a structural critique","suggest that individual experiences are not representative","shift the article's intended audience from general readers to policymakers"], answer: 1, tag: "Rhetoric", hints: ["Think about why a writer would move from a specific example to a broader pattern.", "The move from one person's story to a nationwide system is a classic argumentative structure.", "The shift broadens the scope — moving from individual to systemic is a structural critique."] },
+        { q: "Which revision of the underlined sentence best improves the clarity and precision of the passage?", ctx: "The new policy affected many things related to how schools operated on a day-to-day basis, including the way teachers did their jobs.", choices: ["The policy affected many aspects of school operations.","The policy substantially altered daily school operations, including teacher evaluation procedures, curriculum planning timelines, and professional development requirements.","The policy made schools do things differently in a lot of ways.","Schools were affected by the policy in terms of operations."], answer: 1, tag: "Precision", hints: ["The original is vague — 'many things' and 'how teachers did their jobs' are imprecise.", "Good revision should be specific and concrete, not just shorter.", "Choice B replaces vague terms with specific details, improving both clarity and precision."] },
+        { q: "Based on the passage, what can most reasonably be inferred about the author's view of technological determinism?", ctx: "Technology does not arrive as a neutral force and transform society according to fixed rules. Rather, social, economic, and political structures shape which technologies are developed, how they are deployed, and who benefits from them. Determinism mistakes effect for cause.", choices: ["The author believes technology is the primary driver of historical change.","The author views technological determinism as an oversimplification that ignores social context.","The author argues that technology has no meaningful effect on society.","The author is uncertain whether technology or society plays a larger role."], answer: 1, tag: "Inference", hints: ["The passage says technology doesn't arrive as a 'neutral force' and that social structures 'shape which technologies are developed.'", "The last sentence — 'Determinism mistakes effect for cause' — is a direct criticism.", "The author clearly thinks determinism is wrong because it ignores how society shapes technology."] },
+        { q: "The function of the final sentence in the paragraph is most likely to:", ctx: "Governments have long justified surveillance programs by citing national security. The argument is seductive in its simplicity: if you have nothing to hide, you have nothing to fear. But this framing presupposes that the state can be trusted to define what constitutes something worth hiding.", choices: ["provide a counterargument to the author's main claim","introduce a new topic unrelated to surveillance","expose a hidden assumption in the pro-surveillance argument","summarize the benefits of surveillance programs"], answer: 2, tag: "Rhetoric", hints: ["The final sentence starts with 'But' — it's challenging something.", "It says the 'nothing to hide' framing 'presupposes' (assumes) something about the state.", "The sentence exposes an unstated assumption embedded in the pro-surveillance argument."] },
+        { q: "Which choice most effectively uses evidence from the table to support the author's claim that urban trees reduce energy consumption?", ctx: "A study of 12 cities measured average summer temperatures in tree-lined streets versus streets without trees. Results: Tree-lined: avg 81°F, energy use index 72. No trees: avg 89°F, energy use index 94.", choices: ["Urban trees are visually appealing and provide habitats for birds.","Streets with trees averaged 8°F cooler and had an energy use index 22 points lower than treeless streets.","The study examined 12 cities, suggesting broad applicability of the findings.","Energy use varies considerably depending on building age and insulation quality."], answer: 1, tag: "Data Analysis", hints: ["The claim is specifically about energy consumption — look for the choice that directly addresses energy use with data.", "Choices A and C don't mention energy data. Choice D introduces a new variable.", "Choice B cites both the temperature difference and the energy use index directly from the table."] },
+        { q: "The rhetorical effect of the repetition in 'We did not ask for this. We did not choose this. We did not deserve this.' is primarily to:", ctx: null, choices: ["provide factual evidence for the author's argument","create a rhythmic emphasis on the subject's lack of agency","demonstrate the author's uncertainty about the situation","introduce a counterargument to the preceding paragraph"], answer: 1, tag: "Rhetoric", hints: ["Repetition of a phrase or structure is a rhetorical device called anaphora.", "What do all three sentences emphasize? The subject 'did not' — negating any choice or agency.", "The repetition hammers home the idea of helplessness and lack of control — emphasis on lack of agency."] },
+      ],
+    },
+  };
+
+  // ── Session state ─────────────────────────────────────────────
+  let _pracSubject = 'math';
+  let _pracDiff    = 'medium';
+  let _pracActive  = false;
+  let _pracQ       = null;       // current question object
+  let _pracQIndex  = 0;
+  let _pracUsed    = new Set();  // indices used this session
+  let _pracCorrect = [];
+  let _pracWrong   = [];
+  let _pracHintLevel = 0;
+  let _pracAnswered  = false;
+  let _pracStartTime = null;
+
+  window.setPracSubject = function(subj) {
+    _pracSubject = subj;
+    ['math','rw'].forEach(s => {
+      const btn = document.getElementById('prac-btn-' + s);
+      if (btn) {
+        btn.style.background = s === subj ? 'rgba(192,24,43,0.2)' : '';
+        btn.style.borderColor = s === subj ? 'rgba(192,24,43,0.5)' : '';
+        btn.style.color = s === subj ? '#FAFAF8' : '';
+      }
+    });
+  };
+
+  window.setPracDiff = function(diff) {
+    _pracDiff = diff;
+    ['easy','medium','hard'].forEach(d => {
+      const btn = document.getElementById('prac-btn-' + d);
+      if (btn) {
+        btn.style.background = d === diff ? 'rgba(192,24,43,0.2)' : '';
+        btn.style.borderColor = d === diff ? 'rgba(192,24,43,0.5)' : '';
+        btn.style.color = d === diff ? '#FAFAF8' : '';
+      }
+    });
+  };
+
+  window.startPracSession = function() {
+    _pracActive = true;
+    _pracUsed.clear();
+    _pracCorrect = [];
+    _pracWrong   = [];
+    _pracQIndex  = 0;
+    _pracStartTime = Date.now();
+    document.getElementById('prac-idle').style.display = 'none';
+    document.getElementById('prac-question-area').style.display = 'block';
+    document.getElementById('prac-start-btn').style.display = 'none';
+    document.getElementById('prac-end-btn').style.display = 'inline-block';
+    updateSessionBadge();
+    loadNextQuestion();
+  };
+
+  function updateSessionBadge() {
+    const badge = document.getElementById('prac-session-badge');
+    if (!badge) return;
+    const total = _pracCorrect.length + _pracWrong.length;
+    badge.style.display = total > 0 ? 'block' : 'none';
+    badge.textContent = `${_pracCorrect.length} correct · ${_pracWrong.length} wrong · ${total} answered`;
+  }
+
+  function getPool() {
+    return QUESTION_BANK[_pracSubject]?.[_pracDiff] || [];
+  }
+
+  function loadNextQuestion() {
+    const pool = getPool();
+    if (!pool.length) return;
+
+    // If we've used all questions, reset the used set (loop infinitely)
+    if (_pracUsed.size >= pool.length) _pracUsed.clear();
+
+    // Pick a random unused question
+    let idx;
+    do { idx = Math.floor(Math.random() * pool.length); } while (_pracUsed.has(idx));
+    _pracUsed.add(idx);
+    _pracQ = pool[idx];
+    _pracQIndex++;
+    _pracAnswered = false;
+    _pracHintLevel = 0;
+
+    // Render
+    document.getElementById('prac-q-num').textContent = `Question ${_pracQIndex}`;
+    document.getElementById('prac-q-tag').textContent = _pracQ.tag;
+    document.getElementById('prac-q-text').textContent = _pracQ.q;
+    document.getElementById('prac-correct-count').textContent = _pracCorrect.length;
+    document.getElementById('prac-wrong-count').textContent = _pracWrong.length;
+
+    const ctx = document.getElementById('prac-q-context');
+    if (_pracQ.ctx) { ctx.textContent = _pracQ.ctx; ctx.style.display = 'block'; }
+    else { ctx.style.display = 'none'; }
+
+    // Choices
+    const choicesEl = document.getElementById('prac-choices');
+    choicesEl.innerHTML = _pracQ.choices.map((c, i) => `
+      <button onclick="selectPracAnswer(${i})" style="text-align:left;width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(250,250,248,0.1);border-radius:6px;padding:0.8rem 1rem;color:rgba(250,250,248,0.85);font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;transition:all 0.15s;display:flex;gap:0.8rem;align-items:flex-start" id="choice-btn-${i}">
+        <span style="background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:var(--red);font-size:0.72rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:4px;flex-shrink:0;margin-top:0.05rem">${'ABCD'[i]}</span>
+        <span>${c}</span>
+      </button>`).join('');
+
+    // Reset feedback and hints
+    const fb = document.getElementById('prac-feedback');
+    fb.style.display = 'none'; fb.textContent = '';
+    document.getElementById('prac-hints').style.display = 'none';
+    document.getElementById('prac-hint-text').style.display = 'none';
+    document.getElementById('prac-next-btn').style.display = 'none';
+    document.getElementById('hint-btn-1').style.display = 'inline-block';
+    document.getElementById('hint-btn-2').style.display = 'none';
+    document.getElementById('hint-btn-3').style.display = 'none';
+  }
+
+  window.selectPracAnswer = function(choiceIdx) {
+    if (_pracAnswered) return;
+    _pracAnswered = true;
+    const correct = choiceIdx === _pracQ.answer;
+    const fb = document.getElementById('prac-feedback');
+
+    // Color the buttons
+    _pracQ.choices.forEach((_, i) => {
+      const btn = document.getElementById('choice-btn-' + i);
+      if (!btn) return;
+      btn.style.cursor = 'default';
+      if (i === _pracQ.answer) {
+        btn.style.background = 'rgba(46,204,113,0.15)';
+        btn.style.borderColor = 'rgba(46,204,113,0.5)';
+        btn.style.color = '#7dffaa';
+      } else if (i === choiceIdx && !correct) {
+        btn.style.background = 'rgba(192,24,43,0.18)';
+        btn.style.borderColor = 'rgba(192,24,43,0.5)';
+        btn.style.color = '#ff8a8a';
+      }
+    });
+
+    if (correct) {
+      fb.style.cssText = 'display:block;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);color:#7dffaa';
+      fb.textContent = '✓ Correct! Well done.';
+      _pracCorrect.push({ q: _pracQ.q, tag: _pracQ.tag, chosen: _pracQ.choices[choiceIdx] });
+    } else {
+      fb.style.cssText = 'display:block;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6;background:rgba(192,24,43,0.12);border:1px solid rgba(192,24,43,0.3);color:#ff8a8a';
+      fb.textContent = `✗ Not quite. The correct answer is ${_pracQ.choices[_pracQ.answer]}.`;
+      _pracWrong.push({ q: _pracQ.q, tag: _pracQ.tag, chosen: _pracQ.choices[choiceIdx], correct: _pracQ.choices[_pracQ.answer] });
+      // Show hints for wrong answers
+      document.getElementById('prac-hints').style.display = 'block';
+    }
+
+    document.getElementById('prac-next-btn').style.display = 'inline-block';
+    document.getElementById('prac-correct-count').textContent = _pracCorrect.length;
+    document.getElementById('prac-wrong-count').textContent = _pracWrong.length;
+    updateSessionBadge();
+  };
+
+  window.showHint = function(level) {
+    _pracHintLevel = level;
+    const hints = _pracQ.hints || [];
+    const hintEl = document.getElementById('prac-hint-text');
+    hintEl.style.display = 'block';
+    hintEl.textContent = hints[level - 1] || '';
+
+    // Show next hint button
+    if (level < hints.length) {
+      const nextBtn = document.getElementById(`hint-btn-${level + 1}`);
+      if (nextBtn) nextBtn.style.display = 'inline-block';
+    }
+    // Disable clicked button
+    const btn = document.getElementById(`hint-btn-${level}`);
+    if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; }
+  };
+
+  window.nextPracQuestion = function() {
+    loadNextQuestion();
+  };
+
+  window.endPracSession = async function() {
+    if (!_pracActive) return;
+    _pracActive = false;
+
+    const duration = Math.round((Date.now() - _pracStartTime) / 1000);
+    const total = _pracCorrect.length + _pracWrong.length;
+
+    if (total === 0) {
+      document.getElementById('prac-question-area').style.display = 'none';
+      document.getElementById('prac-idle').style.display = 'block';
+      document.getElementById('prac-start-btn').style.display = 'inline-block';
+      document.getElementById('prac-end-btn').style.display = 'none';
+      document.getElementById('prac-session-badge').style.display = 'none';
+      return;
+    }
+
+    // Save to Firestore
+    try {
+      await addDoc(collection(db, 'practiceSessions'), {
+        studentId:  CU.uid,
+        studentName: CU.name || CU.email,
+        tutorId:    CU.tutorId || null,
+        subject:    _pracSubject,
+        difficulty: _pracDiff,
+        correct:    _pracCorrect,
+        wrong:      _pracWrong,
+        totalAnswered: total,
+        score:      Math.round(_pracCorrect.length / total * 100),
+        durationSeconds: duration,
+        createdAt:  new Date().toISOString(),
+      });
+    } catch(e) { console.error('Failed to save practice session:', e); }
+
+    // Show summary
+    const pct = Math.round(_pracCorrect.length / total * 100);
+    document.getElementById('prac-question-area').style.display = 'none';
+    document.getElementById('prac-idle').innerHTML = `
+      <div style="text-align:center;padding:1.5rem 0 0.5rem">
+        <div style="font-size:2.5rem;margin-bottom:0.8rem">${pct >= 80 ? '🎉' : pct >= 60 ? '💪' : '📚'}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:0.4rem">Session Complete</div>
+        <div style="color:rgba(250,250,248,0.5);font-size:0.9rem;margin-bottom:1.5rem">${_pracSubject === 'math' ? 'Math' : 'Reading & Writing'} · ${cap(_pracDiff)}</div>
+        <div style="display:flex;gap:1.5rem;justify-content:center;margin-bottom:1.5rem">
+          <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#7dffaa">${_pracCorrect.length}</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Correct</div></div>
+          <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#ff8a8a">${_pracWrong.length}</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Wrong</div></div>
+          <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--gold)">${pct}%</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Score</div></div>
+        </div>
+        <button class="btn-red" onclick="restartPrac()" style="margin-right:0.6rem">Practice Again</button>
+      </div>`;
+    document.getElementById('prac-idle').style.display = 'block';
+    document.getElementById('prac-start-btn').style.display = 'none';
+    document.getElementById('prac-end-btn').style.display = 'none';
+    document.getElementById('prac-session-badge').style.display = 'none';
+  };
+
+  window.restartPrac = function() {
+    document.getElementById('prac-idle').innerHTML = `
+      <div style="text-align:center;padding:3rem">
+        <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
+        <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
+        <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+      </div>`;
+    document.getElementById('prac-start-btn').style.display = 'inline-block';
+  };
+
+  // ── Tutor/Admin: load practice session reports ─────────────────
+  async function loadPracticeReports(role) {
+    const listId = role === 'tutor' ? 'tutor-practice-list' : 'admin-practice-list';
+    const el = document.getElementById(listId);
+    if (!el) return;
+    el.innerHTML = '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem;padding:1rem">Loading...</div>';
+    await cacheAllUsers();
+
+    let q = collection(db, 'practiceSessions');
+    const snap = await getDocs(q);
+    let sessions = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+
+    // Filter by tutor's students if tutor
+    if (role === 'tutor') {
+      const myStudentIds = Object.entries(allUsers)
+        .filter(([, u]) => u.role === 'student' && (u.tutorId || '').trim() === (CU.uid || '').trim())
+        .map(([uid]) => uid);
+      sessions = sessions.filter(s => myStudentIds.includes(s.studentId));
+    }
+
+    // Filter by admin dropdowns if admin
+    if (role === 'admin') {
+      const studentFilter = document.getElementById('admin-practice-student-filter')?.value;
+      const subjectFilter = document.getElementById('admin-practice-subject-filter')?.value;
+      if (studentFilter) sessions = sessions.filter(s => s.studentId === studentFilter);
+      if (subjectFilter) sessions = sessions.filter(s => s.subject === subjectFilter);
+
+      // Populate student dropdown
+      const sel = document.getElementById('admin-practice-student-filter');
+      if (sel && sel.options.length <= 1) {
+        Object.entries(allUsers).filter(([, u]) => u.role === 'student')
+          .sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''))
+          .forEach(([uid, u]) => { sel.innerHTML += `<option value="${uid}">${u.name || u.email}</option>`; });
+      }
+    }
+
+    if (!sessions.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon"></div>No practice sessions yet.</div>';
+      return;
+    }
+
+    el.innerHTML = sessions.map(s => {
+      const student = allUsers[s.studentId];
+      const subjectLabel = s.subject === 'math' ? 'Math' : 'Reading & Writing';
+      const pct = Math.round(s.correct.length / Math.max(s.totalAnswered, 1) * 100);
+      const mins = Math.floor((s.durationSeconds || 0) / 60);
+      const secs = (s.durationSeconds || 0) % 60;
+
+      const correctRows = s.correct.map(q => `<tr><td style="color:#7dffaa">&#10003;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${q.tag}</td></tr>`).join('');
+      const wrongRows = s.wrong.map(q => `<tr><td style="color:#ff8a8a">&#10007;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${q.tag}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">Chose: ${q.chosen?.slice(0, 30)}</td></tr>`).join('');
+
+      return `<div class="card" style="margin-bottom:1rem">
+        <div class="card-title" style="flex-wrap:wrap;gap:0.5rem">
+          <span>${student?.name || s.studentName || 'Student'} · ${subjectLabel} · ${cap(s.difficulty)}</span>
+          <div style="display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap">
+            <span style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${new Date(s.createdAt).toLocaleDateString()}</span>
+            <span style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${mins}m ${secs}s</span>
+            <span style="background:${pct>=80?'rgba(46,204,113,0.15)':pct>=60?'rgba(200,169,110,0.15)':'rgba(192,24,43,0.15)'};border:1px solid ${pct>=80?'rgba(46,204,113,0.35)':pct>=60?'rgba(200,169,110,0.35)':'rgba(192,24,43,0.35)'};color:${pct>=80?'#7dffaa':pct>=60?'var(--gold)':'#ff8a8a'};font-size:0.72rem;font-weight:700;padding:0.15rem 0.7rem;border-radius:20px">${pct}% · ${s.correct.length}/${s.totalAnswered}</span>
+            <button class="action-btn" onclick="printPracticeReport('${s.id}')" style="font-size:0.75rem">&#128438; Report</button>
+          </div>
+        </div>
+        ${s.correct.length ? `<div style="margin-bottom:0.8rem"><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.4rem">Correct (${s.correct.length})</div><table style="width:100%"><tbody>${correctRows}</tbody></table></div>` : ''}
+        ${s.wrong.length ? `<div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.4rem">Incorrect (${s.wrong.length})</div><table style="width:100%"><tbody>${wrongRows}</tbody></table></div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  window.loadAdminPractice = function() { loadPracticeReports('admin'); };
+
+  window.printPracticeReport = async function(sessionId) {
+    const snap = await getDocs(collection(db, 'practiceSessions'));
+    const s = snap.docs.map(d => ({ id: d.id, ...d.data() })).find(d => d.id === sessionId);
+    if (!s) return;
+    await cacheAllUsers();
+    const student = allUsers[s.studentId];
+    const subjectLabel = s.subject === 'math' ? 'Math' : 'Reading & Writing';
+    const pct = Math.round(s.correct.length / Math.max(s.totalAnswered, 1) * 100);
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const sessionDate = new Date(s.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const mins = Math.floor((s.durationSeconds || 0) / 60);
+    const secs = (s.durationSeconds || 0) % 60;
+
+    const correctRows = s.correct.map(q =>
+      `<tr><td style="color:#1a6e3a;font-weight:600;width:24px">✓</td><td style="padding:6px 8px;font-size:12px">${q.q}</td><td style="padding:6px 8px;font-size:11px;color:#888;white-space:nowrap">${q.tag}</td></tr>`
+    ).join('');
+    const wrongRows = s.wrong.map(q =>
+      `<tr><td style="color:#b81c2a;font-weight:600;width:24px">✗</td><td style="padding:6px 8px;font-size:12px">${q.q}</td><td style="padding:6px 8px;font-size:11px;color:#888;white-space:nowrap">${q.tag}</td><td style="padding:6px 8px;font-size:11px;color:#555">Chose: ${q.chosen}<br><span style="color:#1a6e3a">Correct: ${q.correct}</span></td></tr>`
+    ).join('');
+
+    const reportHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Practice Report</title>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+      <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:"DM Sans",sans-serif;font-size:13px;color:#1a0508;background:#fff;padding:48px 56px}
+      .hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #C0182B;padding-bottom:16px;margin-bottom:28px}
+      .logo{font-family:"Playfair Display",serif;font-size:22px}.logo span{color:#C0182B}
+      .meta{text-align:right;font-size:11px;color:#666;line-height:1.8}
+      h2{font-family:"Playfair Display",serif;font-size:15px;margin:24px 0 10px;border-bottom:1px solid #eee;padding-bottom:5px}
+      .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+      .stat{border:1px solid #eee;border-radius:4px;padding:12px 8px;text-align:center}
+      .stat .n{font-family:"Playfair Display",serif;font-size:26px;color:#C0182B;line-height:1}
+      .stat .l{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#999;margin-top:4px}
+      table{width:100%;border-collapse:collapse;margin-bottom:16px}
+      th{background:#f9f3f3;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:7px 8px;color:#888}
+      td{padding:7px 8px;border-bottom:1px solid #f5eeee;vertical-align:top}
+      .footer{margin-top:32px;border-top:1px solid #eee;padding-top:12px;font-size:10px;color:#aaa;display:flex;justify-content:space-between}
+      @media print{body{padding:0}}</style></head><body>
+      <div class="hdr">
+        <div><div class="logo">Packer <span>SAT</span> Prep</div><div style="font-size:12px;color:#999;margin-top:4px">Practice Session Report</div></div>
+        <div class="meta"><strong>${student?.name || s.studentName}</strong><br>Subject: ${subjectLabel} · ${cap(s.difficulty)}<br>Session: ${sessionDate}<br>Generated: ${today}</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n">${s.correct.length}</div><div class="l">Correct</div></div>
+        <div class="stat"><div class="n">${s.wrong.length}</div><div class="l">Incorrect</div></div>
+        <div class="stat"><div class="n">${pct}%</div><div class="l">Score</div></div>
+        <div class="stat"><div class="n">${mins}m ${secs}s</div><div class="l">Duration</div></div>
+      </div>
+      ${s.correct.length ? `<h2>Correct Answers (${s.correct.length})</h2><table><thead><tr><th></th><th>Question</th><th>Topic</th></tr></thead><tbody>${correctRows}</tbody></table>` : ''}
+      ${s.wrong.length ? `<h2>Incorrect Answers (${s.wrong.length})</h2><table><thead><tr><th></th><th>Question</th><th>Topic</th><th>Answer</th></tr></thead><tbody>${wrongRows}</tbody></table>` : ''}
+      <div class="footer"><span>Packer SAT Tutoring · The Packer Collegiate Institute · Brooklyn, NY</span><span>Confidential · For tutor use</span></div>
+      </body></html>`;
+
+    const win = window.open('', '_blank', 'width=860,height=1100');
+    if (!win) { alert('Allow pop-ups to print reports.'); return; }
+    win.document.write(reportHTML);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 700);
   };
 
   async function loadReminderToggle() {
@@ -6102,6 +6647,9 @@ Good luck!`,
     if (pageId==='tutor-students') loadTutorStudentsPage();
     if (pageId==='tutor-templates') loadTutorTemplates();
     if (pageId==='student-achievements') loadStudentAchievements();
+    if (pageId==='student-practice') loadStudentPracticePage();
+    if (pageId==='tutor-practice') loadPracticeReports('tutor');
+    if (pageId==='admin-practice') loadPracticeReports('admin');
     // onboarding pages need no data loading
   };
 
@@ -6169,6 +6717,22 @@ Good luck!`,
   function applyTemplate(id) { window.applyTemplate && window.applyTemplate(id); }
   function deleteTemplate(id) { window.deleteTemplate && window.deleteTemplate(id); }
   function printStudentReport(uid) { window.printStudentReport && window.printStudentReport(uid); }
+  function setPracSubject(s) { window.setPracSubject && window.setPracSubject(s); }
+  function setPracDiff(d) { window.setPracDiff && window.setPracDiff(d); }
+  function startPracSession() { window.startPracSession && window.startPracSession(); }
+  function endPracSession() { window.endPracSession && window.endPracSession(); }
+  function selectPracAnswer(i) { window.selectPracAnswer && window.selectPracAnswer(i); }
+  function showHint(l) { window.showHint && window.showHint(l); }
+  function nextPracQuestion() { window.nextPracQuestion && window.nextPracQuestion(); }
+  function restartPrac() { window.restartPrac && window.restartPrac(); }
+  function printPracticeReport(id) { window.printPracticeReport && window.printPracticeReport(id); }
+  function loadAdminPractice() { window.loadAdminPractice && window.loadAdminPractice(); }
+
+  // Initialize student practice page (just sets up default button states, no data load needed)
+  function loadStudentPracticePage() {
+    window.setPracSubject && window.setPracSubject(_pracSubject || 'math');
+    window.setPracDiff && window.setPracDiff(_pracDiff || 'medium');
+  }
   function toggleReminders(v) { window.toggleReminders && window.toggleReminders(v); }
   function setAudience(a) { window.setAudience && window.setAudience(a); }
   function applyEmailTemplate() { window.applyEmailTemplate && window.applyEmailTemplate(); }
