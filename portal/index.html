@@ -1513,6 +1513,23 @@
 
         </div>
       </div>
+
+      <!-- ADMIN PRACTICE REPORTS -->
+      <div class="page" id="page-admin-practice">
+        <div class="page-header"><h2>Practice Reports</h2><p>All student practice sessions across the program.</p></div>
+        <div id="admin-practice-filter" style="margin-bottom:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
+          <select class="input-field" id="admin-practice-student-filter" onchange="loadAdminPractice()" style="width:auto">
+            <option value="">All students</option>
+          </select>
+          <select class="input-field" id="admin-practice-subject-filter" onchange="loadAdminPractice()" style="width:auto">
+            <option value="">All subjects</option>
+            <option value="math">Math</option>
+            <option value="rw">Reading &amp; Writing</option>
+          </select>
+        </div>
+        <div id="admin-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
+      </div>
+
     `;
 
     loadAdminStats();
@@ -2290,6 +2307,13 @@
 
         </div>
       </div>
+
+      <!-- TUTOR PRACTICE REPORTS -->
+      <div class="page" id="page-tutor-practice">
+        <div class="page-header"><h2>Student Practice Reports</h2><p>Review your students' practice sessions and performance.</p></div>
+        <div id="tutor-practice-list"><div class="empty-state"><div class="icon"></div>Loading...</div></div>
+      </div>
+
     `;
 
     loadTutorDashboard();
