@@ -4945,19 +4945,24 @@ Good luck!`,
     }
 
     if (!sessions.length) {
-      el.innerHTML = '<div class="empty-state"><div class="icon"></div>No practice sessions yet.</div>';
+      el.innerHTML = '<div class="empty-state"><div class="icon"></div>' +
+        (role === 'tutor' ? 'No practice sessions from your students yet. Students complete sessions under Practice Problems in their sidebar.' : 'No practice sessions yet across the program.') +
+        '</div>';
       return;
     }
 
     el.innerHTML = sessions.map(s => {
       const student = allUsers[s.studentId];
       const subjectLabel = s.subject === 'math' ? 'Math' : 'Reading & Writing';
-      const pct = Math.round(s.correct.length / Math.max(s.totalAnswered, 1) * 100);
+      const correct = Array.isArray(s.correct) ? s.correct : [];
+      const wrong   = Array.isArray(s.wrong)   ? s.wrong   : [];
+      const total   = s.totalAnswered || (correct.length + wrong.length) || 1;
+      const pct = Math.round(correct.length / total * 100);
       const mins = Math.floor((s.durationSeconds || 0) / 60);
       const secs = (s.durationSeconds || 0) % 60;
 
-      const correctRows = s.correct.map(q => `<tr><td style="color:#7dffaa">&#10003;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${q.tag}</td></tr>`).join('');
-      const wrongRows = s.wrong.map(q => `<tr><td style="color:#ff8a8a">&#10007;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${q.tag}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">Chose: ${q.chosen?.slice(0, 30)}</td></tr>`).join('');
+      const correctRows = correct.map(q => `<tr><td style="color:#7dffaa">&#10003;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${q.tag}</td></tr>`).join('');
+      const wrongRows = wrong.map(q => `<tr><td style="color:#ff8a8a">&#10007;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${q.tag}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">Chose: ${q.chosen?.slice(0, 30)}</td></tr>`).join('');
 
       return `<div class="card" style="margin-bottom:1rem">
         <div class="card-title" style="flex-wrap:wrap;gap:0.5rem">
@@ -4965,12 +4970,12 @@ Good luck!`,
           <div style="display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap">
             <span style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${new Date(s.createdAt).toLocaleDateString()}</span>
             <span style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${mins}m ${secs}s</span>
-            <span style="background:${pct>=80?'rgba(46,204,113,0.15)':pct>=60?'rgba(200,169,110,0.15)':'rgba(192,24,43,0.15)'};border:1px solid ${pct>=80?'rgba(46,204,113,0.35)':pct>=60?'rgba(200,169,110,0.35)':'rgba(192,24,43,0.35)'};color:${pct>=80?'#7dffaa':pct>=60?'var(--gold)':'#ff8a8a'};font-size:0.72rem;font-weight:700;padding:0.15rem 0.7rem;border-radius:20px">${pct}% · ${s.correct.length}/${s.totalAnswered}</span>
+            <span style="background:${pct>=80?'rgba(46,204,113,0.15)':pct>=60?'rgba(200,169,110,0.15)':'rgba(192,24,43,0.15)'};border:1px solid ${pct>=80?'rgba(46,204,113,0.35)':pct>=60?'rgba(200,169,110,0.35)':'rgba(192,24,43,0.35)'};color:${pct>=80?'#7dffaa':pct>=60?'var(--gold)':'#ff8a8a'};font-size:0.72rem;font-weight:700;padding:0.15rem 0.7rem;border-radius:20px">${pct}% · ${correct.length}/${total}</span>
             <button class="action-btn" onclick="printPracticeReport('${s.id}')" style="font-size:0.75rem">&#128438; Report</button>
           </div>
         </div>
-        ${s.correct.length ? `<div style="margin-bottom:0.8rem"><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.4rem">Correct (${s.correct.length})</div><table style="width:100%"><tbody>${correctRows}</tbody></table></div>` : ''}
-        ${s.wrong.length ? `<div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.4rem">Incorrect (${s.wrong.length})</div><table style="width:100%"><tbody>${wrongRows}</tbody></table></div>` : ''}
+        ${correct.length ? `<div style="margin-bottom:0.8rem"><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.4rem">Correct (${correct.length})</div><table style="width:100%"><tbody>${correctRows}</tbody></table></div>` : ''}
+        ${wrong.length ? `<div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.4rem">Incorrect (${wrong.length})</div><table style="width:100%"><tbody>${wrongRows}</tbody></table></div>` : ''}
       </div>`;
     }).join('');
   }
