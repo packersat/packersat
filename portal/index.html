@@ -4699,6 +4699,8 @@ Good luck!`,
   // ── Session state ─────────────────────────────────────────────
   let _pracSubject  = 'math';
   let _pracDiff     = 'medium';
+  window._pracSubject = _pracSubject;
+  window._pracDiff    = _pracDiff;
   let _pracActive   = false;
   let _pracQ        = null;
   let _pracQIndex   = 0;
@@ -4790,6 +4792,7 @@ Good luck!`,
 
   window.setPracSubject = function(subj) {
     _pracSubject = subj;
+    window._pracSubject = subj;
     ['math','rw'].forEach(s => {
       const btn = document.getElementById('prac-btn-' + s);
       if (!btn) return;
@@ -4801,6 +4804,7 @@ Good luck!`,
 
   window.setPracDiff = function(diff) {
     _pracDiff = diff;
+    window._pracDiff = diff;
     ['easy','medium','hard'].forEach(d => {
       const btn = document.getElementById('prac-btn-' + d);
       if (!btn) return;
@@ -6847,8 +6851,8 @@ Good luck!`,
 
   // Initialize student practice page (just sets up default button states, no data load needed)
   function loadStudentPracticePage() {
-    window.setPracSubject && window.setPracSubject(_pracSubject || 'math');
-    window.setPracDiff && window.setPracDiff(_pracDiff || 'medium');
+    window.setPracSubject && window.setPracSubject(window._pracSubject || 'math');
+    window.setPracDiff && window.setPracDiff(window._pracDiff || 'medium');
   }
   function toggleReminders(v) { window.toggleReminders && window.toggleReminders(v); }
   function setAudience(a) { window.setAudience && window.setAudience(a); }
