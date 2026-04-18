@@ -1142,6 +1142,252 @@
     .success-msg h4 { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; margin-bottom: 0.55rem; }
     .success-msg p { color: rgba(250,250,248,0.52); font-size: 0.88rem; line-height: 1.65; }
 
+    /* ── STORY / SCROLLYTELLING ── */
+    #story {
+      background: rgba(107,15,26,0.04);
+      border-top: 1px solid rgba(192,24,43,0.08);
+      border-bottom: 1px solid rgba(192,24,43,0.08);
+    }
+    .story-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 5rem;
+    }
+    .story-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 4rem;
+    }
+    .story-visual {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      height: 340px;
+    }
+    .story-panel {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.52s cubic-bezier(.22,1,.36,1),
+                  transform 0.52s cubic-bezier(.22,1,.36,1);
+      pointer-events: none;
+    }
+    .story-panel.sp-active {
+      opacity: 1;
+      transform: none;
+      pointer-events: all;
+    }
+    .story-steps {
+      padding: 14vh 0 14vh 4rem;
+      border-left: 1px solid rgba(192,24,43,0.08);
+    }
+    .story-step {
+      min-height: 72vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 1.5rem 0;
+      opacity: 0.22;
+      transition: opacity 0.42s cubic-bezier(.22,1,.36,1);
+    }
+    .story-step.ss-active { opacity: 1; }
+    .ss-num {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 1.1rem;
+    }
+    .story-step h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.55rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.9rem;
+    }
+    .story-step p {
+      font-size: 0.97rem;
+      color: rgba(250,250,248,0.55);
+      line-height: 1.82;
+      font-weight: 300;
+      max-width: 380px;
+    }
+
+    /* Panel shared */
+    .sp-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Panel 0 — SAT Structure */
+    .sp0-rows { display: flex; flex-direction: column; }
+    .sp0-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid rgba(250,250,248,0.05);
+    }
+    .sp0-row:first-child { border-top: 1px solid rgba(250,250,248,0.05); }
+    .sp0-row-left { display: flex; align-items: center; gap: 0.8rem; }
+    .sp0-icon {
+      width: 30px; height: 30px;
+      background: rgba(192,24,43,0.1);
+      border: 1px solid rgba(192,24,43,0.2);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sp0-name { font-size: 0.88rem; font-weight: 500; color: rgba(250,250,248,0.78); }
+    .sp0-score {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .sp0-score span {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem;
+      color: rgba(250,250,248,0.3);
+      font-weight: 300;
+    }
+    .sp0-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 1.3rem;
+    }
+    .sp0-total-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(250,250,248,0.3);
+    }
+    .sp0-total-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 900;
+    }
+
+    /* Panel 1 — The Gap */
+    .sp1-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 1.4rem;
+    }
+    .sp1-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1.2rem; }
+    .sp1-tag {
+      background: rgba(192,24,43,0.07);
+      border: 1px solid rgba(192,24,43,0.14);
+      color: rgba(250,250,248,0.38);
+      font-size: 0.7rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 2px;
+      letter-spacing: 0.04em;
+    }
+    .sp1-tag.lit {
+      background: rgba(192,24,43,0.2);
+      border-color: rgba(192,24,43,0.42);
+      color: var(--cream);
+    }
+    .sp1-note {
+      font-size: 0.78rem;
+      color: rgba(250,250,248,0.32);
+      font-style: italic;
+      line-height: 1.62;
+    }
+
+    /* Panel 2 — Weekly Sessions */
+    .sp2-week {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.35rem;
+      margin-bottom: 1.4rem;
+    }
+    .sp2-day { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+    .sp2-lbl {
+      font-size: 0.58rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(250,250,248,0.2);
+    }
+    .sp2-circle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(250,250,248,0.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.68rem;
+      color: rgba(250,250,248,0.16);
+    }
+    .sp2-day.session .sp2-circle {
+      background: rgba(192,24,43,0.16);
+      border-color: rgba(192,24,43,0.38);
+      color: var(--cream);
+      font-weight: 600;
+    }
+    .sp2-legend {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.74rem;
+      color: rgba(250,250,248,0.32);
+    }
+    .sp2-legend-dot {
+      width: 7px; height: 7px;
+      background: rgba(192,24,43,0.55);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Panel 3 — Free */
+    .sp3-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 5.5rem;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .sp3-rule {
+      width: 2.5rem;
+      height: 1px;
+      background: rgba(200,169,110,0.35);
+      margin-bottom: 1rem;
+    }
+    .sp3-sub {
+      font-size: 0.88rem;
+      color: rgba(250,250,248,0.45);
+      line-height: 1.75;
+      font-weight: 300;
+      max-width: 280px;
+    }
+
+    @media (max-width: 1100px) {
+      .story-inner { padding: 0 3rem; }
+      .story-sticky { padding-right: 2.5rem; }
+      .story-steps { padding-left: 2.5rem; }
+    }
+    @media (max-width: 860px) {
+      #story { display: none; }
+    }
+
     /* ── HAMBURGER ── */
     .hamburger {
       display: none;
@@ -1418,6 +1664,121 @@
     <span class="marquee-item">Student-run program <span class="marquee-dot"></span></span>
   </div>
 </div>
+
+<!-- STORY -->
+<section id="story">
+  <div class="story-inner">
+
+    <!-- STICKY LEFT PANEL -->
+    <div class="story-sticky">
+      <div class="story-visual">
+
+        <!-- Panel 0: The Test -->
+        <div class="story-panel sp-active" data-panel="0">
+          <div class="sp-eyebrow">The Digital SAT</div>
+          <div class="sp0-rows">
+            <div class="sp0-row">
+              <div class="sp0-row-left">
+                <div class="sp0-icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,24,43,0.75)" stroke-width="1.5" stroke-linecap="round"><path d="M19 5H6l7 7-7 7h13"/></svg>
+                </div>
+                <div class="sp0-name">Math</div>
+              </div>
+              <div class="sp0-score">800 <span>/ 800</span></div>
+            </div>
+            <div class="sp0-row">
+              <div class="sp0-row-left">
+                <div class="sp0-icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(192,24,43,0.75)" stroke-width="1.5" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                </div>
+                <div class="sp0-name">Reading &amp; Writing</div>
+              </div>
+              <div class="sp0-score">800 <span>/ 800</span></div>
+            </div>
+          </div>
+          <div class="sp0-total">
+            <span class="sp0-total-label">Total Possible</span>
+            <span class="sp0-total-num">1600</span>
+          </div>
+        </div>
+
+        <!-- Panel 1: The Gap -->
+        <div class="story-panel" data-panel="1">
+          <div class="sp-eyebrow">Your Starting Point</div>
+          <div class="sp1-title">Every student has a section<br>that holds them back.</div>
+          <div class="sp1-tags">
+            <span class="sp1-tag lit">Algebra</span>
+            <span class="sp1-tag">Grammar</span>
+            <span class="sp1-tag lit">Time Management</span>
+            <span class="sp1-tag">Rhetoric</span>
+            <span class="sp1-tag">Geometry</span>
+            <span class="sp1-tag lit">Data Analysis</span>
+            <span class="sp1-tag">Vocabulary</span>
+            <span class="sp1-tag">Trigonometry</span>
+            <span class="sp1-tag">Evidence Analysis</span>
+          </div>
+          <div class="sp1-note">Common areas where students leave points on the table.</div>
+        </div>
+
+        <!-- Panel 2: The Work -->
+        <div class="story-panel" data-panel="2">
+          <div class="sp-eyebrow">Your Weekly Schedule</div>
+          <div class="sp2-week">
+            <div class="sp2-day"><span class="sp2-lbl">M</span><div class="sp2-circle">5</div></div>
+            <div class="sp2-day session"><span class="sp2-lbl">T</span><div class="sp2-circle">6</div></div>
+            <div class="sp2-day"><span class="sp2-lbl">W</span><div class="sp2-circle">7</div></div>
+            <div class="sp2-day session"><span class="sp2-lbl">T</span><div class="sp2-circle">8</div></div>
+            <div class="sp2-day"><span class="sp2-lbl">F</span><div class="sp2-circle">9</div></div>
+            <div class="sp2-day"><span class="sp2-lbl">S</span><div class="sp2-circle">10</div></div>
+            <div class="sp2-day"><span class="sp2-lbl">S</span><div class="sp2-circle">11</div></div>
+          </div>
+          <div class="sp2-legend">
+            <div class="sp2-legend-dot"></div>
+            Session days &mdash; on campus, around your schedule
+          </div>
+        </div>
+
+        <!-- Panel 3: Free -->
+        <div class="story-panel" data-panel="3">
+          <div class="sp-eyebrow">What it costs you</div>
+          <div class="sp3-num">Free.</div>
+          <div class="sp3-rule"></div>
+          <div class="sp3-sub">No session fees. No materials cost. No fine print. Every Packer student gets exactly the same access.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SCROLLABLE STEPS -->
+    <div class="story-steps">
+
+      <div class="story-step ss-active" data-step="0">
+        <div class="ss-num">01 &mdash; The Test</div>
+        <h3>Two sections.<br>One score.</h3>
+        <p>The Digital SAT measures Math and Reading &amp; Writing separately, each worth 800 points. Most students have real room to grow in at least one.</p>
+      </div>
+
+      <div class="story-step" data-step="1">
+        <div class="ss-num">02 &mdash; The Gap</div>
+        <h3>We find exactly<br>where you're losing points.</h3>
+        <p>Before anything else, we identify your specific weak spots — a question type, a pacing problem, a section that doesn't click yet. That's where we start.</p>
+      </div>
+
+      <div class="story-step" data-step="2">
+        <div class="ss-num">03 &mdash; The Work</div>
+        <h3>Weekly sessions.<br>Real progress.</h3>
+        <p>One to two focused sessions per week, on campus. Consistent, structured practice is what turns a weak spot into a strength before test day.</p>
+      </div>
+
+      <div class="story-step" data-step="3">
+        <div class="ss-num">04 &mdash; The Cost</div>
+        <h3>Nothing.<br>Not a dollar.</h3>
+        <p>Test prep services charge hundreds per hour. We think your score shouldn't depend on what your family can afford. This program is free for every Packer student, always.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
 
 <!-- ABOUT -->
 <section id="about">
@@ -1865,6 +2226,32 @@
     document.getElementById('hamburger').classList.remove('open');
     document.body.style.overflow = '';
   }
+
+  /* ── STORY SCROLLYTELLING ── */
+  (function initStory() {
+    const steps  = document.querySelectorAll('.story-step');
+    const panels = document.querySelectorAll('.story-panel');
+    if (!steps.length || !panels.length) return;
+
+    const activate = (idx) => {
+      panels.forEach(p => p.classList.remove('sp-active'));
+      steps.forEach(s => s.classList.remove('ss-active'));
+      if (panels[idx]) panels[idx].classList.add('sp-active');
+      if (steps[idx])  steps[idx].classList.add('ss-active');
+    };
+
+    // rootMargin creates a trigger band in the center 30% of the viewport.
+    // When a step enters this band, its panel activates.
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          activate(parseInt(entry.target.dataset.step, 10));
+        }
+      });
+    }, { threshold: 0, rootMargin: '-35% 0px -35% 0px' });
+
+    steps.forEach(step => obs.observe(step));
+  })();
 </script>
 </body>
 </html>
