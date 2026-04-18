@@ -4734,6 +4734,31 @@ Good luck!`,
     }
   }
 
+  function cleanLatex(text) {
+    if (!text || typeof text !== 'string') return text;
+    return text
+      // Remove display math: $$...$$ or \[...\]
+      .replace(/\$\$([^$]*)\$\$/g, '$1')
+      .replace(/\\\[([^\]]*)\\\]/g, '$1')
+      // Remove inline math: $...$
+      .replace(/\$([^$]+)\$/g, '$1')
+      // Clean up LaTeX commands
+      .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+      .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+      .replace(/\\left\(/g, '(').replace(/\\right\)/g, ')')
+      .replace(/\\left\[/g, '[').replace(/\\right\]/g, ']')
+      .replace(/\\cdot/g, '·').replace(/\\times/g, '×').replace(/\\div/g, '÷')
+      .replace(/\\leq/g, '≤').replace(/\\geq/g, '≥').replace(/\\neq/g, '≠')
+      .replace(/\\pm/g, '±').replace(/\\infty/g, '∞')
+      .replace(/\^{([^}]+)}/g, '^$1').replace(/_{([^}]+)}/g, '_$1')
+      .replace(/\^(\w)/g, '^$1').replace(/_(\w)/g, '_$1')
+      .replace(/\\[a-zA-Z]+\{([^}]+)\}/g, '$1')
+      .replace(/\\[a-zA-Z]+/g, '')
+      .replace(/\{|\}/g, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
   function mapOpenSATQuestions(data, subject, difficulty) {
     if (!Array.isArray(data) || !data.length) return null;
     const mapped = [];
@@ -4743,22 +4768,31 @@ Good luck!`,
         const q = item.question;
         if (!q || !q.question || !q.choices || !q.correct_answer) continue;
 
-        const choices = ['A','B','C','D'].map(k => q.choices[k]).filter(Boolean);
+        const choices = ['A','B','C','D'].map(k => cleanLatex(q.choices[k])).filter(Boolean);
         if (choices.length !== 4) continue;
 
         const answerIdx = ['A','B','C','D'].indexOf(q.correct_answer);
         if (answerIdx === -1) continue;
 
+        // Strip LaTeX from question text
+        const questionText = cleanLatex(q.question);
+
+        // Paragraph: only show if it's a real non-null non-empty string
+        const rawParagraph = q.paragraph;
+        const paragraph = (rawParagraph && typeof rawParagraph === 'string' &&
+          rawParagraph.trim() !== '' && rawParagraph.trim().toLowerCase() !== 'null')
+          ? cleanLatex(rawParagraph.trim()) : null;
+
         // Build progressive hints from explanation
-        const explanation = q.explanation || '';
+        const explanation = cleanLatex(q.explanation || '');
         const sentences   = explanation.match(/[^.!?]+[.!?]+/g) || [];
         const hint1 = sentences[0]?.trim() || 'Re-read the question carefully and eliminate obviously wrong answers.';
         const hint2 = sentences[1]?.trim() || 'Consider each answer choice against the question.';
         const hint3 = `The correct answer is ${q.correct_answer}: ${choices[answerIdx]}. ${sentences[2]?.trim() || explanation.slice(0, 120)}`;
 
         mapped.push({
-          q:       q.question,
-          ctx:     q.paragraph || null,
+          q:      questionText,
+          ctx:    paragraph,
           choices,
           answer:  answerIdx,
           tag:     item.domain || (subject === 'math' ? 'Math' : 'Reading & Writing'),
@@ -4770,7 +4804,7 @@ Good luck!`,
 
     // Filter by difficulty if we have enough questions
     const filtered = mapped.filter(q => q._diff === difficulty);
-    return filtered.length >= 10 ? filtered : mapped; // fall back to all if not enough
+    return filtered.length >= 10 ? filtered : mapped;
   }
 
   function estimateDifficulty(item, subject) {
