@@ -404,6 +404,22 @@
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
+  <!-- MathJax: renders LaTeX math in practice problems -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+      startup: { typeset: false }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+  <style>
+    /* Make MathJax rendered math match portal text color */
+    #prac-q-text mjx-container, #prac-q-context mjx-container,
+    #prac-choices mjx-container { color: inherit; }
+    mjx-container { font-size: 1em !important; }
+  </style>
+
 </head>
 <body>
 
@@ -4735,28 +4751,16 @@ Good luck!`,
   }
 
   function cleanLatex(text) {
-    if (!text || typeof text !== 'string') return text;
-    return text
-      // Remove display math: $$...$$ or \[...\]
-      .replace(/\$\$([^$]*)\$\$/g, '$1')
-      .replace(/\\\[([^\]]*)\\\]/g, '$1')
-      // Remove inline math: $...$
-      .replace(/\$([^$]+)\$/g, '$1')
-      // Clean up LaTeX commands
-      .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
-      .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
-      .replace(/\\left\(/g, '(').replace(/\\right\)/g, ')')
-      .replace(/\\left\[/g, '[').replace(/\\right\]/g, ']')
-      .replace(/\\cdot/g, '·').replace(/\\times/g, '×').replace(/\\div/g, '÷')
-      .replace(/\\leq/g, '≤').replace(/\\geq/g, '≥').replace(/\\neq/g, '≠')
-      .replace(/\\pm/g, '±').replace(/\\infty/g, '∞')
-      .replace(/\^{([^}]+)}/g, '^$1').replace(/_{([^}]+)}/g, '_$1')
-      .replace(/\^(\w)/g, '^$1').replace(/_(\w)/g, '_$1')
-      .replace(/\\[a-zA-Z]+\{([^}]+)\}/g, '$1')
-      .replace(/\\[a-zA-Z]+/g, '')
-      .replace(/\{|\}/g, '')
-      .replace(/\s{2,}/g, ' ')
-      .trim();
+    // Just return text as-is — MathJax will render the LaTeX in the browser
+    return text || '';
+  }
+
+  // Trigger MathJax to typeset newly rendered math after each question loads
+  function typesetMath() {
+    if (window.MathJax && window.MathJax.typesetPromise) {
+      const area = document.getElementById('prac-question-area');
+      if (area) window.MathJax.typesetPromise([area]).catch(e => console.warn('MathJax error:', e));
+    }
   }
 
   function mapOpenSATQuestions(data, subject, difficulty) {
@@ -4917,12 +4921,12 @@ Good luck!`,
 
     document.getElementById('prac-q-num').textContent  = `Question ${_pracQIndex}`;
     document.getElementById('prac-q-tag').textContent  = _pracQ.tag || '';
-    document.getElementById('prac-q-text').textContent = _pracQ.q || '';
+    document.getElementById('prac-q-text').innerHTML   = _pracQ.q || '';
     document.getElementById('prac-correct-count').textContent = _pracCorrect.length;
     document.getElementById('prac-wrong-count').textContent   = _pracWrong.length;
 
     const ctx = document.getElementById('prac-q-context');
-    if (_pracQ.ctx) { ctx.textContent = _pracQ.ctx; ctx.style.display = 'block'; }
+    if (_pracQ.ctx) { ctx.innerHTML = _pracQ.ctx; ctx.style.display = 'block'; }
     else            { ctx.style.display = 'none'; }
 
     const choicesEl = document.getElementById('prac-choices');
@@ -4931,7 +4935,7 @@ Good luck!`,
         id="choice-btn-${i}"
         style="text-align:left;width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(250,250,248,0.1);border-radius:6px;padding:0.8rem 1rem;color:rgba(250,250,248,0.85);font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;transition:all 0.15s;display:flex;gap:0.8rem;align-items:flex-start">
         <span style="background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:var(--red);font-size:0.72rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:4px;flex-shrink:0;margin-top:0.05rem">${'ABCD'[i]}</span>
-        <span>${c}</span>
+        <span class="choice-text">${c}</span>
       </button>`).join('');
 
     const fb = document.getElementById('prac-feedback');
@@ -4945,6 +4949,9 @@ Good luck!`,
     if (h1) { h1.style.display = 'inline-block'; h1.disabled = false; h1.style.opacity = '1'; }
     if (h2) { h2.style.display = 'none'; }
     if (h3) { h3.style.display = 'none'; }
+
+    // Render any LaTeX math in the question
+    typesetMath();
   }
 
   window.selectPracAnswer = function(choiceIdx) {
