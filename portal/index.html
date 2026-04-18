@@ -4715,22 +4715,33 @@ Good luck!`,
 
   // ── OpenSAT API fetch ────────────────────────────────────────
   // Maps OpenSAT difficulty estimate by domain — we classify by section
-  const OPENSAT_BASE = 'https://packersat.vercel.app/api/sat-questions';
+  const OPENSAT_BASE = 'https://pinesat.com/api/questions';
 
   async function fetchOpenSATQuestions(subject, difficulty) {
     const section = subject === 'math' ? 'MATH' : 'ENGLISH';
     const limit   = 200;
-    try {
-      const res  = await fetch(`${OPENSAT_BASE}?section=${section}&limit=${limit}`);
-      if (!res.ok) throw new Error('API error ' + res.status);
-      const data = await res.json();
-      if (!Array.isArray(data) || data.length === 0) throw new Error('Empty response');
-      console.log(`OpenSAT: received ${data.length} questions for ${section}`);
-      return mapOpenSATQuestions(data, subject, difficulty);
-    } catch(e) {
-      console.warn('OpenSAT fetch failed, using local bank:', e.message);
-      return null;
+
+    // Try direct fetch first (works if pinesat.com allows CORS)
+    const urls = [
+      `${OPENSAT_BASE}?section=${section}&limit=${limit}`,
+      `https://packersat.vercel.app/api/Sat-Questions?section=${section}&limit=${limit}`,
+    ];
+
+    for (const url of urls) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) { console.warn('Failed:', url, res.status); continue; }
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) { console.warn('Empty response from', url); continue; }
+        console.log(`OpenSAT: received ${data.length} questions from ${url}`);
+        return mapOpenSATQuestions(data, subject, difficulty);
+      } catch(e) {
+        console.warn('Fetch failed for', url, e.message);
+      }
     }
+
+    console.warn('All OpenSAT sources failed, using local bank');
+    return null;
   }
 
   function mapOpenSATQuestions(data, subject, difficulty) {
