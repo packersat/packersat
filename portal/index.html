@@ -5262,19 +5262,23 @@ Good luck!`,
     prac('prac-correct-count').textContent = _pracCorrect.length;
     prac('prac-wrong-count').textContent   = _pracWrong.length;
     updateSessionBadge();
+    // Render any LaTeX in the feedback (e.g. correct answer shown after wrong guess)
+    typesetMath();
   };
 
   window.showHint = function(level) {
     const hints  = _pracQ?.hints || [];
     const hintEl = prac('prac-hint-text');
     hintEl.style.display = 'block';
-    hintEl.textContent   = hints[level - 1] || '';
+    hintEl.innerHTML     = hints[level - 1] || '';
     if (level < hints.length) {
-      const nextBtn = document.getElementById(`hint-btn-${level + 1}`);
+      const nextBtn = prac(`hint-btn-${level + 1}`);
       if (nextBtn) nextBtn.style.display = 'inline-block';
     }
-    const btn = document.getElementById(`hint-btn-${level}`);
+    const btn = prac(`hint-btn-${level}`);
     if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; }
+    // Render any LaTeX in the hint text
+    typesetMath();
   };
 
   window.nextPracQuestion = function() { loadNextQuestion(); };
