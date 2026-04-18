@@ -943,7 +943,7 @@
       <div class="sidebar-item" onclick="showPage('admin-messages',this)"><span class="sidebar-icon"></span>Direct Messages <span id="admin-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
       <div class="sidebar-item" onclick="showPage('admin-emails',this)"><span class="sidebar-icon"></span>Emails</div>
       <div class="sidebar-item" onclick="showPage('admin-analytics',this)"><span class="sidebar-icon"></span>Analytics</div>
-      <div class="sidebar-item" onclick="showPage('admin-practice',this)"><span class="sidebar-icon"></span>Practice Reports</div>
+      <div class="sidebar-item" onclick="showPage('admin-practice',this)"><span class="sidebar-icon"></span>Practice Problems</div>
       <div class="sidebar-item" onclick="adminExportCSV()"><span class="sidebar-icon">️</span>Export Data</div>
     `;
 
@@ -1530,20 +1530,89 @@
         </div>
       </div>
 
-      <!-- ADMIN PRACTICE REPORTS -->
+      <!-- ADMIN PRACTICE PAGE (practice + reports) -->
       <div class="page" id="page-admin-practice">
-        <div class="page-header"><h2>Practice Reports</h2><p>All student practice sessions across the program.</p></div>
-        <div id="admin-practice-filter" style="margin-bottom:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
-          <select class="input-field" id="admin-practice-student-filter" onchange="loadAdminPractice()" style="width:auto">
-            <option value="">All students</option>
-          </select>
-          <select class="input-field" id="admin-practice-subject-filter" onchange="loadAdminPractice()" style="width:auto">
-            <option value="">All subjects</option>
-            <option value="math">Math</option>
-            <option value="rw">Reading &amp; Writing</option>
-          </select>
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem">
+          <div><h2>Practice Problems</h2><p>Practice SAT questions yourself, and review all student sessions below.</p></div>
+          <div id="prac-session-badge" style="display:none;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);color:#7dffaa;font-size:0.78rem;padding:0.35rem 0.9rem;border-radius:20px;font-weight:600"></div>
         </div>
-        <div id="admin-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
+
+        <!-- Controls -->
+        <div class="card" style="margin-bottom:1.2rem" id="prac-controls">
+          <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center">
+            <div>
+              <div class="field-label" style="margin-bottom:0.4rem">Subject</div>
+              <div style="display:flex;gap:0.4rem">
+                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Math</button>
+                <button id="prac-btn-rw" class="action-btn" onclick="setPracSubject('rw')">Reading &amp; Writing</button>
+              </div>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:0.4rem">Difficulty</div>
+              <div style="display:flex;gap:0.4rem">
+                <button id="prac-btn-easy" class="action-btn" onclick="setPracDiff('easy')">Easy</button>
+                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Medium</button>
+                <button id="prac-btn-hard" class="action-btn" onclick="setPracDiff('hard')">Hard</button>
+              </div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:0.6rem">
+              <button class="btn-red" onclick="startPracSession()" id="prac-start-btn">Start Session</button>
+              <button class="btn-ghost" onclick="endPracSession()" id="prac-end-btn" style="display:none">End &amp; Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question card -->
+        <div id="prac-question-area" style="display:none">
+          <div class="card" style="margin-bottom:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
+              <div style="display:flex;gap:0.8rem;align-items:center">
+                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Question 1</span>
+                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(250,250,248,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
+              </div>
+              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(250,250,248,0.4)">
+                <span>&#10003; <span id="prac-correct-count" style="color:#7dffaa;font-weight:600">0</span></span>
+                <span>&#10007; <span id="prac-wrong-count" style="color:#ff8a8a;font-weight:600">0</span></span>
+              </div>
+            </div>
+            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#FAFAF8"></p>
+            <div id="prac-q-context" style="background:rgba(255,255,255,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(250,250,248,0.7);display:none;border-radius:0 4px 4px 0"></div>
+            <div id="prac-choices" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem"></div>
+            <div id="prac-feedback" style="display:none;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6"></div>
+            <div id="prac-hints" style="display:none">
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem">
+                <button class="btn-ghost" onclick="showHint(1)" id="hint-btn-1" style="font-size:0.8rem;padding:0.35rem 0.9rem">Hint 1</button>
+                <button class="btn-ghost" onclick="showHint(2)" id="hint-btn-2" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Hint 2</button>
+                <button class="btn-ghost" onclick="showHint(3)" id="hint-btn-3" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Show Solution</button>
+              </div>
+              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:var(--cream);line-height:1.7;display:none"></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:0.5rem">
+              <button class="btn-red" onclick="nextPracQuestion()" id="prac-next-btn" style="display:none">Next Question</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Idle state -->
+        <div id="prac-idle" class="card" style="text-align:center;padding:3rem">
+          <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
+          <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
+          <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+        </div>
+        <div style="margin-top:2rem">
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(250,250,248,0.08)">Student Practice Reports</div>
+          <div id="admin-practice-filter" style="margin-bottom:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
+            <select class="input-field" id="admin-practice-student-filter" onchange="loadAdminPractice()" style="width:auto">
+              <option value="">All students</option>
+            </select>
+            <select class="input-field" id="admin-practice-subject-filter" onchange="loadAdminPractice()" style="width:auto">
+              <option value="">All subjects</option>
+              <option value="math">Math</option>
+              <option value="rw">Reading &amp; Writing</option>
+            </select>
+          </div>
+          <div id="admin-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
+        </div>
       </div>
 
     `;
@@ -2324,10 +2393,79 @@
         </div>
       </div>
 
-      <!-- TUTOR PRACTICE REPORTS -->
+      <!-- TUTOR PRACTICE PAGE (practice + reports) -->
       <div class="page" id="page-tutor-practice">
-        <div class="page-header"><h2>Student Practice Reports</h2><p>Review your students' practice sessions and performance.</p></div>
-        <div id="tutor-practice-list"><div class="empty-state"><div class="icon"></div>Loading...</div></div>
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem">
+          <div><h2>Practice Problems</h2><p>Practice SAT questions yourself, and review your students' sessions below.</p></div>
+          <div id="prac-session-badge" style="display:none;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);color:#7dffaa;font-size:0.78rem;padding:0.35rem 0.9rem;border-radius:20px;font-weight:600"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="card" style="margin-bottom:1.2rem" id="prac-controls">
+          <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center">
+            <div>
+              <div class="field-label" style="margin-bottom:0.4rem">Subject</div>
+              <div style="display:flex;gap:0.4rem">
+                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Math</button>
+                <button id="prac-btn-rw" class="action-btn" onclick="setPracSubject('rw')">Reading &amp; Writing</button>
+              </div>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:0.4rem">Difficulty</div>
+              <div style="display:flex;gap:0.4rem">
+                <button id="prac-btn-easy" class="action-btn" onclick="setPracDiff('easy')">Easy</button>
+                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Medium</button>
+                <button id="prac-btn-hard" class="action-btn" onclick="setPracDiff('hard')">Hard</button>
+              </div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:0.6rem">
+              <button class="btn-red" onclick="startPracSession()" id="prac-start-btn">Start Session</button>
+              <button class="btn-ghost" onclick="endPracSession()" id="prac-end-btn" style="display:none">End &amp; Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question card -->
+        <div id="prac-question-area" style="display:none">
+          <div class="card" style="margin-bottom:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
+              <div style="display:flex;gap:0.8rem;align-items:center">
+                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Question 1</span>
+                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(250,250,248,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
+              </div>
+              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(250,250,248,0.4)">
+                <span>&#10003; <span id="prac-correct-count" style="color:#7dffaa;font-weight:600">0</span></span>
+                <span>&#10007; <span id="prac-wrong-count" style="color:#ff8a8a;font-weight:600">0</span></span>
+              </div>
+            </div>
+            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#FAFAF8"></p>
+            <div id="prac-q-context" style="background:rgba(255,255,255,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(250,250,248,0.7);display:none;border-radius:0 4px 4px 0"></div>
+            <div id="prac-choices" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem"></div>
+            <div id="prac-feedback" style="display:none;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6"></div>
+            <div id="prac-hints" style="display:none">
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem">
+                <button class="btn-ghost" onclick="showHint(1)" id="hint-btn-1" style="font-size:0.8rem;padding:0.35rem 0.9rem">Hint 1</button>
+                <button class="btn-ghost" onclick="showHint(2)" id="hint-btn-2" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Hint 2</button>
+                <button class="btn-ghost" onclick="showHint(3)" id="hint-btn-3" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Show Solution</button>
+              </div>
+              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:var(--cream);line-height:1.7;display:none"></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:0.5rem">
+              <button class="btn-red" onclick="nextPracQuestion()" id="prac-next-btn" style="display:none">Next Question</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Idle state -->
+        <div id="prac-idle" class="card" style="text-align:center;padding:3rem">
+          <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
+          <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
+          <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+        </div>
+        <div style="margin-top:2rem">
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(250,250,248,0.08)">Student Practice Reports</div>
+          <div id="tutor-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
+        </div>
       </div>
 
     `;
@@ -3031,20 +3169,89 @@
         <div id="tutor-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
       </div>
 
-      <!-- ADMIN PRACTICE REPORTS -->
+      <!-- ADMIN PRACTICE PAGE (practice + reports) -->
       <div class="page" id="page-admin-practice">
-        <div class="page-header"><h2>Practice Reports</h2><p>All student practice sessions across the program.</p></div>
-        <div id="admin-practice-filter" style="margin-bottom:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
-          <select class="input-field" id="admin-practice-student-filter" onchange="loadAdminPractice()" style="width:auto">
-            <option value="">All students</option>
-          </select>
-          <select class="input-field" id="admin-practice-subject-filter" onchange="loadAdminPractice()" style="width:auto">
-            <option value="">All subjects</option>
-            <option value="math">Math</option>
-            <option value="rw">Reading &amp; Writing</option>
-          </select>
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.8rem">
+          <div><h2>Practice Problems</h2><p>Practice SAT questions yourself, and review all student sessions below.</p></div>
+          <div id="prac-session-badge" style="display:none;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);color:#7dffaa;font-size:0.78rem;padding:0.35rem 0.9rem;border-radius:20px;font-weight:600"></div>
         </div>
-        <div id="admin-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
+
+        <!-- Controls -->
+        <div class="card" style="margin-bottom:1.2rem" id="prac-controls">
+          <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center">
+            <div>
+              <div class="field-label" style="margin-bottom:0.4rem">Subject</div>
+              <div style="display:flex;gap:0.4rem">
+                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Math</button>
+                <button id="prac-btn-rw" class="action-btn" onclick="setPracSubject('rw')">Reading &amp; Writing</button>
+              </div>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:0.4rem">Difficulty</div>
+              <div style="display:flex;gap:0.4rem">
+                <button id="prac-btn-easy" class="action-btn" onclick="setPracDiff('easy')">Easy</button>
+                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Medium</button>
+                <button id="prac-btn-hard" class="action-btn" onclick="setPracDiff('hard')">Hard</button>
+              </div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:0.6rem">
+              <button class="btn-red" onclick="startPracSession()" id="prac-start-btn">Start Session</button>
+              <button class="btn-ghost" onclick="endPracSession()" id="prac-end-btn" style="display:none">End &amp; Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question card -->
+        <div id="prac-question-area" style="display:none">
+          <div class="card" style="margin-bottom:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
+              <div style="display:flex;gap:0.8rem;align-items:center">
+                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Question 1</span>
+                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(250,250,248,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
+              </div>
+              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(250,250,248,0.4)">
+                <span>&#10003; <span id="prac-correct-count" style="color:#7dffaa;font-weight:600">0</span></span>
+                <span>&#10007; <span id="prac-wrong-count" style="color:#ff8a8a;font-weight:600">0</span></span>
+              </div>
+            </div>
+            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#FAFAF8"></p>
+            <div id="prac-q-context" style="background:rgba(255,255,255,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(250,250,248,0.7);display:none;border-radius:0 4px 4px 0"></div>
+            <div id="prac-choices" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem"></div>
+            <div id="prac-feedback" style="display:none;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6"></div>
+            <div id="prac-hints" style="display:none">
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem">
+                <button class="btn-ghost" onclick="showHint(1)" id="hint-btn-1" style="font-size:0.8rem;padding:0.35rem 0.9rem">Hint 1</button>
+                <button class="btn-ghost" onclick="showHint(2)" id="hint-btn-2" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Hint 2</button>
+                <button class="btn-ghost" onclick="showHint(3)" id="hint-btn-3" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Show Solution</button>
+              </div>
+              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:var(--cream);line-height:1.7;display:none"></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:0.5rem">
+              <button class="btn-red" onclick="nextPracQuestion()" id="prac-next-btn" style="display:none">Next Question</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Idle state -->
+        <div id="prac-idle" class="card" style="text-align:center;padding:3rem">
+          <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
+          <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
+          <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+        </div>
+        <div style="margin-top:2rem">
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(250,250,248,0.08)">Student Practice Reports</div>
+          <div id="admin-practice-filter" style="margin-bottom:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
+            <select class="input-field" id="admin-practice-student-filter" onchange="loadAdminPractice()" style="width:auto">
+              <option value="">All students</option>
+            </select>
+            <select class="input-field" id="admin-practice-subject-filter" onchange="loadAdminPractice()" style="width:auto">
+              <option value="">All subjects</option>
+              <option value="math">Math</option>
+              <option value="rw">Reading &amp; Writing</option>
+            </select>
+          </div>
+          <div id="admin-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
+        </div>
       </div>
 
     `;
@@ -4712,6 +4919,21 @@ Good luck!`,
     },
   };
 
+  // ── Practice element helper — finds elements in whichever practice page is active ──
+  function prac(id) {
+    // Find the currently visible practice page
+    const pages = ['page-student-practice','page-tutor-practice','page-admin-practice'];
+    for (const pid of pages) {
+      const page = document.getElementById(pid);
+      if (page && page.style.display !== 'none' && page.classList.contains('active')) {
+        const el = page.querySelector('#' + id);
+        if (el) return el;
+      }
+    }
+    // Fallback: return first match anywhere
+    return document.getElementById(id);
+  }
+
   // ── Session state ─────────────────────────────────────────────
   let _pracSubject  = 'math';
   let _pracDiff     = 'medium';
@@ -4758,7 +4980,7 @@ Good luck!`,
   // Trigger MathJax to typeset newly rendered math after each question loads
   function typesetMath() {
     if (window.MathJax && window.MathJax.typesetPromise) {
-      const area = document.getElementById('prac-question-area');
+      const area = prac('prac-question-area');
       if (area) window.MathJax.typesetPromise([area]).catch(e => console.warn('MathJax error:', e));
     }
   }
@@ -4862,12 +5084,12 @@ Good luck!`,
     _pracPool     = [];
     _pracStartTime = Date.now();
 
-    const startBtn = document.getElementById('prac-start-btn');
-    const endBtn   = document.getElementById('prac-end-btn');
+    const startBtn = prac('prac-start-btn');
+    const endBtn   = prac('prac-end-btn');
     if (startBtn) { startBtn.disabled = true; startBtn.textContent = 'Loading questions…'; }
 
-    document.getElementById('prac-idle').style.display = 'none';
-    document.getElementById('prac-question-area').style.display = 'none';
+    prac('prac-idle').style.display = 'none';
+    prac('prac-question-area').style.display = 'none';
 
     // Try OpenSAT first
     const fetched = await fetchOpenSATQuestions(_pracSubject, _pracDiff);
@@ -4884,13 +5106,13 @@ Good luck!`,
     if (endBtn) endBtn.style.display = 'inline-block';
     if (startBtn) startBtn.style.display = 'none';
 
-    document.getElementById('prac-question-area').style.display = 'block';
+    prac('prac-question-area').style.display = 'block';
     updateSessionBadge();
     loadNextQuestion();
   };
 
   function updateSessionBadge() {
-    const badge = document.getElementById('prac-session-badge');
+    const badge = prac('prac-session-badge');
     if (!badge) return;
     const total = _pracCorrect.length + _pracWrong.length;
     badge.style.display = total > 0 ? 'block' : 'none';
@@ -4911,7 +5133,7 @@ Good luck!`,
   function loadNextQuestion() {
     _pracQ = getNextQuestion();
     if (!_pracQ) {
-      document.getElementById('prac-question-area').innerHTML =
+      prac('prac-question-area').innerHTML =
         '<div class="card" style="text-align:center;padding:2rem">No questions available. Try a different subject or difficulty.</div>';
       return;
     }
@@ -4919,17 +5141,17 @@ Good luck!`,
     _pracAnswered  = false;
     _pracHintLevel = 0;
 
-    document.getElementById('prac-q-num').textContent  = `Question ${_pracQIndex}`;
-    document.getElementById('prac-q-tag').textContent  = _pracQ.tag || '';
-    document.getElementById('prac-q-text').innerHTML   = _pracQ.q || '';
-    document.getElementById('prac-correct-count').textContent = _pracCorrect.length;
-    document.getElementById('prac-wrong-count').textContent   = _pracWrong.length;
+    prac('prac-q-num').textContent  = `Question ${_pracQIndex}`;
+    prac('prac-q-tag').textContent  = _pracQ.tag || '';
+    prac('prac-q-text').innerHTML   = _pracQ.q || '';
+    prac('prac-correct-count').textContent = _pracCorrect.length;
+    prac('prac-wrong-count').textContent   = _pracWrong.length;
 
-    const ctx = document.getElementById('prac-q-context');
+    const ctx = prac('prac-q-context');
     if (_pracQ.ctx) { ctx.innerHTML = _pracQ.ctx; ctx.style.display = 'block'; }
     else            { ctx.style.display = 'none'; }
 
-    const choicesEl = document.getElementById('prac-choices');
+    const choicesEl = prac('prac-choices');
     choicesEl.innerHTML = (_pracQ.choices || []).map((c, i) => `
       <button onclick="selectPracAnswer(${i})"
         id="choice-btn-${i}"
@@ -4938,14 +5160,14 @@ Good luck!`,
         <span class="choice-text">${c}</span>
       </button>`).join('');
 
-    const fb = document.getElementById('prac-feedback');
+    const fb = prac('prac-feedback');
     fb.style.display = 'none';
-    document.getElementById('prac-hints').style.display = 'none';
-    document.getElementById('prac-hint-text').style.display = 'none';
-    document.getElementById('prac-next-btn').style.display = 'none';
-    const h1 = document.getElementById('hint-btn-1');
-    const h2 = document.getElementById('hint-btn-2');
-    const h3 = document.getElementById('hint-btn-3');
+    prac('prac-hints').style.display = 'none';
+    prac('prac-hint-text').style.display = 'none';
+    prac('prac-next-btn').style.display = 'none';
+    const h1 = prac('hint-btn-1');
+    const h2 = prac('hint-btn-2');
+    const h3 = prac('hint-btn-3');
     if (h1) { h1.style.display = 'inline-block'; h1.disabled = false; h1.style.opacity = '1'; }
     if (h2) { h2.style.display = 'none'; }
     if (h3) { h3.style.display = 'none'; }
@@ -4958,7 +5180,7 @@ Good luck!`,
     if (_pracAnswered || !_pracQ) return;
     _pracAnswered = true;
     const correct = choiceIdx === _pracQ.answer;
-    const fb = document.getElementById('prac-feedback');
+    const fb = prac('prac-feedback');
 
     (_pracQ.choices || []).forEach((_, i) => {
       const btn = document.getElementById('choice-btn-' + i);
@@ -4983,18 +5205,18 @@ Good luck!`,
       fb.style.cssText = 'display:block;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6;background:rgba(192,24,43,0.12);border:1px solid rgba(192,24,43,0.3);color:#ff8a8a';
       fb.innerHTML = `&#10007; Not quite. The correct answer is <strong style="color:#fafaf8">${(_pracQ.choices||[])[_pracQ.answer]}</strong>.`;
       _pracWrong.push({ q: _pracQ.q.slice(0,120), tag: _pracQ.tag, chosen: (_pracQ.choices||[])[choiceIdx], correct: (_pracQ.choices||[])[_pracQ.answer] });
-      document.getElementById('prac-hints').style.display = 'block';
+      prac('prac-hints').style.display = 'block';
     }
 
-    document.getElementById('prac-next-btn').style.display = 'inline-block';
-    document.getElementById('prac-correct-count').textContent = _pracCorrect.length;
-    document.getElementById('prac-wrong-count').textContent   = _pracWrong.length;
+    prac('prac-next-btn').style.display = 'inline-block';
+    prac('prac-correct-count').textContent = _pracCorrect.length;
+    prac('prac-wrong-count').textContent   = _pracWrong.length;
     updateSessionBadge();
   };
 
   window.showHint = function(level) {
     const hints  = _pracQ?.hints || [];
-    const hintEl = document.getElementById('prac-hint-text');
+    const hintEl = prac('prac-hint-text');
     hintEl.style.display = 'block';
     hintEl.textContent   = hints[level - 1] || '';
     if (level < hints.length) {
@@ -5013,31 +5235,34 @@ Good luck!`,
     const duration = Math.round((Date.now() - _pracStartTime) / 1000);
     const total    = _pracCorrect.length + _pracWrong.length;
     if (total === 0) {
-      document.getElementById('prac-question-area').style.display = 'none';
-      document.getElementById('prac-idle').style.display = 'block';
-      document.getElementById('prac-start-btn').style.display = 'inline-block';
-      document.getElementById('prac-end-btn').style.display = 'none';
-      document.getElementById('prac-session-badge').style.display = 'none';
+      prac('prac-question-area').style.display = 'none';
+      prac('prac-idle').style.display = 'block';
+      prac('prac-start-btn').style.display = 'inline-block';
+      prac('prac-end-btn').style.display = 'none';
+      prac('prac-session-badge').style.display = 'none';
       return;
     }
-    try {
-      await addDoc(collection(db, 'practiceSessions'), {
-        studentId:      CU.uid,
-        studentName:    CU.name || CU.email,
-        tutorId:        CU.tutorId || null,
-        subject:        _pracSubject,
-        difficulty:     _pracDiff,
-        correct:        _pracCorrect,
-        wrong:          _pracWrong,
-        totalAnswered:  total,
-        score:          Math.round(_pracCorrect.length / total * 100),
-        durationSeconds: duration,
-        createdAt:      new Date().toISOString(),
-      });
-    } catch(e) { console.error('Failed to save practice session:', e); }
+    // Only save to Firestore if the user is a student
+    if (CU.role === 'student') {
+      try {
+        await addDoc(collection(db, 'practiceSessions'), {
+          studentId:      CU.uid,
+          studentName:    CU.name || CU.email,
+          tutorId:        CU.tutorId || null,
+          subject:        _pracSubject,
+          difficulty:     _pracDiff,
+          correct:        _pracCorrect,
+          wrong:          _pracWrong,
+          totalAnswered:  total,
+          score:          Math.round(_pracCorrect.length / total * 100),
+          durationSeconds: duration,
+          createdAt:      new Date().toISOString(),
+        });
+      } catch(e) { console.error('Failed to save practice session:', e); }
+    }
     const pct = Math.round(_pracCorrect.length / total * 100);
-    document.getElementById('prac-question-area').style.display = 'none';
-    document.getElementById('prac-idle').innerHTML = `
+    prac('prac-question-area').style.display = 'none';
+    prac('prac-idle').innerHTML = `
       <div style="text-align:center;padding:1.5rem 0 0.5rem">
         <div style="font-size:2.5rem;margin-bottom:0.8rem">${pct >= 80 ? '&#127881;' : pct >= 60 ? '&#128170;' : '&#128218;'}</div>
         <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:0.4rem">Session Complete</div>
@@ -5049,20 +5274,20 @@ Good luck!`,
         </div>
         <button class="btn-red" onclick="restartPrac()" style="margin-right:0.6rem">Practice Again</button>
       </div>`;
-    document.getElementById('prac-idle').style.display = 'block';
-    document.getElementById('prac-start-btn').style.display = 'none';
-    document.getElementById('prac-end-btn').style.display = 'none';
-    document.getElementById('prac-session-badge').style.display = 'none';
+    prac('prac-idle').style.display = 'block';
+    prac('prac-start-btn').style.display = 'none';
+    prac('prac-end-btn').style.display = 'none';
+    prac('prac-session-badge').style.display = 'none';
   };
 
   window.restartPrac = function() {
-    document.getElementById('prac-idle').innerHTML = `
+    prac('prac-idle').innerHTML = `
       <div style="text-align:center;padding:3rem">
         <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
         <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
         <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
       </div>`;
-    document.getElementById('prac-start-btn').style.display = 'inline-block';
+    prac('prac-start-btn').style.display = 'inline-block';
   };
 
   // ── Tutor/Admin: load practice session reports ─────────────────
@@ -6811,8 +7036,8 @@ Good luck!`,
     if (pageId==='tutor-templates') loadTutorTemplates();
     if (pageId==='student-achievements') loadStudentAchievements();
     if (pageId==='student-practice') loadStudentPracticePage();
-    if (pageId==='tutor-practice') loadPracticeReports('tutor');
-    if (pageId==='admin-practice') loadPracticeReports('admin');
+    if (pageId==='tutor-practice')  { loadStudentPracticePage(); loadPracticeReports('tutor'); }
+    if (pageId==='admin-practice')  { loadStudentPracticePage(); loadPracticeReports('admin'); }
     // onboarding pages need no data loading
   };
 
