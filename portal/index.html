@@ -911,6 +911,9 @@
     if (CU.role === 'admin') buildAdminPortal();
     else if (CU.role === 'tutor') buildTutorPortal();
     else buildStudentPortal();
+
+    // Show announcement popup if enabled (once per session)
+    maybeShowAnnouncementPopup();
   }
 
   function showLogin() {
@@ -976,6 +979,7 @@
         </div>
         <div class="card" style="margin-top:1.2rem">
           <div class="card-title">Automation</div>
+          <!-- Nightly Reminder -->
           <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
             <div>
               <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8">Nightly Session Log Reminders</div>
@@ -989,6 +993,52 @@
             </label>
           </div>
           <div id="reminder-status-text" style="font-size:0.75rem;color:rgba(250,250,248,0.3);margin-top:0.3rem"></div>
+
+          <!-- Divider -->
+          <div style="border-top:1px solid rgba(250,250,248,0.06);margin:1rem 0"></div>
+
+          <!-- Announcement Popup -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8">Announcement Popup</div>
+              <div style="font-size:0.8rem;color:rgba(250,250,248,0.45);margin-top:0.2rem">Shows a dismissible popup to all users when they log in</div>
+            </div>
+            <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0;margin-left:1.5rem;cursor:pointer">
+              <input type="checkbox" id="popup-toggle" style="opacity:0;width:0;height:0;position:absolute" onchange="toggleAnnouncementPopup(this.checked)">
+              <span id="popup-slider" style="position:absolute;inset:0;border-radius:26px;background:rgba(250,250,248,0.15);transition:background 0.2s;cursor:pointer">
+                <span id="popup-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.2s"></span>
+              </span>
+            </label>
+          </div>
+          <div id="popup-status-text" style="font-size:0.75rem;color:rgba(250,250,248,0.3);margin-top:0.3rem"></div>
+
+          <!-- Popup editor (shown when enabled) -->
+          <div id="popup-editor" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(250,250,248,0.06)">
+            <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.8rem">Customize popup content</div>
+            <div style="margin-bottom:0.7rem">
+              <div class="field-label">Headline <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(large text)</span></div>
+              <input class="input-field" type="text" id="popup-title" placeholder="e.g. Try our new feature!" oninput="savePopupDraft()" />
+            </div>
+            <div style="margin-bottom:0.7rem">
+              <div class="field-label">Body <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(shown below headline)</span></div>
+              <textarea class="input-field" id="popup-body" rows="3" placeholder="e.g. Practice Problems is now live. Find it in your sidebar." oninput="savePopupDraft()" style="resize:vertical;font-family:inherit;line-height:1.6"></textarea>
+            </div>
+            <div class="form-row" style="margin-bottom:0.7rem">
+              <div>
+                <div class="field-label">Button label <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(optional)</span></div>
+                <input class="input-field" type="text" id="popup-btn-label" placeholder="e.g. Try it now" oninput="savePopupDraft()" />
+              </div>
+              <div>
+                <div class="field-label">Button URL <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(optional)</span></div>
+                <input class="input-field" type="text" id="popup-btn-url" placeholder="e.g. https://packersat.org/portal" oninput="savePopupDraft()" />
+              </div>
+            </div>
+            <div style="display:flex;gap:0.6rem;align-items:center">
+              <button class="btn-red" style="font-size:0.8rem;padding:0.35rem 0.9rem" onclick="savePopupSettings()">Save Popup</button>
+              <button class="btn-ghost" style="font-size:0.8rem;padding:0.35rem 0.9rem" onclick="previewPopup()">Preview</button>
+              <div class="form-msg" id="popup-save-msg" style="margin:0"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -5424,6 +5474,126 @@ Good luck!`,
     setTimeout(() => win.print(), 700);
   };
 
+  // ─────────────────────────────────────────
+  // ████  ANNOUNCEMENT POPUP
+  // ─────────────────────────────────────────
+
+  async function loadPopupSettings() {
+    const toggle = document.getElementById('popup-toggle');
+    const slider = document.getElementById('popup-slider');
+    const knob   = document.getElementById('popup-knob');
+    const status = document.getElementById('popup-status-text');
+    const editor = document.getElementById('popup-editor');
+    if (!toggle) return;
+
+    try {
+      const snap = await getDoc(doc(db, 'settings', 'popup'));
+      const data = snap.exists() ? snap.data() : {};
+      const enabled = data.enabled || false;
+
+      toggle.checked = enabled;
+      applyPopupToggleUI(enabled, slider, knob, status, editor);
+
+      if (data.title)    document.getElementById('popup-title').value    = data.title;
+      if (data.body)     document.getElementById('popup-body').value     = data.body;
+      if (data.btnLabel) document.getElementById('popup-btn-label').value = data.btnLabel;
+      if (data.btnUrl)   document.getElementById('popup-btn-url').value  = data.btnUrl;
+    } catch(e) {
+      console.error('loadPopupSettings error:', e);
+    }
+  }
+
+  function applyPopupToggleUI(enabled, slider, knob, status, editor) {
+    if (slider) slider.style.background = enabled ? '#C0182B' : 'rgba(250,250,248,0.15)';
+    if (knob)   knob.style.transform    = enabled ? 'translateX(22px)' : 'translateX(0)';
+    if (status) status.textContent      = enabled
+      ? 'Popup is on — users will see it on their next login.'
+      : 'Popup is off — no popup will be shown.';
+    if (editor) editor.style.display = enabled ? 'block' : 'none';
+  }
+
+  window.toggleAnnouncementPopup = async function(enabled) {
+    const slider = document.getElementById('popup-slider');
+    const knob   = document.getElementById('popup-knob');
+    const status = document.getElementById('popup-status-text');
+    const editor = document.getElementById('popup-editor');
+    applyPopupToggleUI(enabled, slider, knob, status, editor);
+    try {
+      await setDoc(doc(db, 'settings', 'popup'), { enabled }, { merge: true });
+    } catch(e) { console.error('toggleAnnouncementPopup error:', e); }
+  };
+
+  // Auto-save draft while typing (debounced)
+  let _popupSaveTimer = null;
+  window.savePopupDraft = function() {
+    clearTimeout(_popupSaveTimer);
+    _popupSaveTimer = setTimeout(() => window.savePopupSettings(true), 1200);
+  };
+
+  window.savePopupSettings = async function(silent = false) {
+    const title    = document.getElementById('popup-title')?.value.trim()    || '';
+    const body     = document.getElementById('popup-body')?.value.trim()     || '';
+    const btnLabel = document.getElementById('popup-btn-label')?.value.trim() || '';
+    const btnUrl   = document.getElementById('popup-btn-url')?.value.trim()  || '';
+    const msg      = document.getElementById('popup-save-msg');
+
+    try {
+      await setDoc(doc(db, 'settings', 'popup'), { title, body, btnLabel, btnUrl }, { merge: true });
+      if (!silent && msg) showMsg(msg, 'Popup saved.', 'success');
+    } catch(e) {
+      if (!silent && msg) showMsg(msg, 'Save failed.', 'error');
+    }
+  };
+
+  window.previewPopup = async function() {
+    // Save current draft first then show preview
+    await window.savePopupSettings(true);
+    const title    = document.getElementById('popup-title')?.value.trim()    || '';
+    const body     = document.getElementById('popup-body')?.value.trim()     || '';
+    const btnLabel = document.getElementById('popup-btn-label')?.value.trim() || '';
+    const btnUrl   = document.getElementById('popup-btn-url')?.value.trim()  || '';
+    showAnnouncementPopup({ title, body, btnLabel, btnUrl });
+  };
+
+  function showAnnouncementPopup(data) {
+    const overlay = document.getElementById('announcement-popup-overlay');
+    if (!overlay) return;
+    document.getElementById('ap-title').textContent = data.title || '';
+    document.getElementById('ap-body').textContent  = data.body  || '';
+    const btn = document.getElementById('ap-btn');
+    if (data.btnLabel && data.btnUrl) {
+      btn.textContent = data.btnLabel;
+      btn.href        = data.btnUrl;
+      btn.style.display = 'inline-block';
+    } else {
+      btn.style.display = 'none';
+    }
+    overlay.style.display = 'flex';
+  }
+
+  window.dismissAnnouncementPopup = function() {
+    const overlay = document.getElementById('announcement-popup-overlay');
+    if (overlay) overlay.style.display = 'none';
+    sessionStorage.setItem('popup-dismissed', '1');
+  };
+
+  // Called once after login — checks Firestore and shows popup if enabled and not yet dismissed
+  async function maybeShowAnnouncementPopup() {
+    // Only show once per browser session
+    if (sessionStorage.getItem('popup-dismissed')) return;
+    try {
+      const snap = await getDoc(doc(db, 'settings', 'popup'));
+      if (!snap.exists()) return;
+      const data = snap.data();
+      if (!data.enabled) return;
+      if (!data.title && !data.body) return;
+      // Small delay so the portal finishes rendering first
+      setTimeout(() => showAnnouncementPopup(data), 800);
+    } catch(e) {
+      console.error('maybeShowAnnouncementPopup error:', e);
+    }
+  }
+
   async function loadReminderToggle() {
     const toggle = document.getElementById('reminder-toggle');
     const slider = document.getElementById('reminder-slider');
@@ -7022,6 +7192,7 @@ Good luck!`,
     if (pageId==='admin-session-logs') loadAdminSessionLogs();
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='admin-dashboard') loadReminderToggle();
+    if (pageId==='admin-dashboard') loadPopupSettings();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
     if (pageId==='student-sessions') { loadStudentSessionRequests(); loadGroupSessions(); }
     if (pageId==='student-documents') loadStudentDocuments();
@@ -7095,6 +7266,11 @@ Good luck!`,
   function addToWaitlist() { window.addToWaitlist && window.addToWaitlist(); }
   function removeFromWaitlist(id) { window.removeFromWaitlist && window.removeFromWaitlist(id); }
   function convertWaitlistToUser(name, email) { window.convertWaitlistToUser && window.convertWaitlistToUser(name, email); }
+  function toggleAnnouncementPopup(v) { window.toggleAnnouncementPopup && window.toggleAnnouncementPopup(v); }
+  function savePopupDraft() { window.savePopupDraft && window.savePopupDraft(); }
+  function savePopupSettings() { window.savePopupSettings && window.savePopupSettings(); }
+  function previewPopup() { window.previewPopup && window.previewPopup(); }
+  function dismissAnnouncementPopup() { window.dismissAnnouncementPopup && window.dismissAnnouncementPopup(); }
   function toggleReminders(v) { window.toggleReminders && window.toggleReminders(v); }
   function setAudience(a) { window.setAudience && window.setAudience(a); }
   function applyEmailTemplate() { window.applyEmailTemplate && window.applyEmailTemplate(); }
@@ -7394,6 +7570,19 @@ Good luck!`,
 
 <!-- Print Report Modal (hidden, used for printing only) -->
 <div id="print-report-container" style="display:none"></div>
+<!-- Announcement Popup Modal -->
+<div id="announcement-popup-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:1.5rem">
+  <div style="background:linear-gradient(135deg,#1A0508,#2A0A10);border:1px solid rgba(192,24,43,0.35);border-radius:12px;max-width:480px;width:100%;padding:2.2rem 2rem;position:relative;box-shadow:0 24px 60px rgba(0,0,0,0.5)">
+    <button onclick="dismissAnnouncementPopup()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(250,250,248,0.4);font-size:1.2rem;cursor:pointer;line-height:1;padding:0.2rem 0.4rem;border-radius:4px" title="Dismiss">&#10005;</button>
+    <div id="ap-icon" style="font-size:2rem;margin-bottom:0.8rem"></div>
+    <div id="ap-title" style="font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:700;color:#FAFAF8;line-height:1.3;margin-bottom:0.8rem"></div>
+    <div id="ap-body" style="font-size:0.92rem;color:rgba(250,250,248,0.65);line-height:1.75;margin-bottom:1.4rem;white-space:pre-line"></div>
+    <div style="display:flex;gap:0.7rem;align-items:center;flex-wrap:wrap">
+      <a id="ap-btn" href="#" target="_blank" class="btn-red" style="display:none;text-decoration:none;font-size:0.88rem"></a>
+      <button onclick="dismissAnnouncementPopup()" class="btn-ghost" style="font-size:0.88rem">Got it</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
