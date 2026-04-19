@@ -1142,6 +1142,164 @@
     .success-msg h4 { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; margin-bottom: 0.55rem; }
     .success-msg p { color: rgba(250,250,248,0.52); font-size: 0.88rem; line-height: 1.65; }
 
+    /* ── ONBOARDING STEPS ── */
+    .ob-bar-wrap {
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .ob-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+      border-radius: 2px;
+      transition: width 0.4s cubic-bezier(.22,1,.36,1);
+    }
+    .ob-step { display: none; }
+    .ob-step.ob-active { display: block; animation: fadeUp 0.32s ease both; }
+    .ob-h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+    .ob-sub {
+      color: rgba(250,250,248,0.48);
+      font-size: 0.88rem;
+      line-height: 1.62;
+      margin-bottom: 1.8rem;
+    }
+    .ob-btn-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .ob-back-btn {
+      flex: 1;
+      background: transparent;
+      color: rgba(250,250,248,0.52);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.88rem;
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .ob-back-btn:hover { border-color: rgba(255,255,255,0.22); color: var(--white); }
+    .ob-continue-btn {
+      flex: 2;
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      padding: 0.88rem;
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.035em;
+      width: 100%;
+    }
+    .ob-continue-btn:hover { background: var(--light-red); }
+    .ob-continue-btn:active { transform: scale(0.98); }
+    .ob-chip-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(250,250,248,0.38);
+      margin-bottom: 0.6rem;
+    }
+    .ob-grade-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.4rem;
+    }
+    .ob-score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .ob-chip {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 0.62rem 0.4rem;
+      color: rgba(250,250,248,0.72);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.1s;
+    }
+    .ob-chip:hover { border-color: rgba(192,24,43,0.4); color: var(--white); }
+    .ob-chip:active { transform: scale(0.97); }
+    .ob-chip.ob-sel { background: var(--red); border-color: var(--red); color: var(--white); }
+    .ob-chip-score {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 0.62rem 0.4rem;
+      color: rgba(250,250,248,0.72);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.1s;
+    }
+    .ob-chip-score:hover { border-color: rgba(200,169,110,0.5); color: var(--white); }
+    .ob-chip-score:active { transform: scale(0.97); }
+    .ob-chip-score.ob-sel { background: rgba(200,169,110,0.15); border-color: var(--gold); color: var(--gold); }
+    .ob-privacy-box {
+      background: rgba(200,169,110,0.06);
+      border: 1px solid rgba(200,169,110,0.14);
+      border-radius: 4px;
+      padding: 0.75rem 0.9rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .ob-privacy-box svg { flex-shrink: 0; margin-top: 2px; }
+    .ob-privacy-box p { font-size: 0.76rem; color: rgba(250,250,248,0.42); line-height: 1.5; }
+    .ob-success-wrap { text-align: center; padding: 1rem 0 0.25rem; }
+    .ob-success-icon {
+      width: 52px; height: 52px;
+      background: rgba(192,24,43,0.12);
+      border: 1px solid rgba(192,24,43,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.4rem;
+    }
+    .ob-success-wrap h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .ob-success-wrap p { color: rgba(250,250,248,0.48); font-size: 0.88rem; line-height: 1.65; margin-bottom: 1.8rem; }
+    .ob-info-rows { border-top: 1px solid rgba(255,255,255,0.07); }
+    .ob-info-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .ob-info-row-label { font-size: 0.72rem; color: rgba(250,250,248,0.38); letter-spacing: 0.08em; text-transform: uppercase; }
+    .ob-info-row-val { font-size: 0.88rem; font-weight: 500; }
+    .ob-done-btn {
+      width: 100%; background: var(--red); color: var(--white);
+      border: none; padding: 0.88rem; border-radius: 2px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 600;
+      cursor: pointer; transition: background 0.2s, transform 0.15s;
+      margin-top: 1.5rem; letter-spacing: 0.035em;
+    }
+    .ob-done-btn:hover { background: var(--light-red); }
+    .ob-done-btn:active { transform: scale(0.98); }
+
     /* ── STORY / SCROLLYTELLING ── */
     #story {
       background: rgba(107,15,26,0.04);
@@ -2049,46 +2207,91 @@
 <div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">&times;</button>
-    <div class="modal-eyebrow">Join the Program</div>
-    <h3>Sign Up Free</h3>
-    <p class="modal-sub">No cost, no commitment — just better SAT prep.</p>
-    <div id="form-body">
+
+    <!-- STEP 0: Welcome + Name -->
+    <div class="ob-step ob-active" data-ob="0">
+      <div class="modal-eyebrow">Welcome</div>
+      <h3 class="ob-h3">Let's get started.</h3>
+      <p class="ob-sub">Free SAT prep, zero commitment. Tell us your name and we'll take it from there.</p>
       <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" name="name" placeholder="Your name" required />
+        <label>Your Name</label>
+        <input type="text" id="ob-name" placeholder="First and last name" autocomplete="name" />
       </div>
-      <div class="form-group">
-        <label>School Email</label>
-        <input type="email" name="email" placeholder="you@packer.edu" required />
-      </div>
-      <div class="form-group">
-        <label>Grade</label>
-        <select name="grade" required>
-          <option value="">Select your grade</option>
-          <option>9th Grade</option>
-          <option>10th Grade</option>
-          <option>11th Grade</option>
-          <option>12th Grade</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Current SAT Score (if taken)</label>
-        <input type="text" name="current_score" placeholder="e.g. 1200, or leave blank" />
-      </div>
-      <div class="form-group">
-        <label>Target Score</label>
-        <input type="text" name="target_score" placeholder="e.g. 1500" />
-      </div>
-      <button class="form-submit" onclick="submitForm(event)">Join the Program &rarr;</button>
+      <button class="ob-continue-btn" onclick="obNext()">Continue &rarr;</button>
     </div>
-    <div class="success-msg" id="success-msg">
-      <div class="success-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(192,24,43,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
+
+    <!-- STEP 1: Email -->
+    <div class="ob-step" data-ob="1">
+      <div class="ob-bar-wrap"><div class="ob-bar" style="width:50%"></div></div>
+      <div class="modal-eyebrow">Step 2 of 4</div>
+      <h3 class="ob-h3">Your school email.</h3>
+      <p class="ob-sub">We'll send session details here. Use your Packer email if you have one.</p>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="ob-email" placeholder="you@packer.edu" autocomplete="email" />
       </div>
-      <h4>You're on the list.</h4>
-      <p>We'll reach out to your school email within a couple days with session details. See you soon.</p>
+      <div class="ob-btn-row">
+        <button class="ob-back-btn" onclick="obBack()">&larr; Back</button>
+        <button class="ob-continue-btn" onclick="obNext()">Continue &rarr;</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Grade + Score -->
+    <div class="ob-step" data-ob="2">
+      <div class="ob-bar-wrap"><div class="ob-bar" style="width:75%"></div></div>
+      <div class="modal-eyebrow">Step 3 of 4</div>
+      <h3 class="ob-h3">A bit about you.</h3>
+      <p class="ob-sub">This helps us match you with the right session group.</p>
+      <div class="ob-chip-label">What grade are you in?</div>
+      <div class="ob-grade-grid">
+        <button class="ob-chip" data-grade="9th">9th</button>
+        <button class="ob-chip" data-grade="10th">10th</button>
+        <button class="ob-chip" data-grade="11th">11th</button>
+        <button class="ob-chip" data-grade="12th">12th</button>
+      </div>
+      <div class="ob-chip-label">Current SAT score range?</div>
+      <div class="ob-score-grid">
+        <button class="ob-chip-score" data-score="No score yet">No score yet</button>
+        <button class="ob-chip-score" data-score="400–800">400–800</button>
+        <button class="ob-chip-score" data-score="800–1000">800–1000</button>
+        <button class="ob-chip-score" data-score="1000–1200">1000–1200</button>
+        <button class="ob-chip-score" data-score="1200–1400">1200–1400</button>
+        <button class="ob-chip-score" data-score="1400+">1400+</button>
+      </div>
+      <div class="ob-privacy-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(200,169,110,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <p>Your info is only used to organize sessions — never shared or sold.</p>
+      </div>
+      <div class="ob-btn-row">
+        <button class="ob-back-btn" onclick="obBack()">&larr; Back</button>
+        <button class="ob-continue-btn" id="ob-submit-btn" onclick="obSubmit()">Join the Program &rarr;</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Success -->
+    <div class="ob-step" data-ob="3">
+      <div class="ob-success-wrap">
+        <div class="ob-success-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(192,24,43,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3>You're on the list.</h3>
+        <p>We'll reach out within a couple days with session details. See you soon.</p>
+      </div>
+      <div class="ob-info-rows">
+        <div class="ob-info-row">
+          <span class="ob-info-row-label">Sessions</span>
+          <span class="ob-info-row-val">Weekly, 1 hour</span>
+        </div>
+        <div class="ob-info-row">
+          <span class="ob-info-row-label">Location</span>
+          <span class="ob-info-row-val">Packer Campus</span>
+        </div>
+        <div class="ob-info-row">
+          <span class="ob-info-row-label">Cost</span>
+          <span class="ob-info-row-val">Free. Always.</span>
+        </div>
+      </div>
+      <button class="ob-done-btn" onclick="closeModal()">Done</button>
     </div>
   </div>
 </div>
@@ -2155,42 +2358,92 @@
   }
 
   /* ── MODAL ── */
+  let _obStep = 0;
+  const _obData = {};
+
+  function _obShow(step) {
+    document.querySelectorAll('.ob-step').forEach((el, i) => {
+      el.classList.toggle('ob-active', i === step);
+    });
+    _obStep = step;
+  }
+
   function openModal() {
+    _obData.grade = '';
+    _obData.score = '';
+    document.querySelectorAll('.ob-chip').forEach(c => c.classList.remove('ob-sel'));
+    document.querySelectorAll('.ob-chip-score').forEach(c => c.classList.remove('ob-sel'));
+    const nameInp = document.getElementById('ob-name');
+    const emailInp = document.getElementById('ob-email');
+    if (nameInp) nameInp.value = '';
+    if (emailInp) emailInp.value = '';
+    _obShow(0);
     document.getElementById('modal').classList.add('open');
     document.body.style.overflow = 'hidden';
+    setTimeout(() => { if (nameInp) nameInp.focus(); }, 60);
   }
+
   function closeModal() {
     document.getElementById('modal').classList.remove('open');
     document.body.style.overflow = '';
   }
+
   function closeModalOnOverlay(e) {
     if (e.target.id === 'modal') closeModal();
   }
 
+  function obNext() {
+    if (_obStep === 0) {
+      const name = (document.getElementById('ob-name').value || '').trim();
+      if (!name) { document.getElementById('ob-name').focus(); return; }
+      _obData.name = name;
+      _obShow(1);
+      setTimeout(() => { const inp = document.getElementById('ob-email'); if (inp) inp.focus(); }, 60);
+    } else if (_obStep === 1) {
+      const email = (document.getElementById('ob-email').value || '').trim();
+      if (!email || !email.includes('@')) { document.getElementById('ob-email').focus(); return; }
+      _obData.email = email;
+      _obShow(2);
+    }
+  }
+
+  function obBack() {
+    if (_obStep > 0) _obShow(_obStep - 1);
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.ob-chip[data-grade]')) {
+      document.querySelectorAll('.ob-chip[data-grade]').forEach(c => c.classList.remove('ob-sel'));
+      e.target.classList.add('ob-sel');
+      _obData.grade = e.target.dataset.grade;
+    }
+    if (e.target.matches('.ob-chip-score[data-score]')) {
+      document.querySelectorAll('.ob-chip-score[data-score]').forEach(c => c.classList.remove('ob-sel'));
+      e.target.classList.add('ob-sel');
+      _obData.score = e.target.dataset.score;
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.getElementById('modal').classList.contains('open')) {
+      if (_obStep === 0 || _obStep === 1) obNext();
+    }
+  });
+
   /* ── EMAILJS + FORM ── */
   emailjs.init('8hVlfMj_UDUbe4x-W');
 
-  async function submitForm(e) {
-    e.preventDefault();
-    const btn  = document.querySelector('.form-submit');
-    const form = document.getElementById('form-body');
-
-    const name  = form.querySelector('[name="name"]').value.trim();
-    const email = form.querySelector('[name="email"]').value.trim();
-    const grade = form.querySelector('[name="grade"]').value;
-    if (!name || !email) {
-      btn.textContent = 'Please fill in your name and email.';
-      setTimeout(() => { btn.textContent = 'Join the Program →'; }, 2500);
-      return;
-    }
-
+  async function obSubmit() {
+    const btn = document.getElementById('ob-submit-btn');
     btn.textContent = 'Submitting...';
     btn.disabled = true;
 
     const data = {
-      name, email, grade,
-      current_score: form.querySelector('[name="current_score"]').value.trim(),
-      target_score:  form.querySelector('[name="target_score"]').value.trim(),
+      name:          _obData.name  || '',
+      email:         _obData.email || '',
+      grade:         _obData.grade || 'Not specified',
+      current_score: _obData.score || 'Not specified',
+      target_score:  'Not specified',
     };
 
     try {
@@ -2198,17 +2451,15 @@
       try {
         await emailjs.send('service_xia779e', 'template_k1tzbql', {
           name: data.name, email: data.email,
-          grade: data.grade || 'Not specified',
-          current_score: data.current_score || 'Not taken yet',
-          target_score:  data.target_score  || 'Not set',
+          grade: data.grade,
+          current_score: data.current_score,
+          target_score: 'Not specified',
         });
       } catch (emailErr) { console.warn('EmailJS failed (non-critical):', emailErr); }
-
-      document.getElementById('form-body').style.display = 'none';
-      document.getElementById('success-msg').style.display = 'block';
+      _obShow(3);
     } catch (err) {
       console.error('Firestore error:', err);
-      btn.textContent = 'Something went wrong — please try again.';
+      btn.textContent = 'Something went wrong — try again.';
       btn.disabled = false;
     }
   }
