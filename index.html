@@ -2448,27 +2448,88 @@
     try {
       await window._submitToFirestore(data);
       try {
-        const emailHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+        const emailHtml = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#1A0508;font-family:'Helvetica Neue',Arial,sans-serif">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+
+        <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:36px 40px;border-radius:8px 8px 0 0;text-align:center">
-          <h1 style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</h1>
-          <p style="margin:8px 0 0;color:rgba(250,250,248,0.75);font-size:13px;letter-spacing:0.1em;text-transform:uppercase">Waitlist Confirmation</p>
+          <h1 style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:700;color:#FAFAF8;letter-spacing:0.02em">Packer <span style="color:#C8A96E">SAT</span> Prep</h1>
+          <p style="margin:8px 0 0;color:rgba(250,250,248,0.75);font-size:12px;letter-spacing:0.12em;text-transform:uppercase">The Packer Collegiate Institute</p>
         </td></tr>
+
+        <!-- Body -->
         <tr><td style="background:#2A0A10;padding:40px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
-          <p style="margin:0 0 16px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi <strong>${data.name}</strong>,</p>
-          <p style="margin:0 0 24px;color:#FAFAF8;font-size:15px;line-height:1.7">Thanks for signing up for Packer SAT Tutoring. You're on the waitlist and we'll be in touch soon to get you matched with a tutor.</p>
-          <p style="margin:0;color:rgba(250,250,248,0.5);font-size:13px;line-height:1.7">The Packer Collegiate Institute &middot; Brooklyn, NY</p>
+
+          <p style="margin:0 0 8px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi <strong>${data.name}</strong>,</p>
+
+          <p style="margin:0 0 24px;color:#FAFAF8;font-size:15px;line-height:1.75">You\'re on the waitlist for Packer SAT Tutoring. We\'ll reach out soon to pair you with a tutor and get you set up in the program.</p>
+
+          <!-- Divider -->
+          <div style="border-top:1px solid rgba(192,24,43,0.25);margin:0 0 24px"></div>
+
+          <!-- Submission summary -->
+          <p style="margin:0 0 14px;color:#C8A96E;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase">Your submission</p>
+
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px">
+            <tr>
+              <td style="padding:10px 14px;background:rgba(192,24,43,0.08);border-radius:6px 6px 0 0;border-bottom:1px solid rgba(192,24,43,0.15)">
+                <span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:3px">Name</span>
+                <span style="font-size:14px;color:#FAFAF8;font-weight:500">${data.name}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;background:rgba(192,24,43,0.06);border-bottom:1px solid rgba(192,24,43,0.15)">
+                <span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:3px">Email</span>
+                <span style="font-size:14px;color:#FAFAF8;font-weight:500">${data.email}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;background:rgba(192,24,43,0.08);border-bottom:1px solid rgba(192,24,43,0.15)">
+                <span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:3px">Grade</span>
+                <span style="font-size:14px;color:#FAFAF8;font-weight:500">${data.grade}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;background:rgba(192,24,43,0.06);border-bottom:1px solid rgba(192,24,43,0.15)">
+                <span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:3px">Current SAT Score</span>
+                <span style="font-size:14px;color:#FAFAF8;font-weight:500">${data.current_score}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;background:rgba(192,24,43,0.08);border-radius:0 0 6px 6px">
+                <span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:3px">Target Score</span>
+                <span style="font-size:14px;color:#FAFAF8;font-weight:500">${data.target_score}</span>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Divider -->
+          <div style="border-top:1px solid rgba(192,24,43,0.25);margin:0 0 24px"></div>
+
+          <!-- What happens next -->
+          <p style="margin:0 0 14px;color:#C8A96E;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase">What happens next</p>
+          <p style="margin:0 0 10px;color:rgba(250,250,248,0.7);font-size:14px;line-height:1.75">&#10003;&nbsp; We\'ll review your application and match you with a Packer upperclassman tutor.</p>
+          <p style="margin:0 0 10px;color:rgba(250,250,248,0.7);font-size:14px;line-height:1.75">&#10003;&nbsp; You\'ll receive an email with your login details and tutor assignment.</p>
+          <p style="margin:0 0 0;color:rgba(250,250,248,0.7);font-size:14px;line-height:1.75">&#10003;&nbsp; Your tutor will reach out to schedule your first session.</p>
+
         </td></tr>
-        <tr><td style="background:#1A0508;padding:20px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
-          <p style="margin:0;color:rgba(250,250,248,0.25);font-size:11px">Packer SAT Tutoring &middot; packersat.org</p>
+
+        <!-- Footer -->
+        <tr><td style="background:#1A0508;padding:24px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
+          <p style="margin:0 0 6px;color:rgba(250,250,248,0.35);font-size:12px">Questions? Reply to this email or visit <a href="https://www.packersat.org" style="color:#C0182B;text-decoration:none">packersat.org</a></p>
+          <p style="margin:0;color:rgba(250,250,248,0.2);font-size:11px">Packer SAT Tutoring &middot; The Packer Collegiate Institute &middot; Brooklyn, NY</p>
         </td></tr>
+
       </table>
     </td></tr>
   </table>
-</body></html>`;
+</body>
+</html>`;
         await fetch('https://packersat.vercel.app/api/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
