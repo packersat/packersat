@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { to_email, to_name, subject, html_content, from_email, from_name } = req.body;
+  const { to_email, to_name, subject, html_content, from_email, from_name, reply_to } = req.body;
 
   if (!to_email || !subject || !html_content) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -31,6 +31,18 @@ export default async function handler(req, res) {
   const senderName = from_name || ALLOWED_SENDERS[senderEmail];
 
   try {
+    const brevoPayload = {
+      sender: { name: senderName, email: senderEmail },
+      to: [{ email: to_email, name: to_name || to_email }],
+      subject,
+      htmlContent: html_content,
+    };
+
+    // Add reply-to if provided (enables inbound email threading)
+    if (reply_to) {
+      brevoPayload.replyTo = { email: reply_to };
+    }
+
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
@@ -38,12 +50,7 @@ export default async function handler(req, res) {
         'api-key': process.env.BREVO_API_KEY,
         'content-type': 'application/json',
       },
-      body: JSON.stringify({
-        sender: { name: senderName, email: senderEmail },
-        to: [{ email: to_email, name: to_name || to_email }],
-        subject,
-        htmlContent: html_content,
-      }),
+      body: JSON.stringify(brevoPayload),
     });
 
     if (!response.ok) {
