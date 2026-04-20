@@ -1407,7 +1407,7 @@
       margin-bottom: 1.5rem;
     }
 
-    /* Panel 0 — SAT Structure */
+    /* Panel 0, SAT Structure */
     .sp0-rows { display: flex; flex-direction: column; }
     .sp0-row {
       display: flex;
@@ -1455,7 +1455,7 @@
       font-weight: 900;
     }
 
-    /* Panel 1 — The Gap */
+    /* Panel 1, The Gap */
     .sp1-title {
       font-family: 'Playfair Display', serif;
       font-size: 1.35rem;
@@ -1485,7 +1485,7 @@
       line-height: 1.62;
     }
 
-    /* Panel 2 — Weekly Sessions */
+    /* Panel 2, Weekly Sessions */
     .sp2-week {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -1527,7 +1527,7 @@
       flex-shrink: 0;
     }
 
-    /* Panel 3 — Free */
+    /* Panel 3, Free */
     .sp3-num {
       font-family: 'Playfair Display', serif;
       font-size: 5.5rem;
@@ -1691,9 +1691,9 @@
       await addDoc(collection(db, 'waitlist'), {
         name: data.name,
         email: data.email,
-        grade: data.grade || '—',
-        currentScore: data.current_score || '—',
-        targetScore: data.target_score || '—',
+        grade: data.grade || '',
+        currentScore: data.current_score || '',
+        targetScore: data.target_score || '',
         status: 'pending',
         createdAt: new Date().toISOString()
       });
@@ -1746,9 +1746,9 @@
       Conquer the SAT
       <em>with your peers.</em>
     </h1>
-    <p class="hero-sub">Free, student-led SAT tutoring exclusively for Packer students. No fees. No stress. Just real preparation from people who've been there.</p>
+    <p class="hero-sub">Free, student-led SAT tutoring exclusively for Packer students.</p>
     <div class="hero-cta-group">
-      <a href="#" class="btn-primary" id="hero-cta" onclick="openModal(); return false;">Sign Up — It's Free</a>
+      <a href="#" class="btn-primary" id="hero-cta" onclick="openModal(); return false;">Sign Up, It's Free</a>
       <a href="#how" class="btn-ghost">How It Works</a>
       <a href="portal/index.html" class="btn-ghost">Log In &rarr;</a>
     </div>
@@ -1906,7 +1906,7 @@
           </div>
           <div class="sp2-legend">
             <div class="sp2-legend-dot"></div>
-            Session days &mdash; on campus, around your schedule
+            Session days ,  on campus, around your schedule
           </div>
         </div>
 
@@ -1925,25 +1925,25 @@
     <div class="story-steps">
 
       <div class="story-step ss-active" data-step="0">
-        <div class="ss-num">01 &mdash; The Test</div>
+        <div class="ss-num">01 ,  The Test</div>
         <h3>Two sections.<br>One score.</h3>
-        <p>The Digital SAT measures Math and Reading &amp; Writing separately, each worth 800 points. Most students have real room to grow in at least one.</p>
+        <p>The Digital SAT measures Math and Reading &amp; Writing separately, each worth 800 points. Most students have room to grow in at least one.</p>
       </div>
 
       <div class="story-step" data-step="1">
-        <div class="ss-num">02 &mdash; The Gap</div>
+        <div class="ss-num">02 ,  The Gap</div>
         <h3>We find exactly<br>where you're losing points.</h3>
-        <p>Before anything else, we identify your specific weak spots — a question type, a pacing problem, a section that doesn't click yet. That's where we start.</p>
+        <p>Before anything else, we identify your specific weak spots, a question type, a pacing problem, a section that doesn't click yet.</p>
       </div>
 
       <div class="story-step" data-step="2">
-        <div class="ss-num">03 &mdash; The Work</div>
-        <h3>Weekly sessions.<br>Real progress.</h3>
+        <div class="ss-num">03 ,  The Work</div>
+        <h3>Weekly sessions.<br>Progress.</h3>
         <p>One to two focused sessions per week, on campus. Consistent, structured practice is what turns a weak spot into a strength before test day.</p>
       </div>
 
       <div class="story-step" data-step="3">
-        <div class="ss-num">04 &mdash; The Cost</div>
+        <div class="ss-num">04 ,  The Cost</div>
         <h3>Nothing.<br>Not a dollar.</h3>
         <p>Test prep services charge hundreds per hour. We think your score shouldn't depend on what your family can afford. This program is free for every Packer student, always.</p>
       </div>
@@ -1959,7 +1959,7 @@
       <div class="section-label">About the Program</div>
       <h2 class="about-h2">Built for Packer students, by Packer students.</h2>
       <p>We're a group of upperclassmen at <span class="highlight">The Packer Collegiate Institute</span> who believe every student deserves access to quality SAT preparation without the price tag.</p>
-      <p>Our sessions are tailored specifically to the skills tested on the Digital SAT — closing score gaps and building confidence through focused, consistent practice.</p>
+      <p>Our sessions are tailored specifically to the skills tested on the Digital SAT, closing score gaps and building confidence through focused, consistent practice.</p>
       <p>Wherever you're starting from, we'll meet you there and build from it.</p>
     </div>
     <div class="reveal-right">
@@ -1975,7 +1975,7 @@
           <div class="pillar-num">02</div>
           <div>
             <div class="pillar-title">Digital SAT Focused</div>
-            <div class="pillar-desc">Everything we teach reflects the current Digital SAT format — adaptive modules, question types, and timing.</div>
+            <div class="pillar-desc">Everything we teach reflects the current Digital SAT format, adaptive modules, question types, and timing.</div>
           </div>
         </div>
         <div class="pillar-item">
@@ -2005,7 +2005,7 @@
         <div class="section-label">The Process</div>
         <h2 class="how-h2">Simple.<br>Structured.<br>Effective.</h2>
       </div>
-      <p class="how-desc reveal" style="transition-delay:0.1s">Three steps stand between you and a better score. No complicated onboarding, no contracts — just real preparation that fits your life.</p>
+      <p class="how-desc reveal" style="transition-delay:0.1s">Three straightforward steps.</p>
     </div>
     <div class="steps-list">
       <div class="step-row reveal" style="transition-delay:0.05s">
@@ -2020,7 +2020,7 @@
             </svg>
           </div>
           <h3>Sign Up &amp; Assess</h3>
-          <p>Fill out a short form so we can understand where you are and pair you with the right tutor. No test required — just a few questions about your goals.</p>
+          <p>Fill out a short form so we can understand where you are and pair you with the right tutor.</p>
         </div>
       </div>
       <div class="step-row reveal" style="transition-delay:0.12s">
@@ -2139,21 +2139,6 @@
   </div>
 </section>
 
-<!-- FREE BANNER -->
-<section id="free">
-  <div class="free-inner reveal">
-    <div>
-      <h2 class="free-h2">Zero cost.<br>Zero excuses.</h2>
-      <p class="free-sub">This program exists because we believe test prep shouldn't depend on what you can afford. Every Packer student gets the same access.</p>
-    </div>
-    <div class="free-badge-wrap">
-      <div class="free-badge">
-        100% FREE
-        <span class="free-badge-small">For all Packer students</span>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- FAQ -->
 <section id="faq">
@@ -2184,7 +2169,7 @@
       What if I'm already scoring high?
       <div class="faq-toggle">+</div>
     </div>
-    <div class="faq-a">Great — we work with students at all levels. For high scorers, we focus on eliminating small errors, mastering the hardest question types, and perfecting test-day strategy to push you toward 1550+.</div>
+    <div class="faq-a">Great, we work with students at all levels. For high scorers, we focus on eliminating small errors, mastering the hardest question types, and perfecting test-day strategy to push you toward 1550+.</div>
   </div>
 
   <div class="faq-item reveal">
@@ -2295,7 +2280,7 @@
       </div>
       <div class="ob-privacy-box">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(200,169,110,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <p>Your info is only used to organize sessions — never shared or sold.</p>
+        <p>Your info is only used to organize sessions, never shared or sold.</p>
       </div>
       <div class="ob-btn-row">
         <button class="ob-back-btn" onclick="obBack()">&larr; Back</button>
@@ -2442,7 +2427,7 @@
       _obData.email = email;
       _obShow(2);
     } else if (_obStep === 2) {
-      // Grade and current score — both optional, just advance
+      // Grade and current score, both optional, just advance
       _obShow(3);
     }
   }
@@ -2589,7 +2574,7 @@
       _obShow(4);
     } catch (err) {
       console.error('Firestore error:', err);
-      btn.textContent = 'Something went wrong — try again.';
+      btn.textContent = 'Something went wrong, try again.';
       btn.disabled = false;
     }
   }
