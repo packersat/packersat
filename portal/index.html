@@ -1408,7 +1408,7 @@
             </div>
           </a>
 
-          <a href="https://www.desmos.com/testing/collegeboard/graphing" target="_blank" class="resource-card">
+          <a href="https://www.desmos.com/calculator" target="_blank" class="resource-card">
             <div class="resource-icon" style="background:rgba(160,40,40,0.15);border-color:rgba(160,40,40,0.3);">📐</div>
             <div class="resource-info">
               <div class="resource-name">Desmos Calculator</div>
@@ -5035,9 +5035,20 @@ Good luck!`,
 
   // Trigger MathJax to typeset newly rendered math after each question loads
   function typesetMath() {
+    const area = prac('prac-question-area');
+    if (!area) return;
     if (window.MathJax && window.MathJax.typesetPromise) {
-      const area = prac('prac-question-area');
-      if (area) window.MathJax.typesetPromise([area]).catch(e => console.warn('MathJax error:', e));
+      // MathJax already ready — typeset immediately
+      window.MathJax.typesetPromise([area]).catch(e => console.warn('MathJax error:', e));
+    } else {
+      // MathJax still loading async — poll until ready then typeset
+      const interval = setInterval(() => {
+        if (window.MathJax && window.MathJax.typesetPromise) {
+          clearInterval(interval);
+          window.MathJax.typesetPromise([area]).catch(e => console.warn('MathJax error:', e));
+        }
+      }, 100);
+      setTimeout(() => clearInterval(interval), 10000);
     }
   }
 
