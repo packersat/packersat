@@ -1175,8 +1175,12 @@
           </div>
         </div>
         <div class="card" style="margin-top:1.5rem">
-          <div class="card-title"> Inbox (Messages to Admin)</div>
+          <div class="card-title"> Inbox (Portal Messages to Admin)</div>
           <div id="dm-inbox-list"><div class="empty-state"><div class="icon"></div>No messages received yet.</div></div>
+        </div>
+        <div class="card" style="margin-top:1.5rem">
+          <div class="card-title">&#9993; Email Replies <span style="font-size:0.72rem;font-weight:400;color:rgba(250,250,248,0.35);margin-left:0.5rem">Replies sent to jack@packersat.org from your emails</span></div>
+          <div id="dm-email-replies-list"><div class="empty-state"><div class="icon"></div>No email replies yet. When students reply to emails you send through the portal, they appear here.</div></div>
         </div>
       </div>
 
@@ -4405,11 +4409,13 @@ Good luck!`,
     btn.disabled = true;
     btn.textContent = `Sending to ${total} recipient${total > 1 ? 's' : ''}…`;
     let sent = 0, failed = 0;
-    for (const [, u] of recipients) {
+    for (const [uid, u] of recipients) {
       const personalBody = body.replace(/\[Name\]/g, u.name || u.email);
       const html = buildEmailHTML(u.name || u.email, subject, personalBody, btnLabel, btnUrl);
+      // Encode recipient UID in reply-to so inbound replies link back to the right student
+      const replyTo = uid && !uid.startsWith('__') ? `replies+uid_${uid}@packersat.org` : 'replies@packersat.org';
       try {
-        await sendBrevoEmail({ to_email: u.email, to_name: u.name || u.email, subject, html_content: html, from_email: fromEmail });
+        await sendBrevoEmail({ to_email: u.email, to_name: u.name || u.email, subject, html_content: html, from_email: fromEmail, reply_to: replyTo });
         sent++;
       } catch(e) { failed++; console.error('Failed to send to', u.email, e); }
     }
@@ -6803,6 +6809,44 @@ Good luck!`,
     if (badge) badge.style.display = 'none';
   }
 
+  async function loadEmailReplies() {
+    const el = document.getElementById('dm-email-replies-list');
+    if (!el) return;
+    el.innerHTML = '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem;padding:0.5rem">Loading...</div>';
+
+    const snap = await getDocs(collection(db, 'messages'));
+    const replies = [];
+    snap.forEach(d => {
+      const m = { id: d.id, ...d.data() };
+      if (m.inbound) replies.push(m);
+    });
+    replies.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+
+    if (!replies.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon"></div>No email replies yet. When students reply to emails you send through the portal, they appear here.</div>';
+      return;
+    }
+
+    el.innerHTML = replies.map(m => `
+      <div style="padding:1rem;border-bottom:1px solid rgba(192,24,43,0.12);background:${m.read?'transparent':'rgba(192,24,43,0.06)'}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.4rem;flex-wrap:wrap;gap:0.3rem">
+          <div>
+            <span style="font-size:0.88rem;font-weight:600;color:#fafaf8">${m.fromName}</span>
+            <span style="font-size:0.72rem;color:rgba(250,250,248,0.35);margin-left:0.4rem">${m.fromEmail || ''}</span>
+            ${!m.read ? '<span style="margin-left:0.5rem;font-size:0.65rem;background:#c0182b;color:#fff;padding:0.1rem 0.4rem;border-radius:10px">NEW</span>' : ''}
+          </div>
+          <span style="font-size:0.72rem;color:rgba(250,250,248,0.3)">${new Date(m.createdAt).toLocaleString()}</span>
+        </div>
+        <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-bottom:0.5rem">Re: ${m.subject}</div>
+        <div style="font-size:0.85rem;color:rgba(250,250,248,0.7);line-height:1.65;white-space:pre-wrap">${m.body}</div>
+      </div>`).join('');
+
+    // Mark as read
+    replies.filter(m => !m.read).forEach(async m => {
+      await updateDoc(doc(db, 'messages', m.id), { read: true });
+    });
+  }
+
   function populateDMRecipients() {
     const sel = document.getElementById('dm-recipient');
     if (!sel) return;
@@ -7106,11 +7150,11 @@ Good luck!`,
   // BREVO EMAIL
   // ─────────────────────────────────────────
 
-  async function sendBrevoEmail({ to_email, to_name, subject, html_content, from_email, from_name }) {
+  async function sendBrevoEmail({ to_email, to_name, subject, html_content, from_email, from_name, reply_to }) {
     const res = await fetch('https://packersat.vercel.app/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to_email, to_name, subject, html_content, from_email, from_name })
+      body: JSON.stringify({ to_email, to_name, subject, html_content, from_email, from_name, reply_to })
     });
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
@@ -7188,7 +7232,7 @@ Good luck!`,
     if (pageId==='admin-users') loadUsersTable();
     if (pageId==='admin-profiles') loadAdminProfiles();
     if (pageId==='admin-analytics') loadAnalytics();
-    if (pageId==='admin-messages') { populateDMRecipients(); loadDMHistory(); loadDMInbox(); }
+    if (pageId==='admin-messages') { populateDMRecipients(); loadDMHistory(); loadDMInbox(); loadEmailReplies(); }
     if (pageId==='admin-emails') loadAdminEmailsPage();
     if (pageId==='admin-waitlist') loadWaitlist();
     if (pageId==='admin-scores') { loadAllScores(); populateAdminScoreStudents(); }
