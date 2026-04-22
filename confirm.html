@@ -259,7 +259,7 @@
         html_content: html,
         from_email: 'jack@packersat.org',
         from_name:  'Jack Rose',
-        reply_to: `replies+uid_${studentEmail}@reply.packersat.org`,
+        reply_to:   'jack@packersat.org',
       }),
     });
   }
@@ -310,7 +310,8 @@
         // Resolve student info — may be a portal user or a custom email
         let studentName  = token.studentName  || picker.studentName  || 'Student';
         let studentEmail = token.studentEmail || picker.studentEmail || '';
-        let tutorId      = null;
+        let resolvedStudentId = studentId || null;
+        let tutorId      = picker.adminId || null;
 
         if (studentId) {
           const studentDoc = await getDoc(doc(db, 'users', studentId));
@@ -318,13 +319,16 @@
             const s = studentDoc.data();
             studentName  = s.name  || s.email || studentName;
             studentEmail = s.email || studentEmail;
-            tutorId      = s.tutorId || picker.adminId || '';
+            tutorId      = s.tutorId || picker.adminId || null;
+            resolvedStudentId = studentId;
           }
         }
 
+        console.log('Sending confirmation to:', studentEmail, studentName);
+
         // Write session to Firestore
         await addDoc(collection(db, 'sessions'), {
-          studentId,
+          studentId:  resolvedStudentId,
           tutorId,
           date,
           time,
@@ -342,9 +346,16 @@
         // Build calendar link
         const calLink = buildCalLink(date, time, studentName, location);
 
-        // Send confirmation email
+        // Send confirmation email — don't let email failure block the success screen
         if (studentEmail) {
-          await sendConfirmationEmail(studentEmail, studentName, date, time, location, calLink);
+          try {
+            await sendConfirmationEmail(studentEmail, studentName, date, time, location, calLink);
+            console.log('Confirmation email sent to:', studentEmail);
+          } catch(emailErr) {
+            console.error('Confirmation email failed (non-critical):', emailErr);
+          }
+        } else {
+          console.warn('No student email found — skipping confirmation email');
         }
 
         // Show success
@@ -354,7 +365,7 @@
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C0182B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
             <h1 style="margin-bottom:0.5rem">You're all set!</h1>
-            <p class="sub">Your session on <strong style="color:#FAFAF8">${dayStr}</strong> at <strong style="color:#C8A96E">${timeStr} Eastern</strong> is confirmed. A confirmation email with your calendar invite has been sent.</p>
+            <p class="sub">Your session on <strong style="color:#FAFAF8">${dayStr}</strong> at <strong style="color:#C8A96E">${timeStr} Eastern</strong> is confirmed.${studentEmail ? ' A confirmation email with your calendar invite has been sent.' : ''}</p>
             <a href="${calLink}" target="_blank" class="cal-link">&#128197; Add to Google Calendar</a>
           </div>`;
 
