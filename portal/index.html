@@ -4696,48 +4696,53 @@ Good luck!`,
   function buildSchedulePickerEmailHTMLWithTokens(studentName, slotsWithTokens, note) {
     const baseUrl = 'https://www.packersat.org';
     const slotButtons = slotsWithTokens.map(s => {
-      const label = formatSlotDisplay(s.date, s.time);
-      const href  = `${baseUrl}/confirm.html?t=${encodeURIComponent(s.token)}`;
+      const label    = formatSlotDisplay(s.date, s.time);
+      const dayPart  = label.split(' at ')[0];
+      const timePart = label.includes(' at ') ? label.split(' at ').slice(1).join(' at ') : '';
+      const href     = `${baseUrl}/confirm.html?t=${encodeURIComponent(s.token)}`;
       return `
-        <a href="${href}" style="display:block;text-decoration:none;margin-bottom:10px">
-          <table width="100%" cellpadding="0" cellspacing="0">
-            <tr><td style="border:1px solid rgba(192,24,43,0.4);border-radius:8px;padding:14px 18px;background:rgba(192,24,43,0.08)">
-              <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                <td>
-                  <div style="font-size:14px;font-weight:600;color:#FAFAF8;font-family:'Helvetica Neue',Arial,sans-serif">${label.split(' at ')[0]}</div>
-                  <div style="font-size:13px;color:#C8A96E;margin-top:3px;font-family:'Helvetica Neue',Arial,sans-serif">${label.includes(' at ') ? label.split(' at ').slice(1).join(' at ') : ''}</div>
-                </td>
-                <td align="right"><div style="background:#C0182B;color:#ffffff;font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;font-family:'Helvetica Neue',Arial,sans-serif">Select</div></td>
-              </tr></table>
-            </td></tr>
-          </table>
-        </a>`;
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px">
+          <tr>
+            <td style="background:#3A0D15;border:1px solid #8B1A2A;border-radius:8px;padding:0">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="70%" style="padding:14px 16px;vertical-align:middle">
+                    <div style="font-size:15px;font-weight:700;color:#FAFAF8;font-family:Arial,sans-serif;line-height:1.3">${dayPart}</div>
+                    <div style="font-size:13px;color:#C8A96E;font-family:Arial,sans-serif;margin-top:4px">${timePart}</div>
+                  </td>
+                  <td width="30%" align="right" style="padding:14px 16px;vertical-align:middle">
+                    <a href="${href}" style="background:#C0182B;color:#ffffff;font-size:12px;font-weight:700;padding:8px 18px;border-radius:20px;text-decoration:none;font-family:Arial,sans-serif;display:inline-block">Select</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>`;
     }).join('');
 
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#1A0508;font-family:'Helvetica Neue',Arial,sans-serif">
+<body style="margin:0;padding:0;background:#1A0508;font-family:Arial,sans-serif">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">
   <tr><td align="center">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
-      <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:32px 40px;border-radius:8px 8px 0 0;text-align:center">
+      <tr><td style="background:#8B1A2A;padding:32px 40px;border-radius:8px 8px 0 0;text-align:center">
         <div style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</div>
-        <div style="font-size:11px;color:rgba(250,250,248,0.7);letter-spacing:0.12em;text-transform:uppercase;margin-top:8px">Session Scheduling</div>
+        <div style="font-size:11px;color:rgba(250,250,248,0.75);letter-spacing:0.12em;text-transform:uppercase;margin-top:8px">Session Scheduling</div>
       </td></tr>
-      <tr><td style="background:#2A0A10;padding:36px 40px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
-        <p style="margin:0 0 14px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi <strong>${studentName}</strong>,</p>
-        <p style="margin:0 0 24px;color:rgba(250,250,248,0.75);font-size:14px;line-height:1.75">${note || "I'd like to schedule our next tutoring session. Please click on a time that works for you:"}</p>
+      <tr><td style="background:#2A0A10;padding:36px 40px;border-left:2px solid #5A1020;border-right:2px solid #5A1020">
+        <p style="margin:0 0 14px;color:#FAFAF8;font-size:16px;line-height:1.6;font-family:Arial,sans-serif">Hi <strong>${studentName}</strong>,</p>
+        <p style="margin:0 0 24px;color:#AAAAAA;font-size:14px;line-height:1.75;font-family:Arial,sans-serif">${note || "I'd like to schedule our next tutoring session. Please click on a time that works for you:"}</p>
         ${slotButtons}
-        <p style="margin:20px 0 0;color:rgba(250,250,248,0.4);font-size:12px;line-height:1.6">Once you select a time, your session will be confirmed automatically and you'll receive a calendar invite by email.</p>
+        <p style="margin:20px 0 0;color:#666666;font-size:12px;line-height:1.6;font-family:Arial,sans-serif">Once you select a time, your session will be confirmed automatically and you'll receive a calendar invite by email.</p>
       </td></tr>
-      <tr><td style="background:#1A0508;padding:20px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
-        <p style="margin:0;color:rgba(250,250,248,0.2);font-size:11px">Packer SAT Tutoring &middot; packersat.org</p>
+      <tr><td style="background:#1A0508;padding:20px 40px;border-radius:0 0 8px 8px;border:2px solid #3A0D15;border-top:none;text-align:center">
+        <p style="margin:0;color:#444444;font-size:11px;font-family:Arial,sans-serif">Packer SAT Tutoring &middot; packersat.org</p>
       </td></tr>
     </table>
   </td></tr>
 </table>
 </body></html>`;
   }
-
   async function loadAdminEmailsPage() {
     await cacheAllUsers();
     _emailAudience = 'students';
