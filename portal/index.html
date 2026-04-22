@@ -4653,7 +4653,7 @@ Good luck!`,
       });
 
       const slotsWithTokens = validSlots.map((s, i) => {
-        const token = btoa(JSON.stringify({
+        const json  = JSON.stringify({
           pickerId: pickerRef.id,
           studentId: toId,
           studentEmail: toEmail,
@@ -4662,7 +4662,9 @@ Good luck!`,
           time: s.time,
           location,
           idx: i,
-        }));
+        });
+        // URL-safe base64: replace +→-, /→_, strip = padding
+        const token = btoa(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
         return { ...s, token };
       });
 
@@ -4699,7 +4701,7 @@ Good luck!`,
       const label    = formatSlotDisplay(s.date, s.time);
       const dayPart  = label.split(' at ')[0];
       const timePart = label.includes(' at ') ? label.split(' at ').slice(1).join(' at ') : '';
-      const href     = `${baseUrl}/confirm.html?t=${encodeURIComponent(s.token)}`;
+      const href     = `${baseUrl}/confirm.html?t=${s.token}`;
       return `
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px">
           <tr>
