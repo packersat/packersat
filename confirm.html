@@ -161,9 +161,20 @@
   function getToken() {
     const params = new URLSearchParams(window.location.search);
     const t = params.get('t');
-    if (!t) return null;
-    try { return JSON.parse(atob(decodeURIComponent(t))); }
-    catch(e) { return null; }
+    console.log('Raw t param:', t);
+    if (!t) { console.log('No t param found'); return null; }
+    try {
+      // Reverse URL-safe base64: -→+, _→/, restore = padding
+      const b64    = t.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = b64 + '=='.slice(0, (4 - b64.length % 4) % 4);
+      console.log('b64:', b64.slice(0, 40) + '...');
+      const parsed = JSON.parse(atob(padded));
+      console.log('Parsed token:', parsed);
+      return parsed;
+    } catch(e) {
+      console.error('Token decode failed:', e);
+      return null;
+    }
   }
 
   // ── Format helpers ──────────────────────────────────────────────
@@ -255,8 +266,13 @@
 
   // ── Main ────────────────────────────────────────────────────────
   const token = getToken();
+  console.log('Token result:', token);
+  console.log('Has pickerId:', token?.pickerId);
+  console.log('Has studentId:', token?.studentId);
+  console.log('Has date:', token?.date);
+  console.log('Has time:', token?.time);
 
-  if (!token || !token.pickerId || !token.studentId || !token.date || !token.time) {
+  if (!token || !token.pickerId || !token.date || !token.time) {
     content.innerHTML = `
       <h1 style="margin-bottom:0.5rem">Invalid link</h1>
       <p class="sub">This scheduling link is invalid or has expired. Please contact your tutor for a new one.</p>`;
@@ -291,12 +307,20 @@
         if (!pickerDoc.exists()) throw new Error('Picker not found');
         const picker = pickerDoc.data();
 
-        // Get student info
-        const studentDoc = await getDoc(doc(db, 'users', studentId));
-        const student    = studentDoc.exists() ? studentDoc.data() : {};
-        const studentName  = student.name || student.email || 'Student';
-        const studentEmail = student.email || '';
-        const tutorId      = student.tutorId || picker.adminId || '';
+        // Resolve student info — may be a portal user or a custom email
+        let studentName  = token.studentName  || picker.studentName  || 'Student';
+        let studentEmail = token.studentEmail || picker.studentEmail || '';
+        let tutorId      = null;
+
+        if (studentId) {
+          const studentDoc = await getDoc(doc(db, 'users', studentId));
+          if (studentDoc.exists()) {
+            const s = studentDoc.data();
+            studentName  = s.name  || s.email || studentName;
+            studentEmail = s.email || studentEmail;
+            tutorId      = s.tutorId || picker.adminId || '';
+          }
+        }
 
         // Write session to Firestore
         await addDoc(collection(db, 'sessions'), {
