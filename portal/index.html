@@ -1311,8 +1311,16 @@
               <p style="font-size:0.82rem;color:rgba(250,250,248,0.45);margin-bottom:1.2rem;line-height:1.6">Pick a student and add up to 4 available time slots. The student gets an email where they click their preferred time to confirm — it automatically creates the session and sends a calendar invite.</p>
 
               <div style="margin-bottom:0.9rem">
-                <div class="field-label">Student</div>
-                <select class="input-field" id="sp-student"></select>
+                <div class="field-label">Recipient</div>
+                <select class="input-field" id="sp-student" onchange="onSpRecipientChange(); updateSchedulePreview()"></select>
+              </div>
+
+              <div style="margin-bottom:0.9rem;display:none" id="sp-custom-email-row">
+                <div class="field-label">Custom email address</div>
+                <div style="display:flex;gap:0.5rem">
+                  <input class="input-field" type="email" id="sp-custom-email" placeholder="e.g. parent@example.com" oninput="updateSchedulePreview()" style="flex:1" />
+                  <input class="input-field" type="text" id="sp-custom-name" placeholder="Name (optional)" oninput="updateSchedulePreview()" style="width:150px" />
+                </div>
               </div>
 
               <div style="margin-bottom:0.9rem">
@@ -4476,15 +4484,23 @@ Good luck!`,
   function loadSchedulePickerStudents() {
     const sel = document.getElementById('sp-student');
     if (!sel) return;
-    sel.innerHTML = '<option value="">Select a student...</option>';
+    sel.innerHTML = '<option value="">Select recipient...</option>';
     Object.entries(allUsers)
-      .filter(([,u]) => u.role === 'student' && u.email)
+      .filter(([,u]) => u.email)
       .sort(([,a],[,b]) => (a.name||'').localeCompare(b.name||''))
       .forEach(([uid, u]) => {
-        sel.innerHTML += `<option value="${uid}">${u.name || u.email}</option>`;
+        const roleLabel = u.role ? ` (${u.role})` : '';
+        sel.innerHTML += `<option value="${uid}">${u.name || u.email}${roleLabel}</option>`;
       });
-    sel.onchange = updateSchedulePreview;
+    sel.innerHTML += '<option value="__custom__">Custom email address...</option>';
+    sel.onchange = () => { window.onSpRecipientChange(); window.updateSchedulePreview(); };
   }
+
+  window.onSpRecipientChange = function() {
+    const val    = document.getElementById('sp-student')?.value;
+    const row    = document.getElementById('sp-custom-email-row');
+    if (row) row.style.display = val === '__custom__' ? 'block' : 'none';
+  };
 
   let _spSlots = []; // [{date, time}]
   window._spSlots = _spSlots;
@@ -4540,14 +4556,19 @@ Good luck!`,
   window.updateSchedulePreview = function() {
     const preview = document.getElementById('sp-preview');
     if (!preview) return;
-    const studentSel  = document.getElementById('sp-student');
-    const note        = document.getElementById('sp-note')?.value.trim() || '';
-    const uid         = studentSel?.value;
-    const studentName = uid ? (allUsers[uid]?.name || allUsers[uid]?.email || 'Student') : 'Student';
-    const validSlots  = _spSlots.filter(s => s.date && s.time);
-
+    const uid = document.getElementById('sp-student')?.value;
+    let studentName;
+    if (uid === '__custom__') {
+      const customName  = document.getElementById('sp-custom-name')?.value.trim();
+      const customEmail = document.getElementById('sp-custom-email')?.value.trim();
+      studentName = customName || customEmail || 'Recipient';
+    } else {
+      studentName = uid ? (allUsers[uid]?.name || allUsers[uid]?.email || 'Student') : 'Student';
+    }
+    const note       = document.getElementById('sp-note')?.value.trim() || '';
+    const validSlots = _spSlots.filter(s => s.date && s.time);
     preview.innerHTML = buildSchedulePickerEmailHTML(studentName, validSlots, note, uid, true);
-  }
+  };
 
   function buildSchedulePickerEmailHTML(studentName, slots, note, studentId, isPreview) {
     const baseUrl  = 'https://www.packersat.org';
@@ -4597,64 +4618,73 @@ Good luck!`,
     const location = document.getElementById('sp-location')?.value.trim() || 'Packer Collegiate Institute';
     const validSlots = _spSlots.filter(s => s.date && s.time);
 
-    if (!uid) { showMsg(msg, 'Please select a student.', 'error'); return; }
-    if (!validSlots.length) { showMsg(msg, 'Please add at least one time slot.', 'error'); return; }
+    // Resolve recipient
+    let toEmail, toName, toId;
+    if (uid === '__custom__') {
+      toEmail = document.getElementById('sp-custom-email')?.value.trim();
+      toName  = document.getElementById('sp-custom-name')?.value.trim() || toEmail;
+      toId    = null;
+      if (!toEmail || !toEmail.includes('@')) { showMsg(msg, 'Please enter a valid email address.', 'error'); return; }
+    } else {
+      if (!uid) { showMsg(msg, 'Please select a recipient.', 'error'); return; }
+      const student = allUsers[uid];
+      if (!student?.email) { showMsg(msg, 'Selected user has no email address.', 'error'); return; }
+      toEmail = student.email;
+      toName  = student.name || student.email;
+      toId    = uid;
+    }
 
-    const student = allUsers[uid];
-    if (!student?.email) { showMsg(msg, 'Student has no email address.', 'error'); return; }
+    if (!validSlots.length) { showMsg(msg, 'Please add at least one time slot.', 'error'); return; }
 
     btn.disabled = true;
     btn.textContent = 'Sending…';
 
-    // Store the picker in Firestore so confirm.html can validate and create the session
     try {
       const pickerRef = await addDoc(collection(db, 'schedulePickers'), {
-        studentId: uid,
-        studentName: student.name || student.email,
-        adminId: CU.uid,
-        slots: validSlots,
+        studentId:   toId,
+        studentName: toName,
+        studentEmail: toEmail,
+        adminId:     CU.uid,
+        slots:       validSlots,
         location,
         note,
-        createdAt: new Date().toISOString(),
-        used: false,
+        createdAt:   new Date().toISOString(),
+        used:        false,
       });
 
-      // Rebuild slots with the Firestore pickerId encoded in the token
-      const slotsWithId = validSlots.map((s, i) => {
-        const token = btoa(JSON.stringify({ pickerId: pickerRef.id, studentId: uid, date: s.date, time: s.time, location, idx: i }));
+      const slotsWithTokens = validSlots.map((s, i) => {
+        const token = btoa(JSON.stringify({
+          pickerId: pickerRef.id,
+          studentId: toId,
+          studentEmail: toEmail,
+          studentName: toName,
+          date: s.date,
+          time: s.time,
+          location,
+          idx: i,
+        }));
         return { ...s, token };
       });
 
-      const emailHtml = buildSchedulePickerEmailHTML(
-        student.name || student.email,
-        slotsWithId.map(s => {
-          const label = formatSlotDisplay(s.date, s.time);
-          return { ...s, _label: label };
-        }),
-        note,
-        uid,
-        false
-      );
-
-      // Rebuild with real URLs (re-call with isPreview=false and tokens)
-      const realHtml = buildSchedulePickerEmailHTMLWithTokens(student.name || student.email, slotsWithId, note);
+      const realHtml = buildSchedulePickerEmailHTMLWithTokens(toName, slotsWithTokens, note);
 
       await sendBrevoEmail({
-        to_email: student.email,
-        to_name:  student.name || student.email,
-        subject:  'Pick a time for your SAT tutoring session',
+        to_email:     toEmail,
+        to_name:      toName,
+        subject:      'Pick a time for your SAT tutoring session',
         html_content: realHtml,
-        from_email: 'jack@packersat.org',
-        from_name:  'Jack Rose',
-        reply_to: `replies+uid_${uid}@reply.packersat.org`,
+        from_email:   'jack@packersat.org',
+        from_name:    'Jack Rose',
+        reply_to:     toId ? `replies+uid_${toId}@reply.packersat.org` : 'jack@packersat.org',
       });
 
-      showMsg(msg, `Schedule picker sent to ${student.name || student.email}.`, 'success');
+      showMsg(msg, `Schedule picker sent to ${toName}.`, 'success');
       _spSlots = [];
       renderScheduleSlots();
-      updateSchedulePreview();
+      window.updateSchedulePreview();
       document.getElementById('sp-student').value = '';
       document.getElementById('sp-note').value = '';
+      document.getElementById('sp-custom-email-row').style.display = 'none';
     } catch(e) {
       console.error('sendSchedulePicker error:', e);
       showMsg(msg, 'Failed to send. Please try again.', 'error');
@@ -7677,6 +7707,7 @@ Good luck!`,
   function addScheduleSlot() { window.addScheduleSlot && window.addScheduleSlot(); }
   function removeScheduleSlot(i) { window.removeScheduleSlot && window.removeScheduleSlot(i); }
   function sendSchedulePicker() { window.sendSchedulePicker && window.sendSchedulePicker(); }
+  function onSpRecipientChange() { window.onSpRecipientChange && window.onSpRecipientChange(); }
   function updateSchedulePreview() { window.updateSchedulePreview && window.updateSchedulePreview(); }
   function updateSlotDate(i, v) { window.updateSlotDate && window.updateSlotDate(i, v); }
   function updateSlotTime(i, v) { window.updateSlotTime && window.updateSlotTime(i, v); }
