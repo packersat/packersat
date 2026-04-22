@@ -1317,7 +1317,7 @@
 
               <div style="margin-bottom:0.9rem">
                 <div class="field-label">Location</div>
-                <input class="input-field" type="text" id="sp-location" placeholder="e.g. Room 203, Library" value="Packer Collegiate Institute" />
+                <input class="input-field" type="text" id="sp-location" placeholder="e.g. Room 203, Library" value="Packer Collegiate Institute" oninput="updateSchedulePreview()" />
               </div>
 
               <div style="margin-bottom:0.9rem">
@@ -1327,8 +1327,8 @@
               </div>
 
               <div style="margin-bottom:0.9rem">
-                <div class="field-label">Personal note <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(optional — shown in email)</span></div>
-                <textarea class="input-field" id="sp-note" rows="2" placeholder="e.g. Looking forward to our first session!" style="resize:vertical;font-family:inherit;line-height:1.6"></textarea>
+                <div class="field-label">Email intro <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(shown above the time slots)</span></div>
+                <textarea class="input-field" id="sp-note" rows="3" placeholder="I'd like to schedule our next tutoring session. Please click on a time that works for you:" oninput="updateSchedulePreview()" style="resize:vertical;font-family:inherit;line-height:1.6"></textarea>
               </div>
 
               <button class="btn-red" onclick="sendSchedulePicker()" id="sp-send-btn">Send Schedule Picker</button>
@@ -4487,6 +4487,7 @@ Good luck!`,
   }
 
   let _spSlots = []; // [{date, time}]
+  window._spSlots = _spSlots;
 
   window.addScheduleSlot = function() {
     if (_spSlots.length >= 4) return;
@@ -4497,7 +4498,17 @@ Good luck!`,
   window.removeScheduleSlot = function(idx) {
     _spSlots.splice(idx, 1);
     renderScheduleSlots();
-    updateSchedulePreview();
+    window.updateSchedulePreview();
+  };
+
+  window.updateSlotDate = function(idx, val) {
+    _spSlots[idx].date = val;
+    window.updateSchedulePreview();
+  };
+
+  window.updateSlotTime = function(idx, val) {
+    _spSlots[idx].time = val;
+    window.updateSchedulePreview();
   };
 
   function renderScheduleSlots() {
@@ -4507,9 +4518,9 @@ Good luck!`,
     container.innerHTML = _spSlots.map((slot, i) => `
       <div style="display:flex;gap:0.5rem;align-items:center">
         <input type="date" class="input-field" style="flex:1" value="${slot.date}"
-          oninput="_spSlots[${i}].date=this.value;updateSchedulePreview()" />
+          oninput="updateSlotDate(${i}, this.value)" />
         <input type="time" class="input-field" style="flex:1" value="${slot.time}"
-          oninput="_spSlots[${i}].time=this.value;updateSchedulePreview()" />
+          oninput="updateSlotTime(${i}, this.value)" />
         <button onclick="removeScheduleSlot(${i})" style="background:none;border:none;color:rgba(250,250,248,0.3);font-size:1rem;cursor:pointer;padding:0.2rem 0.4rem;flex-shrink:0" title="Remove">✕</button>
       </div>`).join('');
     if (addBtn) addBtn.style.display = _spSlots.length >= 4 ? 'none' : 'inline-block';
@@ -4526,7 +4537,7 @@ Good luck!`,
     return `${dayStr} at ${h12}:${String(m).padStart(2,'0')} ${ampm}`;
   }
 
-  function updateSchedulePreview() {
+  window.updateSchedulePreview = function() {
     const preview = document.getElementById('sp-preview');
     if (!preview) return;
     const studentSel  = document.getElementById('sp-student');
@@ -7667,6 +7678,8 @@ Good luck!`,
   function removeScheduleSlot(i) { window.removeScheduleSlot && window.removeScheduleSlot(i); }
   function sendSchedulePicker() { window.sendSchedulePicker && window.sendSchedulePicker(); }
   function updateSchedulePreview() { window.updateSchedulePreview && window.updateSchedulePreview(); }
+  function updateSlotDate(i, v) { window.updateSlotDate && window.updateSlotDate(i, v); }
+  function updateSlotTime(i, v) { window.updateSlotTime && window.updateSlotTime(i, v); }
   function toggleReminders(v) { window.toggleReminders && window.toggleReminders(v); }
   function setAudience(a) { window.setAudience && window.setAudience(a); }
   function applyEmailTemplate() { window.applyEmailTemplate && window.applyEmailTemplate(); }
