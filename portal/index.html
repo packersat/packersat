@@ -1100,7 +1100,7 @@
         </div>
         <div class="card" style="margin-bottom:1.2rem">
           <div class="card-title">Past Sessions</div>
-          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th></tr></thead><tbody id="admin-past-sessions-tbody"><tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No past sessions yet.</div></td></tr></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Student</th><th>Tutor</th><th>Location</th><th>Actions</th></tr></thead><tbody id="admin-past-sessions-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No past sessions yet.</div></td></tr></tbody></table></div>
         </div>
         <div class="card" style="margin-top:1.2rem">
           <div class="card-title">Group Sessions</div>
@@ -1873,7 +1873,7 @@
     }
 
     if (pastTbody) {
-      if (!past.length) { pastTbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No past sessions yet.</div></td></tr>'; }
+      if (!past.length) { pastTbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No past sessions yet.</div></td></tr>'; }
       else pastTbody.innerHTML = past.map(r=>`
         <tr>
           <td>${formatDate(r.date)}</td>
@@ -1881,6 +1881,7 @@
           <td>${allUsers[r.studentId]?.name||'—'}</td>
           <td>${allUsers[r.tutorId]?.name||'—'}</td>
           <td>${r.location||'—'}</td>
+          <td><button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button></td>
         </tr>`).join('');
     }
   }
