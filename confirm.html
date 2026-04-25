@@ -307,24 +307,14 @@
         if (!pickerDoc.exists()) throw new Error('Picker not found');
         const picker = pickerDoc.data();
 
-        // Resolve student info — may be a portal user or a custom email
-        let studentName  = token.studentName  || picker.studentName  || 'Student';
-        let studentEmail = token.studentEmail || picker.studentEmail || '';
+        // Resolve student info from token and picker — no auth needed
+        // (avoid reading users collection which requires login)
+        let studentName       = token.studentName  || picker.studentName  || 'Student';
+        let studentEmail      = token.studentEmail || picker.studentEmail || '';
         let resolvedStudentId = studentId || null;
-        let tutorId      = picker.adminId || null;
+        let tutorId           = picker.adminId || null;
 
-        if (studentId) {
-          const studentDoc = await getDoc(doc(db, 'users', studentId));
-          if (studentDoc.exists()) {
-            const s = studentDoc.data();
-            studentName  = s.name  || s.email || studentName;
-            studentEmail = s.email || studentEmail;
-            tutorId      = s.tutorId || picker.adminId || null;
-            resolvedStudentId = studentId;
-          }
-        }
-
-        console.log('Sending confirmation to:', studentEmail, studentName);
+        console.log('Confirming session for:', studentName, studentEmail);
 
         // Write session to Firestore
         await addDoc(collection(db, 'sessions'), {
