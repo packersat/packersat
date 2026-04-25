@@ -339,9 +339,11 @@
         });
 
         // Mark picker slot as used (but don't disable other slots)
-        await updateDoc(doc(db, 'schedulePickers', pickerId), {
-          [`slotUsed_${token.idx}`]: true,
-        });
+        if (pickerId && token.idx !== undefined) {
+          await updateDoc(doc(db, 'schedulePickers', pickerId), {
+            [`slotUsed_${token.idx}`]: true,
+          });
+        }
 
         // Build calendar link
         const calLink = buildCalLink(date, time, studentName, location);
@@ -373,7 +375,7 @@
         console.error('Confirmation error:', e);
         btn.disabled = false;
         btn.textContent = 'Confirm this time';
-        status.textContent = 'Something went wrong. Please try again or contact your tutor.';
+        status.textContent = 'Something went wrong: ' + (e?.message || String(e));
         status.className = 'status error';
       }
     };
