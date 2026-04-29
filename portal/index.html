@@ -8939,6 +8939,90 @@ Good luck!`,
 
   // Store CU reference for mobile nav
   const _origEnterPortal = window.enterPortal;
+  window.enterPortal = function() {
+    if (_origEnterPortal) _origEnterPortal();
+  };
+
+  // ── Bridge functions (inline script → module script) ──────────────────────
+  function showPage(p,el)              { window.showPage && window.showPage(p,el); }
+  function openModal(id)               { window.openModal && window.openModal(id); }
+  function closeModal(id)              { window.closeModal && window.closeModal(id); }
+  function doLogin()                   { window.doLogin && window.doLogin(); }
+  function doLogout()                  { window.doLogout && window.doLogout(); }
+  function doGoogleLogin()             { window.doGoogleLogin && window.doGoogleLogin(); }
+  function doForgotPassword()          { window.doForgotPassword && window.doForgotPassword(); }
+  function doChangeEmail()             { window.doChangeEmail && window.doChangeEmail(); }
+  function addUser()                   { window.addUser && window.addUser(); }
+  function promptDelete(uid,name)      { window.promptDelete && window.promptDelete(uid,name); }
+  function convertWaitlistToUser(id)   { window.convertWaitlistToUser && window.convertWaitlistToUser(id); }
+  function removeFromWaitlist(id)      { window.removeFromWaitlist && window.removeFromWaitlist(id); }
+  function addToWaitlist()             { window.addToWaitlist && window.addToWaitlist(); }
+  function adminLogScore(uid,name)     { window.adminLogScore && window.adminLogScore(uid,name); }
+  function adminDeleteScore(id,uid)    { window.adminDeleteScore && window.adminDeleteScore(id,uid); }
+  function adminDeleteNote(id,uid)     { window.adminDeleteNote && window.adminDeleteNote(id,uid); }
+  function adminDeleteAssignment(id,uid){ window.adminDeleteAssignment && window.adminDeleteAssignment(id,uid); }
+  function adminExportCSV()            { window.adminExportCSV && window.adminExportCSV(); }
+  function exportLogsCSV()             { window.exportLogsCSV && window.exportLogsCSV(); }
+  function exportLogsXLSX()            { window.exportLogsXLSX && window.exportLogsXLSX(); }
+  function exportStudentSessions(uid)  { window.exportStudentSessions && window.exportStudentSessions(uid); }
+  function openScoreModal(uid,name)    { window.openScoreModal && window.openScoreModal(uid,name); }
+  function openNoteModal(uid,name)     { window.openNoteModal && window.openNoteModal(uid,name); }
+  function openAssignModal(uid,name)   { window.openAssignModal && window.openAssignModal(uid,name); }
+  function openAssignmentModal(uid,name){ window.openAssignmentModal && window.openAssignmentModal(uid,name); }
+  function openDocModal(uid)           { window.openDocModal && window.openDocModal(uid); }
+  function deleteSharedDoc(id,uid)     { window.deleteSharedDoc && window.deleteSharedDoc(id,uid); }
+  function openTutorSessionModal(uid,name){ window.openTutorSessionModal && window.openTutorSessionModal(uid,name); }
+  function openAdminSessionModal(uid,name){ window.openAdminSessionModal && window.openAdminSessionModal(uid,name); }
+  function openSessionRequestModal()   { window.openSessionRequestModal && window.openSessionRequestModal(); }
+  function openGroupRequestModal()     { window.openGroupRequestModal && window.openGroupRequestModal(); }
+  function openGroupSessionModal()     { window.openGroupSessionModal && window.openGroupSessionModal(); }
+  function openManualLogModal()        { window.openManualLogModal && window.openManualLogModal(); }
+  function openSessionLogModal(key)    { window.openSessionLogModal && window.openSessionLogModal(key); }
+  function confirmSessionRequest(id)   { window.confirmSessionRequest && window.confirmSessionRequest(id); }
+  function declineSessionRequest(id)   { window.declineSessionRequest && window.declineSessionRequest(id); }
+  function deleteGroupSession(id)      { window.deleteGroupSession && window.deleteGroupSession(id); }
+  function deleteSession(id)           { window.deleteSession && window.deleteSession(id); }
+  function applyEmailTemplate()        { window.applyEmailTemplate && window.applyEmailTemplate(); }
+  function updateEmailPreview()        { window.updateEmailPreview && window.updateEmailPreview(); }
+  function setAudience(a)              { window.setAudience && window.setAudience(a); }
+  function onRecipientChange()         { window.onRecipientChange && window.onRecipientChange(); }
+  function sendAdminEmail()            { window.sendAdminEmail && window.sendAdminEmail(); }
+  function generateNewsletterWithAI()  { window.generateNewsletterWithAI && window.generateNewsletterWithAI(); }
+  function switchEmailTab(t)           { window.switchEmailTab && window.switchEmailTab(t); }
+  function addScheduleSlot()           { window.addScheduleSlot && window.addScheduleSlot(); }
+  function removeScheduleSlot(i)       { window.removeScheduleSlot && window.removeScheduleSlot(i); }
+  function updateSlotDate(i,v)         { window.updateSlotDate && window.updateSlotDate(i,v); }
+  function updateSlotTime(i,v)         { window.updateSlotTime && window.updateSlotTime(i,v); }
+  function updateSchedulePreview()     { window.updateSchedulePreview && window.updateSchedulePreview(); }
+  function sendSchedulePicker()        { window.sendSchedulePicker && window.sendSchedulePicker(); }
+  function onSpRecipientChange()       { window.onSpRecipientChange && window.onSpRecipientChange(); }
+  function toggleReminders(v)          { window.toggleReminders && window.toggleReminders(v); }
+  function toggleAnnouncementPopup(v)  { window.toggleAnnouncementPopup && window.toggleAnnouncementPopup(v); }
+  function savePopupDraft()            { window.savePopupDraft && window.savePopupDraft(); }
+  function savePopupSettings()         { window.savePopupSettings && window.savePopupSettings(); }
+  function previewPopup()              { window.previewPopup && window.previewPopup(); }
+  function dismissAnnouncementPopup()  { window.dismissAnnouncementPopup && window.dismissAnnouncementPopup(); }
+  function setPracSubject(s)           { window.setPracSubject && window.setPracSubject(s); }
+  function setPracDiff(d)              { window.setPracDiff && window.setPracDiff(d); }
+  function startPracSession()          { window.startPracSession && window.startPracSession(); }
+  function endPracSession()            { window.endPracSession && window.endPracSession(); }
+  function restartPrac()               { window.restartPrac && window.restartPrac(); }
+  function selectPracAnswer(i)         { window.selectPracAnswer && window.selectPracAnswer(i); }
+  function showHint(l)                 { window.showHint && window.showHint(l); }
+  function nextPracQuestion()          { window.nextPracQuestion && window.nextPracQuestion(); }
+  function loadAdminPractice()         { window.loadAdminPractice && window.loadAdminPractice(); }
+  function printStudentReport(uid)     { window.printStudentReport && window.printStudentReport(uid); }
+  function printPracticeReport(id)     { window.printPracticeReport && window.printPracticeReport(id); }
+  function markAssignmentDone(id)      { window.markAssignmentDone && window.markAssignmentDone(id); }
+  function uploadAssignmentFile(id)    { window.uploadAssignmentFile && window.uploadAssignmentFile(id); }
+  function saveAssignmentTemplate()    { window.saveAssignmentTemplate && window.saveAssignmentTemplate(); }
+  function applyTemplate(id)           { window.applyTemplate && window.applyTemplate(id); }
+  function deleteTemplate(id)          { window.deleteTemplate && window.deleteTemplate(id); }
+  function adminSendDM()               { window.adminSendDM && window.adminSendDM(); }
+  function tutorSendDM()               { window.tutorSendDM && window.tutorSendDM(); }
+  function studentSendDM()             { window.studentSendDM && window.studentSendDM(); }
+  function userSendDM()                { window.userSendDM && window.userSendDM(); }
+  function loadStudentDocs(uid,role)   { window.loadStudentDocs && window.loadStudentDocs(uid,role); }
 </script>
 <!-- Session Request Modal -->
 <div class="modal-overlay" id="modal-session-request">
