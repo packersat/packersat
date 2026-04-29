@@ -4719,11 +4719,11 @@
     };
   };
 
-  // ── Assignment file upload (Cloudflare R2 via Vercel) ────────────────────
+  // ── Assignment file upload (Cloudflare R2 via presigned URL) ─────────────
   window.uploadAssignmentFile = function(assignmentId) {
     const input = document.createElement('input');
     input.type   = 'file';
-    input.accept = '.pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.txt,.heic';
+    input.accept = '.pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.txt,.heic';
     input.onchange = async () => {
       const file = input.files[0];
       if (!file) return;
@@ -4734,39 +4734,40 @@
       }
 
       const btn = document.getElementById('upload-btn-' + assignmentId);
-      if (btn) { btn.textContent = 'Reading file…'; btn.disabled = true; }
+      if (btn) { btn.textContent = 'Preparing…'; btn.disabled = true; }
 
       try {
-        // Read file as base64
-        const base64 = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload  = () => resolve(reader.result.split(',')[1]);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-
-        if (btn) btn.textContent = 'Uploading…';
-
+        // Step 1: Get presigned URL from Vercel
         const res = await fetch('https://packersat.vercel.app/api/upload-file', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             fileName:     file.name,
-            fileType:     file.type,
-            fileData:     base64,
+            fileType:     file.type || 'application/octet-stream',
             assignmentId,
           }),
         });
 
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
-          throw new Error(err.error || 'Upload failed');
+          throw new Error(err.error || 'Failed to get upload URL');
         }
 
-        const { url, fileName } = await res.json();
+        const { presignedUrl, publicUrl, fileName } = await res.json();
 
+        // Step 2: Upload directly to R2 (no Vercel size limits)
+        if (btn) btn.textContent = 'Uploading…';
+        const uploadRes = await fetch(presignedUrl, {
+          method:  'PUT',
+          headers: { 'Content-Type': file.type || 'application/octet-stream' },
+          body:    file,
+        });
+
+        if (!uploadRes.ok) throw new Error('Upload to storage failed: ' + uploadRes.status);
+
+        // Step 3: Save URL to Firestore
         await updateDoc(doc(db, 'assignments', assignmentId), {
-          submissionUrl:  url,
+          submissionUrl:  publicUrl,
           submissionName: fileName,
           submittedAt:    new Date().toISOString(),
           submittedBy:    CU.uid,
