@@ -1572,8 +1572,6 @@
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, addDoc, updateDoc, deleteDoc, collection, getDocs, query, where, orderBy }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getStorage, ref, uploadBytesResumable, getDownloadURL }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAgl3-vGO-FAHSodXvTFtWv7V5_48qW22w",
@@ -1587,7 +1585,6 @@
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
-  const storage = getStorage(app);
 
 
   let CU = null; // current user object
@@ -4722,6 +4719,71 @@
     };
   };
 
+  // ── Assignment file upload (Cloudflare R2 via Vercel) ────────────────────
+  window.uploadAssignmentFile = function(assignmentId) {
+    const input = document.createElement('input');
+    input.type   = 'file';
+    input.accept = '.pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.txt,.heic';
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      if (file.size > 20 * 1024 * 1024) {
+        alert('File is too large. Maximum size is 20MB.');
+        return;
+      }
+
+      const btn = document.getElementById('upload-btn-' + assignmentId);
+      if (btn) { btn.textContent = 'Reading file…'; btn.disabled = true; }
+
+      try {
+        // Read file as base64
+        const base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload  = () => resolve(reader.result.split(',')[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        if (btn) btn.textContent = 'Uploading…';
+
+        const res = await fetch('https://packersat.vercel.app/api/upload-file', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileName:     file.name,
+            fileType:     file.type,
+            fileData:     base64,
+            assignmentId,
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Upload failed');
+        }
+
+        const { url, fileName } = await res.json();
+
+        await updateDoc(doc(db, 'assignments', assignmentId), {
+          submissionUrl:  url,
+          submissionName: fileName,
+          submittedAt:    new Date().toISOString(),
+          submittedBy:    CU.uid,
+        });
+
+        if (CU.role === 'student') loadStudentAssignments();
+        else loadTutorAssignments();
+
+      } catch(e) {
+        console.error('Upload failed:', e);
+        if (btn) { btn.textContent = '↑ Upload File'; btn.disabled = false; }
+        alert('Upload failed: ' + e.message);
+      }
+    };
+    input.click();
+  };
+
   async function loadTutorAssignments() {
     const el = document.getElementById('tutor-assignments-list');
     if (!el) return;
@@ -4747,7 +4809,9 @@
       const dueStr = a.due ? ` · Due ${formatDate(a.due)}` : '';
       const fileHtml = a.fileUrl ? `<a href="${a.fileUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none"> ${a.fileName||'Attachment'}</a>` : '';
       const linkHtml = a.link ? `<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none"> Link</a>` : '';
-      const submissionHtml = a.submissionUrl ? `<a href="${a.submissionUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;border-color:rgba(100,100,255,0.3);color:rgba(150,150,255,0.9)"> View Submission</a>` : '';
+      const submissionHtml = a.submissionUrl
+        ? `<a href="${a.submissionUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;border-color:rgba(100,100,255,0.3);color:rgba(150,150,255,0.9)"> ${a.submissionName || 'View Submission'}</a>`
+        : `<button class="btn-ghost" id="upload-btn-${a.id}" onclick="uploadAssignmentFile('${a.id}')" style="font-size:0.78rem;padding:0.3rem 0.8rem">↑ Upload for Student</button>`;
       return `
         <div class="assignment-card ${a.completed?'done':''}">
           <div class="assignment-header">
@@ -4788,11 +4852,15 @@
       const linkHtml = a.link ? `<a href="${a.link}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none"> Open Link</a>` : '';
 
       const submittedHtml = a.submissionUrl ?
-        `<span class="submitted-chip"> Submitted — <a href="${a.submissionUrl}" target="_blank" style="color:inherit">view</a></span>` : '';
+        `<a href="${a.submissionUrl}" target="_blank" class="btn-ghost" style="font-size:0.78rem;padding:0.3rem 0.8rem;text-decoration:none;border-color:rgba(100,100,255,0.3);color:rgba(150,150,255,0.9)"> ${a.submissionName || 'View Submission'}</a>` : '';
 
       const completeBtn = !a.completed ? `<button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem" onclick="markAssignmentDone('${a.id}')"> Mark as Done</button>` : '<span class="done-chip"> Completed</span>';
 
-      const uploadBtn = '';
+      const uploadBtn = !a.completed ? `
+        <button class="btn-ghost" id="upload-btn-${a.id}" onclick="uploadAssignmentFile('${a.id}')"
+          style="font-size:0.78rem;padding:0.4rem 1rem">
+          ↑ ${a.submissionUrl ? 'Replace File' : 'Upload File'}
+        </button>` : '';
 
       return `
         <div class="assignment-card ${a.completed?'done':''}">
@@ -8710,6 +8778,7 @@ Good luck!`,
   function openAdminSessionModal() { window.openAdminSessionModal && window.openAdminSessionModal(); }
   function openTutorSessionModal() { window.openTutorSessionModal && window.openTutorSessionModal(); }
   function markAssignmentDone(id) { window.markAssignmentDone && window.markAssignmentDone(id); }
+  function uploadAssignmentFile(id) { window.uploadAssignmentFile && window.uploadAssignmentFile(id); }
   function adminSendDM() { window.adminSendDM && window.adminSendDM(); }
   function userSendDM() { window.userSendDM && window.userSendDM(); }
   function adminExportCSV() { window.adminExportCSV && window.adminExportCSV(); }
