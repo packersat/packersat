@@ -2733,29 +2733,41 @@
 
     if (tbody) {
       if (!upcoming.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No upcoming sessions.</div></td></tr>'; }
-      else tbody.innerHTML = upcoming.map(r=>`
-        <tr>
-          <td>${formatDate(r.date)}</td>
-          <td>${r.time ? formatTime(r.time) : '—'}</td>
-          <td>${allUsers[r.studentId]?.name||'—'}</td>
-          <td>${allUsers[r.tutorId]?.name||'—'}</td>
-          <td>${r.location||'—'}</td>
-          <td><button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button></td>
-        </tr>`).join('');
+      else {
+        tbody.innerHTML = upcoming.map(r=>`
+          <tr>
+            <td>${formatDate(r.date)}</td>
+            <td>${r.time ? formatTime(r.time) : '—'}</td>
+            <td>${allUsers[r.studentId]?.name||'—'}</td>
+            <td>${allUsers[r.tutorId]?.name||'—'}</td>
+            <td>${r.location||'—'}</td>
+            <td><button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button></td>
+          </tr>`).join('');
+      }
     }
 
     if (pastTbody) {
       if (!past.length) { pastTbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No past sessions yet.</div></td></tr>'; }
-      else pastTbody.innerHTML = past.map(r=>`
-        <tr>
-          <td>${formatDate(r.date)}</td>
-          <td>${r.time ? formatTime(r.time) : '—'}</td>
-          <td>${allUsers[r.studentId]?.name||'—'}</td>
-          <td>${allUsers[r.tutorId]?.name||'—'}</td>
-          <td>${r.location||'—'}</td>
-          <td><button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button></td>
-        </tr>`).join('');
-    }
+      else {
+        window._sessionLogCache = window._sessionLogCache || {};
+        pastTbody.innerHTML = past.map(r => {
+          window._sessionLogCache[r.id] = r;
+          return `
+            <tr>
+              <td>${formatDate(r.date)}</td>
+              <td>${r.time ? formatTime(r.time) : '—'}</td>
+              <td>${allUsers[r.studentId]?.name||'—'}</td>
+              <td>${allUsers[r.tutorId]?.name||'—'}</td>
+              <td>${r.location||'—'}</td>
+              <td style="display:flex;gap:0.4rem;flex-wrap:wrap">
+                ${r.logged
+                  ? '<span style="font-size:0.75rem;color:rgba(250,250,248,0.35)"> Logged</span>'
+                  : `<button class="action-btn" onclick="openSessionLogModal('${r.id}')"> Log</button>`}
+                <button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button>
+              </td>
+            </tr>`;
+        }).join('');
+      }
   }
 
   async function loadAdminSessionsPreview() {
@@ -3517,10 +3529,14 @@
   async function loadTutorSessionsPage() {
     const sessSnap = await getDocs(collection(db,'sessions'));
     const now = new Date();
-    const mySessions = [];
+    const upcoming = [], past = [];
     sessSnap.forEach(d => {
       const s = { id: d.id, ...d.data() };
-      if (s.tutorId !== CU.uid) return;
+      // Match sessions where this tutor is assigned, OR where admin created it for this tutor's student
+      const myStudentIds = Object.entries(allUsers)
+        .filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim())
+        .map(([uid])=>uid);
+      if (s.tutorId !== CU.uid && !myStudentIds.includes(s.studentId)) return;
       if (!s.date) return;
       let sessionStart;
       if (s.time && /^\d{1,2}:\d{2}$/.test(s.time.trim())) {
@@ -3532,25 +3548,61 @@
         sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
       }
       const cutoff = new Date(sessionStart.getTime() + 30 * 60 * 1000);
-      if (now < cutoff) mySessions.push(s); // only upcoming
+      if (now < cutoff) upcoming.push(s);
+      else past.push(s);
     });
-    window._tutorMySessions = mySessions;
-    loadTutorSessionsTable(mySessions);
+    upcoming.sort((a,b)=>a.date.localeCompare(b.date));
+    past.sort((a,b)=>b.date.localeCompare(a.date));
+    window._tutorMySessions = [...upcoming, ...past];
+    loadTutorSessionsTable(upcoming, past);
   }
 
-  function loadTutorSessionsTable(sessions) {
+  function loadTutorSessionsTable(upcoming, past) {
     const tbody = document.getElementById('tutor-sessions-tbody');
     if (!tbody) return;
-    const sorted = sessions.sort((a,b)=>a.date.localeCompare(b.date));
-    if (!sorted.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No sessions.</div></td></tr>'; return; }
-    tbody.innerHTML = sorted.map(s=>`
-      <tr>
-        <td>${formatDate(s.date)}</td>
-        <td>${s.time ? formatTime(s.time) : '—'}</td>
-        <td>${allUsers[s.studentId]?.name||'—'}</td>
-        <td>${s.location||'—'}</td>
-        <td><button class="action-btn danger" onclick="deleteSession('${s.id}')">Remove</button></td>
-      </tr>`).join('');
+    window._sessionLogCache = window._sessionLogCache || {};
+
+    if (!upcoming.length && !past.length) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon"></div>No sessions.</div></td></tr>';
+      return;
+    }
+
+    let html = '';
+
+    if (upcoming.length) {
+      html += `<tr><td colspan="5" style="padding:0.5rem 0.8rem;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);background:rgba(250,250,248,0.03)">Upcoming</td></tr>`;
+      html += upcoming.map(s => {
+        window._sessionLogCache[s.id] = s;
+        return `<tr>
+          <td>${formatDate(s.date)}</td>
+          <td>${s.time ? formatTime(s.time) : '—'}</td>
+          <td>${allUsers[s.studentId]?.name||'—'}</td>
+          <td>${s.location||'—'}</td>
+          <td><button class="action-btn danger" onclick="deleteSession('${s.id}')">Remove</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    if (past.length) {
+      html += `<tr><td colspan="5" style="padding:0.5rem 0.8rem;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);background:rgba(250,250,248,0.03)">Past</td></tr>`;
+      html += past.map(s => {
+        window._sessionLogCache[s.id] = s;
+        return `<tr>
+          <td>${formatDate(s.date)}</td>
+          <td>${s.time ? formatTime(s.time) : '—'}</td>
+          <td>${allUsers[s.studentId]?.name||'—'}</td>
+          <td>${s.location||'—'}</td>
+          <td style="display:flex;gap:0.4rem;flex-wrap:wrap">
+            ${s.logged
+              ? '<span style="font-size:0.75rem;color:rgba(250,250,248,0.35)"> Logged</span>'
+              : `<button class="action-btn" onclick="openSessionLogModal('${s.id}')"> Log</button>`}
+            <button class="action-btn danger" onclick="deleteSession('${s.id}')">Remove</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    tbody.innerHTML = html;
   }
 
   // Score modal (tutor)
