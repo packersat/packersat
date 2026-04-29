@@ -4828,6 +4828,7 @@
           ${a.desc ? `<div class="assignment-desc">${a.desc}</div>` : ''}
           <div class="assignment-actions">
             ${fileHtml}${linkHtml}${submissionHtml}
+            ${!a.completed ? `<button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem" onclick="markAssignmentDone('${a.id}')"> Mark as Done</button>` : ''}
           </div>
         </div>`;
     }).join('');
@@ -4883,7 +4884,8 @@
 
   window.markAssignmentDone = async function(id) {
     await updateDoc(doc(db,'assignments',id), { completed: true });
-    loadStudentAssignments();
+    if (CU.role === 'student') loadStudentAssignments();
+    else loadTutorAssignments();
   };
 
   // ── Shared Documents ──────────────────────────────────────────────────────
