@@ -3524,12 +3524,22 @@
   }
 
   async function loadTutorSessionsPage() {
-    const sessSnap = await getDocs(collection(db,'sessions'));
+    const [sessSnap, logSnap] = await Promise.all([
+      getDocs(collection(db,'sessions')),
+      getDocs(collection(db,'sessionLogs')),
+    ]);
+
+    // Build set of session IDs that have been logged
+    const loggedSessionIds = new Set();
+    logSnap.forEach(d => {
+      const l = d.data();
+      if (l.sessionId) loggedSessionIds.add(l.sessionId);
+    });
+
     const now = new Date();
     const upcoming = [], past = [];
     sessSnap.forEach(d => {
       const s = { id: d.id, ...d.data() };
-      // Match sessions where this tutor is assigned, OR where admin created it for this tutor's student
       const myStudentIds = Object.entries(allUsers)
         .filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim())
         .map(([uid])=>uid);
@@ -3545,6 +3555,8 @@
         sessionStart = new Date(yr, mo - 1, dy, 0, 0, 0);
       }
       const cutoff = new Date(sessionStart.getTime() + 30 * 60 * 1000);
+      // Attach logged status from sessionLogs collection
+      s._logged = loggedSessionIds.has(s.id);
       if (now < cutoff) upcoming.push(s);
       else past.push(s);
     });
@@ -3589,9 +3601,9 @@
           <td>${s.time ? formatTime(s.time) : '—'}</td>
           <td>${allUsers[s.studentId]?.name||'—'}</td>
           <td>${s.location||'—'}</td>
-          <td style="display:flex;gap:0.4rem;flex-wrap:wrap">
-            ${s.logged
-              ? '<span style="font-size:0.75rem;color:rgba(250,250,248,0.35)"> Logged</span>'
+          <td style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center">
+            ${s._logged
+              ? '<span style="color:#7dffaa;font-size:0.85rem" title="Session logged">&#10003; Logged</span>'
               : `<button class="action-btn" onclick="openSessionLogModal('${s.id}')"> Log</button>`}
             <button class="action-btn danger" onclick="deleteSession('${s.id}')">Remove</button>
           </td>
