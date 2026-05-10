@@ -7293,7 +7293,7 @@ Good luck!`,
       await addDoc(collection(db, 'sessionLogs'), {
         sessionId:  _currentLogSession.id,
         studentId:  _currentLogSession.studentId,
-        tutorId:    _currentLogSession.tutorId || CU.uid,
+        tutorId:    CU.uid,
         date:       _currentLogSession.date,
         time:       _currentLogSession.time || '',
         location:   _currentLogSession.location || '',
@@ -7310,8 +7310,7 @@ Good luck!`,
         closeModal('modal-session-log');
         btn.disabled = false; btn.textContent = 'Save Log';
         loadTutorSessionLog();
-        // Also refresh the upcoming/past split on the sessions tab if visible
-        if (document.getElementById('tutor-past-sessions-tbody')) loadTutorSessionLog();
+        loadTutorSessionsPage();
       }, 700);
     };
   };
@@ -7356,7 +7355,10 @@ Good luck!`,
     const loggedSessionIds = new Set();
     logSnap.forEach(d => {
       const l = { id: d.id, ...d.data() };
-      if (l.tutorId === CU.uid) { logs.push(l); loggedSessionIds.add(l.sessionId); }
+      if (l.tutorId === CU.uid || l.loggedBy === CU.uid) {
+        logs.push(l);
+        loggedSessionIds.add(l.sessionId);
+      }
     });
     logs.sort((a, b) => b.date.localeCompare(a.date));
 
