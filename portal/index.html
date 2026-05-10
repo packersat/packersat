@@ -7327,9 +7327,12 @@ Good luck!`,
     // Get all sessions for this tutor where 1+ hour has passed since session start
     const sessSnap = await getDocs(collection(db, 'sessions'));
     const pastSessions = [];
+    const myStudentIds = Object.entries(allUsers)
+      .filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim())
+      .map(([uid])=>uid);
     sessSnap.forEach(d => {
       const s = { id: d.id, ...d.data() };
-      if (s.tutorId !== CU.uid) return;
+      if (s.tutorId !== CU.uid && !myStudentIds.includes(s.studentId)) return;
       if (!s.date) return;
       let sessionStart;
       if (s.time && /^\d{1,2}:\d{2}$/.test(s.time.trim())) {
