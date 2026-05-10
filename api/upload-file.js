@@ -10,6 +10,21 @@ const R2 = new S3Client({
   },
 });
 
+// Guess MIME type from file extension if browser didn't provide one
+function guessMime(fileName, provided) {
+  if (provided && provided !== 'application/octet-stream') return provided;
+  const ext = (fileName || '').split('.').pop().toLowerCase();
+  const map = {
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
+    gif: 'image/gif',  webp: 'image/webp', heic: 'image/heic',
+    heif: 'image/heif', pdf: 'application/pdf',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    txt: 'text/plain',
+  };
+  return map[ext] || 'application/octet-stream';
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -20,36 +35,36 @@ export default async function handler(req, res) {
   try {
     const { fileName, fileType, assignmentId } = req.body;
 
-    if (!fileName || !fileType || !assignmentId) {
+    if (!fileName || !assignmentId) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Validate file type
+    // Resolve MIME type — fall back to extension if browser gave empty/octet-stream
+    const resolvedType = guessMime(fileName, fileType);
+
     const allowed = [
-      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/heic', 'image/webp',
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
+      'image/heic', 'image/heif', 'image/webp',
       'application/pdf', 'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain',
+      'text/plain', 'application/octet-stream',
     ];
-    if (!allowed.includes(fileType)) {
-      return res.status(400).json({ error: 'File type not allowed: ' + fileType });
+    if (!allowed.includes(resolvedType)) {
+      return res.status(400).json({ error: 'File type not allowed: ' + resolvedType });
     }
 
-    // Build a clean unique key
     const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
     const key = `submissions/${assignmentId}/${Date.now()}_${safeName}`;
 
-    // Generate a presigned URL — browser uploads directly to R2 (no Vercel size limit)
     const command = new PutObjectCommand({
       Bucket:      process.env.R2_BUCKET_NAME,
       Key:         key,
-      ContentType: fileType,
+      ContentType: resolvedType,
     });
 
-    const presignedUrl = await getSignedUrl(R2, command, { expiresIn: 300 }); // 5 min
-
+    const presignedUrl = await getSignedUrl(R2, command, { expiresIn: 300 });
     const publicUrl = `${process.env.R2_PUBLIC_URL}/${key}`;
-    return res.status(200).json({ presignedUrl, publicUrl, key, fileName });
+    return res.status(200).json({ presignedUrl, publicUrl, key, fileName, resolvedType });
 
   } catch (err) {
     console.error('R2 presign error:', err);
