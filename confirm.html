@@ -264,19 +264,131 @@
     });
   }
 
+  // ── Send "request different time" email to admin ───────────────
+  async function sendRequestEmail(studentName, studentEmail, requestedDate, requestedTime, location) {
+    const dayStr  = formatDay(requestedDate);
+    const timeStr = formatTime(requestedTime);
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#1A0508;font-family:'Helvetica Neue',Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+      <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:32px 40px;border-radius:8px 8px 0 0;text-align:center">
+        <div style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</div>
+        <div style="font-size:11px;color:rgba(250,250,248,0.7);letter-spacing:0.12em;text-transform:uppercase;margin-top:6px">Session Time Request</div>
+      </td></tr>
+      <tr><td style="background:#2A0A10;padding:36px 40px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
+        <p style="margin:0 0 16px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi Jack,</p>
+        <p style="margin:0 0 24px;color:rgba(250,250,248,0.75);font-size:14px;line-height:1.75"><strong style="color:#FAFAF8">${studentName}</strong> (${studentEmail}) couldn't make any of the offered times and has requested a new session time:</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(192,24,43,0.1);border:1px solid rgba(192,24,43,0.3);border-radius:8px;margin-bottom:28px">
+          <tr><td style="padding:16px 20px">
+            <div style="font-size:11px;color:#C8A96E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Requested Date</div>
+            <div style="font-size:17px;font-weight:700;color:#FAFAF8;margin-bottom:14px">${dayStr}</div>
+            <div style="font-size:11px;color:#C8A96E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Requested Time</div>
+            <div style="font-size:17px;font-weight:700;color:#FAFAF8;margin-bottom:14px">${timeStr} Eastern</div>
+            <div style="font-size:11px;color:#C8A96E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Location</div>
+            <div style="font-size:15px;color:#FAFAF8">${location || 'Packer Collegiate Institute'}</div>
+          </td></tr>
+        </table>
+        <p style="margin:0;color:rgba(250,250,248,0.55);font-size:13px;line-height:1.6">You can confirm this time by scheduling a session in the portal, or send a new schedule picker with updated times.</p>
+      </td></tr>
+      <tr><td style="background:#0F0305;padding:20px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
+        <p style="margin:0;color:rgba(250,250,248,0.25);font-size:12px">Packer SAT Tutoring &middot; packersat.org</p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+
+    await fetch('https://packersat.vercel.app/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to_email:     'jackroseblue@gmail.com',
+        to_name:      'Jack Rose',
+        subject:      `${studentName} requested a new session time — ${dayStr} at ${timeStr}`,
+        html_content: html,
+        from_email:   'noreply@packersat.org',
+        from_name:    'Packer SAT Tutoring',
+        reply_to:     studentEmail,
+      }),
+    });
+  }
+
   // ── Main ────────────────────────────────────────────────────────
   const token = getToken();
+  const params = new URLSearchParams(window.location.search);
+  const mode   = params.get('mode'); // 'request' = request-different-time flow
   console.log('Token result:', token);
-  console.log('Has pickerId:', token?.pickerId);
-  console.log('Has studentId:', token?.studentId);
-  console.log('Has date:', token?.date);
-  console.log('Has time:', token?.time);
 
-  if (!token || !token.pickerId || !token.date || !token.time) {
+  if (!token || !token.pickerId) {
     content.innerHTML = `
       <h1 style="margin-bottom:0.5rem">Invalid link</h1>
       <p class="sub">This scheduling link is invalid or has expired. Please contact your tutor for a new one.</p>`;
+
+  } else if (mode === 'request') {
+    // ── Request different time flow ─────────────────────────────
+    const studentName  = token.studentName  || token.studentEmail || 'Student';
+    const studentEmail = token.studentEmail || '';
+    const location     = token.location     || 'Packer Collegiate Institute';
+
+    content.innerHTML = `
+      <h1 style="margin-bottom:0.5rem">Request a different time</h1>
+      <p class="sub">None of the offered times work for you? Pick a date and time that does, and we'll get back to you to confirm.</p>
+      <div style="margin:1.5rem 0;display:flex;flex-direction:column;gap:0.9rem">
+        <div>
+          <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(250,250,248,0.45);margin-bottom:0.4rem">Preferred Date</div>
+          <input type="date" id="req-date" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(192,24,43,0.25);border-radius:6px;padding:0.7rem 1rem;color:#FAFAF8;font-family:DM Sans,sans-serif;font-size:0.95rem;outline:none" />
+        </div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(250,250,248,0.45);margin-bottom:0.4rem">Preferred Time</div>
+          <input type="time" id="req-time" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(192,24,43,0.25);border-radius:6px;padding:0.7rem 1rem;color:#FAFAF8;font-family:DM Sans,sans-serif;font-size:0.95rem;outline:none" />
+        </div>
+      </div>
+      <button class="btn-confirm" id="req-btn" onclick="submitRequest()">Send Request</button>
+      <div id="req-status" class="status" style="margin-top:1rem"></div>`;
+
+    window.submitRequest = async function() {
+      const btn    = document.getElementById('req-btn');
+      const status = document.getElementById('req-status');
+      const date   = document.getElementById('req-date').value;
+      const time   = document.getElementById('req-time').value;
+
+      if (!date || !time) {
+        status.textContent = 'Please select both a date and a time.';
+        status.className   = 'status error';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+
+      try {
+        await sendRequestEmail(studentName, studentEmail, date, time, location);
+
+        content.innerHTML = `
+          <div class="success-wrap">
+            <div class="success-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C0182B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h1 style="margin-bottom:0.5rem">Request sent!</h1>
+            <p class="sub">Your request for <strong style="color:#FAFAF8">${formatDay(date)}</strong> at <strong style="color:#C8A96E">${formatTime(time)} Eastern</strong> has been sent. You'll hear back to confirm the time.</p>
+          </div>`;
+      } catch(e) {
+        btn.disabled = false;
+        btn.textContent = 'Send Request';
+        status.textContent = 'Something went wrong: ' + (e?.message || String(e));
+        status.className   = 'status error';
+      }
+    };
+
   } else {
+    // ── Normal confirm flow ─────────────────────────────────────
+    if (!token.date || !token.time) {
+      content.innerHTML = `
+        <h1 style="margin-bottom:0.5rem">Invalid link</h1>
+        <p class="sub">This scheduling link is invalid or has expired. Please contact your tutor for a new one.</p>`;
+    } else {
     const { pickerId, studentId, date, time, location } = token;
     const dayStr  = formatDay(date);
     const timeStr = formatTime(time);
@@ -369,7 +481,8 @@
         status.className = 'status error';
       }
     };
-  }
+    } // end inner if/else (token.date check)
+  } // end outer if/else (mode check)
 </script>
 </body>
 </html>
