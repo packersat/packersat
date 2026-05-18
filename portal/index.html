@@ -4799,12 +4799,26 @@
 
       try {
         // Step 1: Get presigned URL from Vercel
+        // Resolve MIME type — iPhone photos often have empty file.type
+        const extMimeMap = {
+          jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
+          gif: 'image/gif', webp: 'image/webp', heic: 'image/heic',
+          heif: 'image/heif', pdf: 'application/pdf',
+          doc: 'application/msword',
+          docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          txt: 'text/plain',
+        };
+        const ext = file.name.split('.').pop().toLowerCase();
+        const resolvedType = (file.type && file.type !== 'application/octet-stream')
+          ? file.type
+          : (extMimeMap[ext] || 'application/octet-stream');
+
         const res = await fetch('https://packersat.vercel.app/api/upload-file', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             fileName:     file.name,
-            fileType:     file.type || 'application/octet-stream',
+            fileType:     resolvedType,
             assignmentId,
           }),
         });
@@ -4820,7 +4834,7 @@
         if (btn) btn.textContent = 'Uploading…';
         const uploadRes = await fetch(presignedUrl, {
           method:  'PUT',
-          headers: { 'Content-Type': file.type || 'application/octet-stream' },
+          headers: { 'Content-Type': resolvedType },
           body:    file,
         });
 
@@ -5679,6 +5693,9 @@ Good luck!`,
         <p style="margin:0 0 24px;color:#AAAAAA;font-size:14px;line-height:1.75;font-family:Arial,sans-serif">${note || "I'd like to schedule our next tutoring session. Please click on a time that works for you:"}</p>
         ${slotButtons}
         <p style="margin:20px 0 0;color:#666666;font-size:12px;line-height:1.6;font-family:Arial,sans-serif">Once you select a time, your session will be confirmed automatically and you'll receive a calendar invite by email.</p>
+        <p style="margin:16px 0 0;text-align:center">
+          <a href="${baseUrl}/confirm.html?t=${slotsWithTokens[0].token}&mode=request" style="color:#C8A96E;font-size:12px;font-family:Arial,sans-serif;text-decoration:underline">None of these work — request a different time</a>
+        </p>
       </td></tr>
       <tr><td style="background:#1A0508;padding:20px 40px;border-radius:0 0 8px 8px;border:2px solid #3A0D15;border-top:none;text-align:center">
         <p style="margin:0;color:#444444;font-size:11px;font-family:Arial,sans-serif">Packer SAT Tutoring &middot; packersat.org</p>
