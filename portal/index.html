@@ -1328,17 +1328,15 @@
     <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="score-student-name"></strong></p>
     <div class="form-row three">
       <div>
-        <div class="field-label">Math Score</div>
-        <input class="input-field" type="number" id="score-math" placeholder="200–800" min="200" max="800" />
+        <div class="field-label">Module</div>
+        <select class="input-field" id="score-module" onchange="toggleScoreFields()">
+          <option value="both">Both (Full Test)</option>
+          <option value="math">Math Only</option>
+          <option value="rw">R&amp;W Only</option>
+        </select>
       </div>
-      <div>
-        <div class="field-label">R&W Score</div>
-        <input class="input-field" type="number" id="score-rw" placeholder="200–800" min="200" max="800" />
-      </div>
-      <div>
-        <div class="field-label">Date</div>
-        <input class="input-field" type="date" id="score-date" />
-      </div>
+      <div><div class="field-label">Math Score</div><input class="input-field" type="number" id="score-math" placeholder="200–800" min="200" max="800" /></div>
+      <div><div class="field-label">R&W Score</div><input class="input-field" type="number" id="score-rw" placeholder="200–800" min="200" max="800" /></div>
     </div>
     <div class="form-row full">
       <div>
@@ -1881,8 +1879,17 @@
         <div class="page-header"><h2>Practice Test Scores</h2><p>Log and track scores for all students.</p></div>
         <div class="card" style="margin-bottom:1.5rem">
           <div class="card-title">Log a Score</div>
-          <div class="form-row three">
-            <div><div class="field-label">Student</div><select class="input-field" id="admin-score-student"></select></div>
+          <div class="form-row full" style="margin-bottom:0.8rem">
+          <div><div class="field-label">Student</div><select class="input-field" id="admin-score-student"></select></div>
+        </div>
+        <div class="form-row three">
+            <div><div class="field-label">Module</div>
+              <select class="input-field" id="admin-score-module" onchange="toggleAdminScoreFields()">
+                <option value="both">Both (Full Test)</option>
+                <option value="math">Math Only</option>
+                <option value="rw">Reading &amp; Writing Only</option>
+              </select>
+            </div>
             <div><div class="field-label">Math Score</div><input class="input-field" type="number" id="admin-score-math" placeholder="200–800" /></div>
             <div><div class="field-label">R&W Score</div><input class="input-field" type="number" id="admin-score-rw" placeholder="200–800" /></div>
           </div>
@@ -2673,13 +2680,29 @@
 
   window.adminLogScore = async function() {
     const studentId = document.getElementById('admin-score-student').value;
-    const math = parseInt(document.getElementById('admin-score-math').value);
-    const rw = parseInt(document.getElementById('admin-score-rw').value);
-    const date = document.getElementById('admin-score-date').value;
-    const notes = document.getElementById('admin-score-notes').value;
-    const msg = document.getElementById('admin-score-msg');
-    if (!studentId||!math||!rw||!date) { showMsg(msg,'Fill in all required fields.','error'); return; }
-    await addDoc(collection(db,'scores'), { studentId, math, rw, total: math+rw, date, notes, loggedBy: CU.uid, createdAt: new Date().toISOString() });
+    const module    = document.getElementById('admin-score-module')?.value || 'both';
+    const mathVal   = document.getElementById('admin-score-math').value;
+    const rwVal     = document.getElementById('admin-score-rw').value;
+    const date      = document.getElementById('admin-score-date').value;
+    const notes     = document.getElementById('admin-score-notes').value;
+    const msg       = document.getElementById('admin-score-msg');
+
+    const math = mathVal ? parseInt(mathVal) : null;
+    const rw   = rwVal   ? parseInt(rwVal)   : null;
+
+    if (!studentId) { showMsg(msg, 'Please select a student.', 'error'); return; }
+    if (!date)      { showMsg(msg, 'Please enter a date.', 'error'); return; }
+    if (module === 'both'  && (!math || !rw))  { showMsg(msg, 'Please enter both scores.', 'error'); return; }
+    if (module === 'math'  && !math)           { showMsg(msg, 'Please enter the Math score.', 'error'); return; }
+    if (module === 'rw'    && !rw)             { showMsg(msg, 'Please enter the R&W score.', 'error'); return; }
+
+    const total = (math || 0) + (rw || 0) || null;
+
+    await addDoc(collection(db,'scores'), {
+      studentId, math: math || null, rw: rw || null,
+      total, module, date, notes,
+      loggedBy: CU.uid, createdAt: new Date().toISOString()
+    });
     showMsg(msg,'Score saved!','success');
     document.getElementById('admin-score-math').value='';
     document.getElementById('admin-score-rw').value='';
@@ -2695,15 +2718,19 @@
     const rows = [];
     snap.forEach(d => rows.push({id:d.id,...d.data()}));
     rows.sort((a,b)=>b.date.localeCompare(a.date));
-    tbody.innerHTML = rows.map(r=>`
-      <tr>
-        <td>${allUsers[r.studentId]?.name||'Unknown'}</td>
+    tbody.innerHTML = rows.map(r=>{
+      const moduleTag = r.module && r.module !== 'both'
+        ? `<span style="font-size:0.68rem;font-weight:600;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.25);color:#C8A96E;padding:0.1rem 0.5rem;border-radius:20px;margin-left:0.4rem">${r.module === 'math' ? 'Math' : 'R&W'} only</span>`
+        : '';
+      return `<tr>
+        <td>${allUsers[r.studentId]?.name||'Unknown'}${moduleTag}</td>
         <td>${formatDate(r.date)}</td>
-        <td>${r.math}</td>
-        <td>${r.rw}</td>
-        <td><span class="score-pill">${r.total}</span></td>
+        <td>${r.math||'—'}</td>
+        <td>${r.rw||'—'}</td>
+        <td><span class="score-pill">${r.total||'—'}</span></td>
         <td style="color:rgba(250,250,248,0.45);font-size:0.82rem">${r.notes||'—'}</td>
-      </tr>`).join('');
+      </tr>`;
+    }).join('');
   }
 
   async function loadAdminSessions() {
@@ -3619,15 +3646,30 @@
     studentId = (studentId||'').trim();
     document.getElementById('score-student-name').textContent = studentName;
     document.getElementById('score-date').value = today();
+    document.getElementById('score-module') && (document.getElementById('score-module').value = 'both');
     openModal('modal-score');
     document.getElementById('confirm-score-btn').onclick = async function() {
-      const math = parseInt(document.getElementById('score-math').value);
-      const rw = parseInt(document.getElementById('score-rw').value);
-      const date = document.getElementById('score-date').value;
-      const notes = document.getElementById('score-notes').value;
-      const msg = document.getElementById('score-msg');
-      if (!math||!rw||!date) { showMsg(msg,'Math, R&W and date are required.','error'); return; }
-      await addDoc(collection(db,'scores'), { studentId, math, rw, total:math+rw, date, notes, loggedBy: CU.uid, createdAt: new Date().toISOString() });
+      const module  = document.getElementById('score-module')?.value || 'both';
+      const mathVal = document.getElementById('score-math').value;
+      const rwVal   = document.getElementById('score-rw').value;
+      const date    = document.getElementById('score-date').value;
+      const notes   = document.getElementById('score-notes').value;
+      const msg     = document.getElementById('score-msg');
+
+      const math = mathVal ? parseInt(mathVal) : null;
+      const rw   = rwVal   ? parseInt(rwVal)   : null;
+
+      if (!date) { showMsg(msg, 'Date is required.', 'error'); return; }
+      if (module === 'both' && (!math || !rw)) { showMsg(msg, 'Please enter both scores.', 'error'); return; }
+      if (module === 'math' && !math) { showMsg(msg, 'Please enter the Math score.', 'error'); return; }
+      if (module === 'rw'   && !rw)  { showMsg(msg, 'Please enter the R&W score.', 'error'); return; }
+
+      const total = (math || 0) + (rw || 0) || null;
+      await addDoc(collection(db,'scores'), {
+        studentId, math: math || null, rw: rw || null,
+        total, module, date, notes,
+        loggedBy: CU.uid, createdAt: new Date().toISOString()
+      });
       showMsg(msg,'Score saved!','success');
       document.getElementById('score-math').value='';
       document.getElementById('score-rw').value='';
@@ -4268,9 +4310,12 @@
       if (!myScores.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No scores yet.</div></td></tr>'; }
       else tbody.innerHTML = myScores.map((s,i)=>{
         const prev = myScores[i+1];
-        const change = prev ? s.total - prev.total : null;
+        const change = prev ? (s.total||0) - (prev.total||0) : null;
         const changeHtml = change !== null ? `<span class="${change>=0?'score-change-pos':'score-change-neg'}">${change>=0?'+':''}${change}</span>` : '—';
-        return `<tr><td>${formatDate(s.date)}</td><td>${s.math}</td><td>${s.rw}</td><td><span class="score-pill">${s.total}</span></td><td>${changeHtml}</td><td style="font-size:0.82rem;color:rgba(250,250,248,0.45)">${s.notes||'—'}</td></tr>`;
+        const moduleTag = s.module && s.module !== 'both'
+          ? `<span style="font-size:0.68rem;font-weight:600;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.25);color:#C8A96E;padding:0.1rem 0.5rem;border-radius:20px;margin-left:0.3rem">${s.module === 'math' ? 'Math' : 'R&W'}</span>`
+          : '';
+        return `<tr><td>${formatDate(s.date)}${moduleTag}</td><td>${s.math||'—'}</td><td>${s.rw||'—'}</td><td>${s.total ? `<span class="score-pill">${s.total}</span>` : '—'}</td><td>${changeHtml}</td><td style="font-size:0.82rem;color:rgba(250,250,248,0.45)">${s.notes||'—'}</td></tr>`;
       }).join('');
     }
 
@@ -4318,17 +4363,18 @@
       if (myScores.length < 2) {
         chartWrap.innerHTML = '<div class="empty-state"><div class="icon"></div>Log at least 2 scores to see your chart.</div>';
       } else {
+        // For chart, only use scores where both sections exist OR use what's available
         const sorted = [...myScores].reverse();
         chartWrap.innerHTML = '<div class="chart-wrap"><canvas id="score-chart"></canvas></div>';
         const ctx = document.getElementById('score-chart').getContext('2d');
         new Chart(ctx, {
           type: 'line',
           data: {
-            labels: sorted.map(s=>formatDate(s.date)),
+            labels: sorted.map(s=>formatDate(s.date) + (s.module && s.module!=='both' ? ` (${s.module==='math'?'M':'RW'})` : '')),
             datasets: [
-              { label: 'Total', data: sorted.map(s=>s.total), borderColor: '#C0182B', backgroundColor: 'rgba(192,24,43,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#C0182B', pointRadius: 4 },
-              { label: 'Math', data: sorted.map(s=>s.math), borderColor: '#C8A96E', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, pointBackgroundColor: '#C8A96E' },
-              { label: 'R&W', data: sorted.map(s=>s.rw), borderColor: 'rgba(250,250,248,0.4)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, pointBackgroundColor: 'rgba(250,250,248,0.4)' }
+              { label: 'Total', data: sorted.map(s=>s.total||null), borderColor: '#C0182B', backgroundColor: 'rgba(192,24,43,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#C0182B', pointRadius: 4, spanGaps: true },
+              { label: 'Math', data: sorted.map(s=>s.math||null), borderColor: '#C8A96E', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, pointBackgroundColor: '#C8A96E', spanGaps: true },
+              { label: 'R&W', data: sorted.map(s=>s.rw||null), borderColor: 'rgba(250,250,248,0.4)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, pointBackgroundColor: 'rgba(250,250,248,0.4)', spanGaps: true }
             ]
           },
           options: {
@@ -4336,7 +4382,7 @@
             plugins: { legend: { labels: { color: 'rgba(250,250,248,0.6)', font: { size: 11 }, boxWidth: 16 } } },
             scales: {
               x: { ticks: { color: 'rgba(250,250,248,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } },
-              y: { min: 400, max: 1600, ticks: { color: 'rgba(250,250,248,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } }
+              y: { min: 200, max: 1600, ticks: { color: 'rgba(250,250,248,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } }
             }
           }
         });
@@ -9047,6 +9093,28 @@ Good luck!`,
   function printPracticeReport(id)     { window.printPracticeReport && window.printPracticeReport(id); }
   function markAssignmentDone(id)      { window.markAssignmentDone && window.markAssignmentDone(id); }
   function uploadAssignmentFile(id)    { window.uploadAssignmentFile && window.uploadAssignmentFile(id); }
+  function toggleAdminScoreFields()    {
+    const mod  = document.getElementById('admin-score-module')?.value;
+    const math = document.getElementById('admin-score-math');
+    const rw   = document.getElementById('admin-score-rw');
+    if (!math || !rw) return;
+    math.disabled = (mod === 'rw');
+    rw.disabled   = (mod === 'math');
+    if (mod === 'rw')   { math.value = ''; math.style.opacity='0.35'; rw.style.opacity='1'; }
+    if (mod === 'math') { rw.value   = ''; rw.style.opacity='0.35'; math.style.opacity='1'; }
+    if (mod === 'both') { math.style.opacity='1'; rw.style.opacity='1'; math.disabled=false; rw.disabled=false; }
+  }
+  function toggleScoreFields()         {
+    const mod  = document.getElementById('score-module')?.value;
+    const math = document.getElementById('score-math');
+    const rw   = document.getElementById('score-rw');
+    if (!math || !rw) return;
+    math.disabled = (mod === 'rw');
+    rw.disabled   = (mod === 'math');
+    if (mod === 'rw')   { math.value = ''; math.style.opacity='0.35'; rw.style.opacity='1'; }
+    if (mod === 'math') { rw.value   = ''; rw.style.opacity='0.35'; math.style.opacity='1'; }
+    if (mod === 'both') { math.style.opacity='1'; rw.style.opacity='1'; math.disabled=false; rw.disabled=false; }
+  }
   function saveAssignmentTemplate()    { window.saveAssignmentTemplate && window.saveAssignmentTemplate(); }
   function applyTemplate(id)           { window.applyTemplate && window.applyTemplate(id); }
   function deleteTemplate(id)          { window.deleteTemplate && window.deleteTemplate(id); }
