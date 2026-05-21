@@ -1902,7 +1902,7 @@
         </div>
         <div class="card">
           <div class="card-title"> All Scores <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">️ Export CSV</button></div>
-          <div class="table-wrap"><table><thead><tr><th>Student</th><th>Date</th><th>Math</th><th>R&W</th><th>Total</th><th>Notes</th></tr></thead><tbody id="admin-scores-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No scores logged yet.</div></td></tr></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Student</th><th>Date</th><th>Math</th><th>R&W</th><th>Total</th><th>Notes</th><th></th></tr></thead><tbody id="admin-scores-tbody"><tr><td colspan="7"><div class="empty-state"><div class="icon"></div>No scores logged yet.</div></td></tr></tbody></table></div>
         </div>
       </div>
 
@@ -2729,6 +2729,7 @@
         <td>${r.rw||'—'}</td>
         <td><span class="score-pill">${r.total||'—'}</span></td>
         <td style="color:rgba(250,250,248,0.45);font-size:0.82rem">${r.notes||'—'}</td>
+        <td><button class="action-btn danger" onclick="adminDeleteScore('${r.id}','${r.studentId}')">Remove</button></td>
       </tr>`;
     }).join('');
   }
@@ -8479,19 +8480,19 @@ Good luck!`,
       return;
     }
 
-    // Group by date — average total across all students
+    // Group by date — average only non-null values per section
     const byDate = {};
     allScores.forEach(s => {
       if (!byDate[s.date]) byDate[s.date] = { totals:[], maths:[], rws:[] };
-      byDate[s.date].totals.push(s.total);
-      byDate[s.date].maths.push(s.math);
-      byDate[s.date].rws.push(s.rw);
+      if (s.total) byDate[s.date].totals.push(s.total);
+      if (s.math)  byDate[s.date].maths.push(s.math);
+      if (s.rw)    byDate[s.date].rws.push(s.rw);
     });
     const dates = Object.keys(byDate).sort();
-    const avg = arr => Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
+    const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : null;
     const avgTotals = dates.map(d => avg(byDate[d].totals));
-    const avgMaths = dates.map(d => avg(byDate[d].maths));
-    const avgRws = dates.map(d => avg(byDate[d].rws));
+    const avgMaths  = dates.map(d => avg(byDate[d].maths));
+    const avgRws    = dates.map(d => avg(byDate[d].rws));
 
     const ctx = document.getElementById('analytics-chart');
     if (!ctx) return;
@@ -8501,9 +8502,9 @@ Good luck!`,
       data: {
         labels: dates.map(d => formatDate(d)),
         datasets: [
-          { label: 'Avg Total', data: avgTotals, borderColor: '#c0182b', backgroundColor: 'rgba(192,24,43,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#c0182b' },
-          { label: 'Avg Math', data: avgMaths, borderColor: '#C8A96E', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointBackgroundColor: '#C8A96E' },
-          { label: 'Avg R&W', data: avgRws, borderColor: 'rgba(250,250,248,0.4)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointBackgroundColor: 'rgba(250,250,248,0.4)' }
+          { label: 'Avg Total', data: avgTotals, borderColor: '#c0182b', backgroundColor: 'rgba(192,24,43,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#c0182b', spanGaps: true },
+          { label: 'Avg Math', data: avgMaths, borderColor: '#C8A96E', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointBackgroundColor: '#C8A96E', spanGaps: true },
+          { label: 'Avg R&W', data: avgRws, borderColor: 'rgba(250,250,248,0.4)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointBackgroundColor: 'rgba(250,250,248,0.4)', spanGaps: true }
         ]
       },
       options: {
@@ -8520,9 +8521,9 @@ Good luck!`,
     const studentScores = {};
     allScores.forEach(s => { if (!studentScores[s.studentId]) studentScores[s.studentId]=[]; studentScores[s.studentId].push(s); });
     const improvers = Object.entries(studentScores)
-      .filter(([,sc]) => sc.length >= 2)
+      .filter(([,sc]) => sc.filter(s=>s.total).length >= 2)
       .map(([uid, sc]) => {
-        const sorted = [...sc].sort((a,b)=>a.date.localeCompare(b.date));
+        const sorted = [...sc].filter(s=>s.total).sort((a,b)=>a.date.localeCompare(b.date));
         return { name: allUsers[uid]?.name||'Unknown', improvement: sorted[sorted.length-1].total - sorted[0].total, latest: sorted[sorted.length-1].total };
       })
       .sort((a,b) => b.improvement - a.improvement);
@@ -8546,9 +8547,13 @@ Good luck!`,
     // Program averages
     const avgEl = document.getElementById('analytics-averages');
     if (avgEl && allScores.length) {
-      const overallAvgTotal = avg(allScores.map(s=>s.total));
-      const overallAvgMath = avg(allScores.map(s=>s.math));
-      const overallAvgRw = avg(allScores.map(s=>s.rw));
+      const fullScores = allScores.filter(s=>s.total);
+      const mathScores = allScores.filter(s=>s.math);
+      const rwScores   = allScores.filter(s=>s.rw);
+      const avgAll = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : '—';
+      const overallAvgTotal = avgAll(fullScores.map(s=>s.total));
+      const overallAvgMath  = avgAll(mathScores.map(s=>s.math));
+      const overallAvgRw    = avgAll(rwScores.map(s=>s.rw));
       const students = Object.keys(studentScores).length;
       avgEl.innerHTML = `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
