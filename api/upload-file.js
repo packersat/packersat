@@ -42,17 +42,6 @@ export default async function handler(req, res) {
     // Resolve MIME type — fall back to extension if browser gave empty/octet-stream
     const resolvedType = guessMime(fileName, fileType);
 
-    const allowed = [
-      'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
-      'image/heic', 'image/heif', 'image/webp',
-      'application/pdf', 'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain', 'application/octet-stream',
-    ];
-    if (!allowed.includes(resolvedType)) {
-      return res.status(400).json({ error: 'File type not allowed: ' + resolvedType });
-    }
-
     const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
     const key = `submissions/${assignmentId}/${Date.now()}_${safeName}`;
 
