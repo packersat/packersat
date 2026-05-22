@@ -172,23 +172,7 @@
   .act-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 18px; border-top: 1px dotted var(--rule); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; color: var(--ink-3); text-transform: uppercase; }
 
   /* ─── About + Mission block ─── */
-  .about { display: grid; grid-template-columns: 5fr 7fr; gap: 80px; align-items: start; }
-  .about-photo {
-    border: 1px solid var(--ink); aspect-ratio: 4/5; background: var(--paper-2);
-    display: flex; flex-direction: column; justify-content: space-between; padding: 22px;
-    color: var(--ink-3); position: relative;
-    background-image:
-      repeating-linear-gradient(135deg, rgba(26,23,21,0.04) 0 1px, transparent 1px 18px);
-  }
-  .about-photo .ph-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; }
-  .about-photo .ph-center { text-align: center; padding: 40px 0; }
-  .about-photo .ph-center h4 { font-family: 'Fraunces', serif; font-style: italic; font-weight: 360; font-size: 24px; color: var(--ink); margin: 0 0 8px; }
-  .about-photo .ph-center small { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); }
-  .about-photo .crosshair { position: absolute; width: 14px; height: 14px; border: 1px solid var(--ink-3); }
-  .about-photo .ch-tl { top: 14px; left: 14px; border-right: 0; border-bottom: 0; }
-  .about-photo .ch-tr { top: 14px; right: 14px; border-left: 0; border-bottom: 0; }
-  .about-photo .ch-bl { bottom: 14px; left: 14px; border-right: 0; border-top: 0; }
-  .about-photo .ch-br { bottom: 14px; right: 14px; border-left: 0; border-top: 0; }
+  .about { display: block; }
   .about-copy h2 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 40; font-size: clamp(48px, 5.4vw, 72px); letter-spacing: -0.025em; line-height: 1.02; margin: 0 0 32px; }
   .about-copy h2 em { font-style: italic; color: var(--crimson); font-weight: 320; }
   .about-copy .drop { font-family: 'Newsreader', serif; font-size: 19px; line-height: 1.6; color: var(--ink-2); margin: 0 0 24px; max-width: 56ch; }
@@ -554,7 +538,7 @@
       <article class="act">
         <div class="act-head">
           <span class="act-num">01</span>
-          <span class="act-tag">The Test</span>
+          <span class="act-tag">Test</span>
         </div>
         <h3>Two sections.<br /><em>One score.</em></h3>
         <p>The Digital SAT measures Math and Reading &amp; Writing separately, each worth 800 points. Most students have real room to grow in at least one.</p>
@@ -563,7 +547,7 @@
       <article class="act">
         <div class="act-head">
           <span class="act-num">02</span>
-          <span class="act-tag">The Gap</span>
+          <span class="act-tag">Gap</span>
         </div>
         <h3>We find <em>exactly</em> where you're losing points.</h3>
         <p>Before anything else, your tutor identifies your specific weak spots &ndash; a question type, a pacing problem, a section that doesn't click yet.</p>
@@ -572,7 +556,7 @@
       <article class="act">
         <div class="act-head">
           <span class="act-num">03</span>
-          <span class="act-tag">The Work</span>
+          <span class="act-tag">Work</span>
         </div>
         <h3>Weekly sessions.<br /><em>Steady progress.</em></h3>
         <p>One to two focused sessions per week, on campus. Consistent, structured practice is what turns a weak spot into a strength before test day.</p>
@@ -581,7 +565,7 @@
       <article class="act">
         <div class="act-head">
           <span class="act-num">04</span>
-          <span class="act-tag">The Cost</span>
+          <span class="act-tag">Cost</span>
         </div>
         <h3>Nothing. <em>Not a dollar.</em></h3>
         <p>Test prep companies charge hundreds per hour. We think a Packer student's score shouldn't depend on what their family can afford. So it doesn't.</p>
@@ -602,18 +586,6 @@
     </div>
 
     <div class="about">
-      <div class="about-photo">
-        <div class="crosshair ch-tl"></div>
-        <div class="crosshair ch-tr"></div>
-        <div class="crosshair ch-bl"></div>
-        <div class="crosshair ch-br"></div>
-        <div class="ph-tag">Plate I</div>
-        <div class="ph-center">
-          <h4>"A study room, somewhere on campus."</h4>
-          <small>Photo to come</small>
-        </div>
-        <div class="ph-tag" style="text-align:right;">PKR · 002</div>
-      </div>
       <div class="about-copy">
         <p class="drop">
           We're a group of upperclassmen at The Packer Collegiate Institute who believe every student deserves access to quality SAT preparation without the price tag. Our sessions are tailored specifically to the skills tested on the Digital SAT &ndash; closing score gaps and building confidence through focused, consistent practice. Wherever you're starting from, we'll meet you there and build from it.
