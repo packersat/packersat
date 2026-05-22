@@ -55,6 +55,20 @@
       text-rendering: optimizeLegibility;
     }
 
+    /* ── SCREEN VISIBILITY ── */
+    .screen          { display: none; }
+    .screen.active   { display: flex; }
+    #login-screen.active {
+      display: grid;
+    }
+    #portal-screen.active {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
     /* ── LOGIN — V1 Editorial Daylight ── */
     /* Fonts loaded in <head> google fonts link */
 
@@ -71,7 +85,6 @@
         radial-gradient(60% 50% at 50%  0%,   rgba(212,54,75,0.18) 0%, rgba(212,54,75,0) 70%),
         radial-gradient(120% 80% at 0%  0%,   #f7f2e8 0%, #efe8d8 60%, #e8d4c6 100%);
       color: #1a1715;
-      display: grid;
       grid-template-columns: 1.05fr 1fr;
       min-height: 100dvh;
       overflow: hidden;
