@@ -88,6 +88,7 @@
       grid-template-columns: 1.05fr 1fr;
       min-height: 100dvh;
       overflow: hidden;
+      position: relative;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     }
 
@@ -364,6 +365,113 @@
       .login-contents     { display: none; }
       .login-right        { padding: 36px 28px; }
     }
+
+/* ──────────────────────────────────────
+       LOGIN LOADING STATE
+    ────────────────────────────────────── */
+    #login-loading {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      padding: 56px 64px;
+      color: #1a1715;
+      background:
+        radial-gradient(50% 60% at 100% 100%, rgba(163,22,33,0.45) 0%, rgba(163,22,33,0) 70%),
+        radial-gradient(40% 50% at 0%   100%, rgba(163,22,33,0.22) 0%, rgba(163,22,33,0) 70%),
+        radial-gradient(60% 50% at 50%  0%,   rgba(212,54,75,0.18) 0%, rgba(212,54,75,0) 70%),
+        radial-gradient(120% 80% at 0%  0%,   #f7f2e8 0%, #efe8d8 60%, #e8d4c6 100%);
+      animation: login-fade-up 0.3s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    #login-loading.active { display: flex; flex-direction: column; }
+    .loading-brand {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: #6b6258;
+    }
+    .loading-brand .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #a31621; display: inline-block;
+      margin-right: 8px; vertical-align: middle;
+      animation: v1-pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes v1-pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+    .loading-center {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .loading-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: #a31621;
+      margin-bottom: 36px;
+    }
+    .loading-spinner {
+      position: relative; width: 132px; height: 132px; margin-bottom: 42px;
+    }
+    .loading-spinner svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .spin-track { stroke: rgba(26,23,21,0.10); }
+    .spin-arc {
+      stroke: #a31621; stroke-linecap: round;
+      transform-origin: 50% 50%;
+      animation: v1-spin 1.4s cubic-bezier(.6,.1,.4,.9) infinite;
+    }
+    @keyframes v1-spin { to { transform: rotate(360deg); } }
+    .spin-seal {
+      position: absolute; inset: 0;
+      display: grid; place-items: center;
+      font-family: 'Fraunces', serif;
+      font-style: italic; font-size: 44px;
+      font-weight: 400; color: #1a1715;
+    }
+    .loading-headline {
+      font-family: 'Fraunces', serif;
+      font-weight: 360;
+      font-variation-settings: "SOFT" 30;
+      font-size: 56px; line-height: 1;
+      letter-spacing: -0.022em;
+      margin: 0 0 18px; color: #1a1715;
+    }
+    .loading-headline .ital { font-style: italic; font-weight: 320; color: #a31621; }
+    .loading-tip {
+      font-family: 'Newsreader', serif;
+      font-size: 17px; color: #6b6258;
+      min-height: 24px;
+      animation: v1-tip-in .35s ease-out;
+    }
+    @keyframes v1-tip-in { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+    .loading-bar {
+      width: 380px; max-width: 90vw; height: 1px;
+      background: rgba(26,23,21,0.12);
+      margin: 36px 0 12px; position: relative; overflow: hidden;
+    }
+    .loading-bar-fill {
+      position: absolute; left: -40%; top: 0;
+      width: 40%; height: 100%; background: #a31621;
+      animation: v1-bar 1.8s cubic-bezier(.6,.1,.4,.9) infinite;
+    }
+    @keyframes v1-bar { 0%{left:-40%} 100%{left:100%} }
+    .loading-bar-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: #8a8278;
+    }
+    .loading-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: #6b6258;
+      padding-top: 18px;
+      border-top: 1px solid rgba(26,23,21,0.10);
+    }
+    .loading-footer .bubs { display: flex; gap: 8px; align-items: center; }
+    .loading-footer .bub {
+      width: 12px; height: 12px; border-radius: 50%;
+      border: 1px solid rgba(26,23,21,0.30);
+      transition: background .2s, border-color .2s;
+    }
+    .loading-footer .bub.active { background: #a31621; border-color: #a31621; }
 
 /* ──────────────────────────────────────
        PORTAL LAYOUT
@@ -1330,7 +1438,36 @@
 <!-- LOGIN SCREEN -->
 <div id="login-screen" class="screen active">
 
-  <!-- LEFT: editorial panel -->
+  <!-- LOADING OVERLAY — shown after auth starts -->
+  <div id="login-loading">
+    <div class="loading-brand">
+      <span class="dot"></span>PackerSAT &middot; Portal
+    </div>
+    <div class="loading-center">
+      <div class="loading-eyebrow">&mdash; Signing you in</div>
+      <div class="loading-spinner">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle class="spin-track" cx="50" cy="50" r="44" fill="none" stroke-width="2"></circle>
+          <circle class="spin-arc"   cx="50" cy="50" r="44" fill="none" stroke-width="2" stroke-dasharray="60 220"></circle>
+        </svg>
+        <div class="spin-seal">P</div>
+      </div>
+      <div class="loading-headline">One moment, <span class="ital">please.</span></div>
+      <div class="loading-tip" id="loading-tip-text">Signing you in&hellip;</div>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+      <div class="loading-bar-count" id="loading-step-count">Step 1 of 4</div>
+    </div>
+    <div class="loading-footer">
+      <span>Welcome back.</span>
+      <span class="bubs" id="loading-bubs">
+        <span class="bub active"></span>
+        <span class="bub"></span>
+        <span class="bub"></span>
+        <span class="bub"></span>
+      </span>
+      <span>Spring &rsquo;26</span>
+    </div>
+  </div>
   <div class="login-left">
     <div class="login-topbar">
       <span><span class="dot"></span>PackerSAT &middot; Portal</span>
@@ -1376,7 +1513,7 @@
   <div class="login-right">
     <div class="num"></div>
     <h2>Welcome back.</h2>
-    <p class="login-sub">Pick up where you left off, and sign in to your portal.</p>
+    <p class="login-sub">Pick up where you left off &mdash; sign in to your portal.</p>
 
     <label for="login-email">Packer email</label>
     <input type="email" id="login-email" placeholder="you@packer.edu" autocomplete="email" />
@@ -1731,6 +1868,54 @@
   const googleProvider = new GoogleAuthProvider();
 
   // ─────────────────────────────────────────
+  // LOGIN LOADING SCREEN
+  // ─────────────────────────────────────────
+  const _loadingTips = [
+    'Pulling your last session\u2026',
+    'Loading your Reading & Writing drills\u2026',
+    'Tallying your streak\u2026',
+    'Almost there\u2026'
+  ];
+  let _loadingTipTimer = null;
+  let _loadingTipIdx   = 0;
+
+  function showLoginLoading() {
+    const el = document.getElementById('login-loading');
+    if (!el) return;
+    _loadingTipIdx = 0;
+    _updateLoadingTip();
+    el.classList.add('active');
+    _loadingTipTimer = setInterval(() => {
+      _loadingTipIdx = Math.min(_loadingTipIdx + 1, _loadingTips.length - 1);
+      _updateLoadingTip();
+    }, 1500);
+  }
+
+  function hideLoginLoading() {
+    const el = document.getElementById('login-loading');
+    if (el) el.classList.remove('active');
+    if (_loadingTipTimer) { clearInterval(_loadingTipTimer); _loadingTipTimer = null; }
+    _loadingTipIdx = 0;
+  }
+
+  function _updateLoadingTip() {
+    const tipEl   = document.getElementById('loading-tip-text');
+    const countEl = document.getElementById('loading-step-count');
+    const bubs    = document.querySelectorAll('#loading-bubs .bub');
+    if (tipEl) {
+      // Re-trigger animation by cloning
+      const clone = tipEl.cloneNode(true);
+      clone.textContent = _loadingTips[_loadingTipIdx];
+      tipEl.parentNode.replaceChild(clone, tipEl);
+    }
+    if (countEl) countEl.textContent = `Step ${_loadingTipIdx + 1} of ${_loadingTips.length}`;
+    bubs.forEach((b, i) => b.classList.toggle('active', i <= _loadingTipIdx));
+  }
+
+  window.showLoginLoading = showLoginLoading;
+  window.hideLoginLoading = hideLoginLoading;
+
+  // ─────────────────────────────────────────
   // AUTH
   // ─────────────────────────────────────────
   onAuthStateChanged(auth, async (user) => {
@@ -1743,28 +1928,36 @@
           await updateDoc(doc(db, 'users', user.uid), { lastLoginAt: new Date().toISOString() });
         } catch(e) { /* non-critical */ }
         await cacheAllUsers();
+        hideLoginLoading();
         enterPortal();
       } else {
+        hideLoginLoading();
         await signOut(auth);
       }
     } else {
+      hideLoginLoading();
       showLogin();
     }
   });
 
   window.doLogin = async function() {
-    const email = document.getElementById('login-email').value.trim();
+    const email    = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
-    const btn = document.getElementById('login-btn');
-    const err = document.getElementById('login-error');
+    const btn      = document.getElementById('login-btn');
+    const err      = document.getElementById('login-error');
     err.style.display = 'none';
-    btn.disabled = true; btn.innerHTML = 'Signing in&hellip; <span class="arrow"></span>';
+    btn.disabled = true;
+    btn.innerHTML = 'Signing in&hellip; <span class="arrow"></span>';
+    showLoginLoading();
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged handles the rest — loading screen dismissed there
     } catch (e) {
+      hideLoginLoading();
       err.textContent = friendlyError(e.code);
       err.style.display = 'block';
-      btn.disabled = false; btn.innerHTML = 'Continue <span class="arrow">&rarr;</span>';
+      btn.disabled = false;
+      btn.innerHTML = 'Continue <span class="arrow">&rarr;</span>';
     }
   };
 
@@ -1817,6 +2010,7 @@
     const err = document.getElementById('login-error');
     err.style.display = 'none';
     btn.disabled = true; btn.textContent = 'Signing in…';
+    showLoginLoading();
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
@@ -1834,6 +2028,7 @@
       // onAuthStateChanged will handle the rest
     } catch (e) {
       if (e.code !== 'auth/popup-closed-by-user') {
+      hideLoginLoading();
         err.textContent = friendlyError(e.code);
         err.style.display = 'block';
       }
@@ -1866,9 +2061,12 @@
   function showLogin() {
     document.getElementById('portal-screen').classList.remove('active');
     document.getElementById('login-screen').classList.add('active');
-    document.getElementById('login-btn').disabled = false;
+    hideLoginLoading();
     document.getElementById('login-btn').disabled = false;
     document.getElementById('login-btn').innerHTML = 'Continue <span class="arrow">&rarr;</span>';
+    const gb = document.getElementById('google-btn');
+    if (gb) { gb.disabled = false; gb.textContent = 'Continue with Google'; }
+    CU = null; allUsers = {};
   }
 
   // ─────────────────────────────────────────
@@ -9037,10 +9235,12 @@ Good luck!`,
 </script>
 <script>
   // Global bridge — exposes module functions to inline onclick handlers
-  function doLogin() { window.doLogin && window.doLogin(); }
-  function doGoogleLogin() { window.doGoogleLogin && window.doGoogleLogin(); }
-  function doLogout() { window.doLogout && window.doLogout(); }
-  function doForgotPassword() { window.doForgotPassword && window.doForgotPassword(); }
+  function doLogin()         { window.doLogin         && window.doLogin(); }
+  function doGoogleLogin()   { window.doGoogleLogin   && window.doGoogleLogin(); }
+  function doLogout()        { window.doLogout        && window.doLogout(); }
+  function doForgotPassword(){ window.doForgotPassword&& window.doForgotPassword(); }
+  function showLoginLoading(){ window.showLoginLoading && window.showLoginLoading(); }
+  function hideLoginLoading(){ window.hideLoginLoading && window.hideLoginLoading(); }
   function doChangeEmail() { window.doChangeEmail && window.doChangeEmail(); }
   function addUser() { window.addUser && window.addUser(); }
   function adminLogScore() { window.adminLogScore && window.adminLogScore(); }
