@@ -1,1125 +1,1126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Packer SAT Prep - Free, student-led SAT tutoring at The Packer Collegiate Institute</title>
-  <meta name="description" content="Free, student-led SAT tutoring for every Packer student. One-on-one sessions on campus, run by upperclassmen who have sat the same test." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,ital,wght@6..72,0,300..700;6..72,1,300..700&display=swap" rel="stylesheet" />
-  <style>smtppro.zoho.com
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Packer SAT Prep - Free, student-led SAT tutoring at The Packer Collegiate Institute</title>
+<meta name="description" content="Free, student-led SAT tutoring for every Packer student. One-on-one sessions on campus, run by upperclassmen who have sat the same test." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,ital,wght@6..72,0,300..700;6..72,1,300..700&display=swap" rel="stylesheet" />
+<style>
 
-  :root {
-    --paper: #f4ecd9;
-    --paper-2: #efe6d0;
-    --paper-3: #e8dfc7;
-    --ink: #1a1715;
-    --ink-2: #4a423a;
-    --ink-3: #6b6258;
-    --ink-4: #8a8278;
-    --rule: rgba(26,23,21,0.14);
-    --rule-soft: rgba(26,23,21,0.08);
-    --crimson: #a31621;
-    --crimson-2: #c4253a;
-    --crimson-soft: rgba(163,22,33,0.10);
-    --ivory: #fffdf7;
-    /* modal legacy vars */
-    --red:        #C0182B;
-    --light-red:  #d4364b;
-    --white:      #FAFAF8;
-    --gold:       #C8A96E;
+:root {
+--paper: #f4ecd9;
+--paper-2: #efe6d0;
+--paper-3: #e8dfc7;
+--ink: #1a1715;
+--ink-2: #4a423a;
+--ink-3: #6b6258;
+--ink-4: #8a8278;
+--rule: rgba(26,23,21,0.14);
+--rule-soft: rgba(26,23,21,0.08);
+--crimson: #a31621;
+--crimson-2: #c4253a;
+--crimson-soft: rgba(163,22,33,0.10);
+--ivory: #fffdf7;
+/* modal legacy vars */
+--red:        #C0182B;
+--light-red:  #d4364b;
+--white:      #FAFAF8;
+--gold:       #C8A96E;
 
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    background:
-      radial-gradient(60% 50% at 100% 0%, rgba(163,22,33,0.10), transparent 60%),
-      radial-gradient(50% 40% at 0% 100%, rgba(163,22,33,0.06), transparent 65%),
-      var(--paper);
-    color: var(--ink);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-  a { color: inherit; }
-  img { display: block; max-width: 100%; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+background:
+radial-gradient(60% 50% at 100% 0%, rgba(163,22,33,0.10), transparent 60%),
+radial-gradient(50% 40% at 0% 100%, rgba(163,22,33,0.06), transparent 65%),
+var(--paper);
+color: var(--ink);
+-webkit-font-smoothing: antialiased;
+text-rendering: optimizeLegibility;
+}
+a { color: inherit; }
+img { display: block; max-width: 100%; }
 
-  /* Container */
-  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
+/* Container */
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
 
-  /* Type helpers */
-  .display { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 30; letter-spacing: -0.025em; line-height: 0.96; color: var(--ink); }
-  .display .ital { font-style: italic; font-weight: 320; color: var(--crimson); }
-  .display .red { color: var(--crimson); }
-  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--crimson); }
-  .eyebrow.muted { color: var(--ink-3); }
-  .eyebrow .dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--crimson); margin-right: 10px; vertical-align: middle; }
-  .lede { font-family: 'Newsreader', serif; font-size: 22px; line-height: 1.5; color: var(--ink-2); }
-  .small-cap { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
-  .section-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--crimson); }
+/* Type helpers */
+.display { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 30; letter-spacing: -0.025em; line-height: 0.96; color: var(--ink); }
+.display .ital { font-style: italic; font-weight: 320; color: var(--crimson); }
+.display .red { color: var(--crimson); }
+.eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--crimson); }
+.eyebrow.muted { color: var(--ink-3); }
+.eyebrow .dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--crimson); margin-right: 10px; vertical-align: middle; }
+.lede { font-family: 'Newsreader', serif; font-size: 22px; line-height: 1.5; color: var(--ink-2); }
+.small-cap { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
+.section-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--crimson); }
 
-  /* Nav */
-  .nav {
-    position: sticky; top: 0; z-index: 50;
-    background: rgba(244,236,217,0.85);
-    backdrop-filter: blur(10px) saturate(140%);
-    border-bottom: 1px solid var(--rule-soft);
-  }
-  .nav-inner { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 16px 0; gap: 32px; }
-  .brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; color: var(--ink); text-decoration: none; }
-  .brand .seal {
-    width: 30px; height: 30px; border: 1px solid var(--ink); border-radius: 50%;
-    display: grid; place-items: center; font-style: italic; color: var(--crimson);
-    font-size: 14px; font-weight: 400; line-height: 1;
-  }
-  .brand .x { color: var(--crimson); font-style: italic; }
-  .nav ul { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; gap: 32px; }
-  .nav ul a { text-decoration: none; font-size: 13px; color: var(--ink-2); letter-spacing: 0.01em; padding: 6px 2px; border-bottom: 1px solid transparent; transition: border-color .15s, color .15s; }
-  .nav ul a:hover { color: var(--ink); border-bottom-color: var(--crimson); }
-  .nav-cta { display: flex; gap: 14px; align-items: center; }
-  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 13px; font-weight: 500; text-decoration: none; border-radius: 0; cursor: pointer; border: 1px solid var(--ink); background: var(--ink); color: var(--ivory); transition: background .15s, color .15s, border-color .15s, transform .12s; font-family: inherit; }
-  .btn:hover { background: var(--crimson); border-color: var(--crimson); }
-  .btn.ghost { background: transparent; color: var(--ink); }
-  .btn.ghost:hover { background: var(--ink); color: var(--ivory); }
-  .btn.large { padding: 16px 26px; font-size: 14px; letter-spacing: 0.02em; }
-  .btn.link { background: transparent; border: 0; color: var(--ink-2); padding: 0; font-size: 13px; }
-  .btn.link:hover { color: var(--crimson); background: transparent; }
-  .btn .arrow { font-family: 'Inter', sans-serif; }
+/* Nav */
+.nav {
+position: sticky; top: 0; z-index: 50;
+background: rgba(244,236,217,0.85);
+backdrop-filter: blur(10px) saturate(140%);
+border-bottom: 1px solid var(--rule-soft);
+}
+.nav-inner { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 16px 0; gap: 32px; }
+.brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; color: var(--ink); text-decoration: none; }
+.brand .seal {
+width: 30px; height: 30px; border: 1px solid var(--ink); border-radius: 50%;
+display: grid; place-items: center; font-style: italic; color: var(--crimson);
+font-size: 14px; font-weight: 400; line-height: 1;
+}
+.brand .x { color: var(--crimson); font-style: italic; }
+.nav ul { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; gap: 32px; }
+.nav ul a { text-decoration: none; font-size: 13px; color: var(--ink-2); letter-spacing: 0.01em; padding: 6px 2px; border-bottom: 1px solid transparent; transition: border-color .15s, color .15s; }
+.nav ul a:hover { color: var(--ink); border-bottom-color: var(--crimson); }
+.nav-cta { display: flex; gap: 14px; align-items: center; }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 13px; font-weight: 500; text-decoration: none; border-radius: 0; cursor: pointer; border: 1px solid var(--ink); background: var(--ink); color: var(--ivory); transition: background .15s, color .15s, border-color .15s, transform .12s; font-family: inherit; }
+.btn:hover { background: var(--crimson); border-color: var(--crimson); }
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.ghost:hover { background: var(--ink); color: var(--ivory); }
+.btn.large { padding: 16px 26px; font-size: 14px; letter-spacing: 0.02em; }
+.btn.link { background: transparent; border: 0; color: var(--ink-2); padding: 0; font-size: 13px; }
+.btn.link:hover { color: var(--crimson); background: transparent; }
+.btn .arrow { font-family: 'Inter', sans-serif; }
 
-  /* ─── Hero ─── */
-  .hero { padding: 88px 0 64px; position: relative; }
-  .hero-stamp { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; }
-  .hero-stamp .line { width: 80px; height: 1px; background: var(--ink); }
-  .hero-headline { font-size: clamp(64px, 8.8vw, 132px); margin: 0 0 28px; }
-  .hero-headline em { font-style: italic; font-weight: 320; color: var(--crimson); }
-  .hero-lede { max-width: 56ch; margin: 0 0 40px; }
-  .hero-actions { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+/* ─── Hero ─── */
+.hero { padding: 88px 0 64px; position: relative; }
+.hero-stamp { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; }
+.hero-stamp .line { width: 80px; height: 1px; background: var(--ink); }
+.hero-headline { font-size: clamp(64px, 8.8vw, 132px); margin: 0 0 28px; }
+.hero-headline em { font-style: italic; font-weight: 320; color: var(--crimson); }
+.hero-lede { max-width: 56ch; margin: 0 0 40px; }
+.hero-actions { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
 
-  .hero-meta {
-    margin-top: 80px;
-    display: grid; grid-template-columns: repeat(12, 1fr); gap: 0;
-    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-    padding: 28px 0;
-  }
-  .hero-meta .cell { grid-column: span 4; padding-right: 24px; position: relative; }
-  .hero-meta .cell + .cell { padding-left: 32px; border-left: 1px solid var(--rule); }
-  .hero-meta .n { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 400; letter-spacing: -0.025em; line-height: 1; color: var(--ink); }
-  .hero-meta .n .qual { font-size: 22px; color: var(--ink-3); margin-left: 8px; vertical-align: super; font-style: italic; font-weight: 380; }
-  .hero-meta .l { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); margin-top: 14px; }
-  .hero-meta .desc { font-family: 'Newsreader', serif; font-size: 15px; color: var(--ink-2); margin-top: 8px; max-width: 30ch; }
+.hero-meta {
+margin-top: 80px;
+display: grid; grid-template-columns: repeat(12, 1fr); gap: 0;
+border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+padding: 28px 0;
+}
+.hero-meta .cell { grid-column: span 4; padding-right: 24px; position: relative; }
+.hero-meta .cell + .cell { padding-left: 32px; border-left: 1px solid var(--rule); }
+.hero-meta .n { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 400; letter-spacing: -0.025em; line-height: 1; color: var(--ink); }
+.hero-meta .n .qual { font-size: 22px; color: var(--ink-3); margin-left: 8px; vertical-align: super; font-style: italic; font-weight: 380; }
+.hero-meta .l { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); margin-top: 14px; }
+.hero-meta .desc { font-family: 'Newsreader', serif; font-size: 15px; color: var(--ink-2); margin-top: 8px; max-width: 30ch; }
 
-  /* Ticker */
-  .ticker {
-    overflow: hidden;
-    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-    margin-top: 0;
-    padding: 18px 0;
-    background: var(--ivory);
-  }
-  .ticker-track { display: flex; gap: 64px; white-space: nowrap; animation: ticker 60s linear infinite; font-family: 'Fraunces', serif; font-size: 20px; font-weight: 400; color: var(--ink); }
-  .ticker-track span { display: inline-flex; align-items: center; gap: 64px; }
-  .ticker-track .sep { color: var(--crimson); font-style: italic; }
-  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* Ticker */
+.ticker {
+overflow: hidden;
+border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+margin-top: 0;
+padding: 18px 0;
+background: var(--ivory);
+}
+.ticker-track { display: flex; gap: 64px; white-space: nowrap; animation: ticker 60s linear infinite; font-family: 'Fraunces', serif; font-size: 20px; font-weight: 400; color: var(--ink); }
+.ticker-track span { display: inline-flex; align-items: center; gap: 64px; }
+.ticker-track .sep { color: var(--crimson); font-style: italic; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-  /* ─── Section: The Test ─── */
-  .section { padding: 120px 0; }
-  .section-head { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: end; margin-bottom: 64px; }
-  .section-head .meta { padding-top: 12px; }
-  .section-head h2 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 50; font-size: clamp(48px, 5.6vw, 76px); letter-spacing: -0.025em; line-height: 1; margin: 0; }
-  .section-head h2 em { font-style: italic; color: var(--crimson); font-weight: 320; }
-  .section-head .meta .small-cap { margin-bottom: 18px; display: block; }
-  .section-head .blurb { font-family: 'Newsreader', serif; font-size: 17px; color: var(--ink-3); line-height: 1.5; max-width: 30ch; }
+/* ─── Section: The Test ─── */
+.section { padding: 120px 0; }
+.section-head { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: end; margin-bottom: 64px; }
+.section-head .meta { padding-top: 12px; }
+.section-head h2 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 50; font-size: clamp(48px, 5.6vw, 76px); letter-spacing: -0.025em; line-height: 1; margin: 0; }
+.section-head h2 em { font-style: italic; color: var(--crimson); font-weight: 320; }
+.section-head .meta .small-cap { margin-bottom: 18px; display: block; }
+.section-head .blurb { font-family: 'Newsreader', serif; font-size: 17px; color: var(--ink-3); line-height: 1.5; max-width: 30ch; }
 
-  /* Score breakdown */
-  .score-board { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
-  .score-board .col { padding: 36px 32px; border-right: 1px solid var(--rule); position: relative; }
-  .score-board .col:last-child { border-right: 0; background: var(--ink); color: var(--ivory); }
-  .score-board .col-tag { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
-  .score-board .col-tag .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-3); }
-  .score-board .col:last-child .col-tag .label { color: rgba(255,253,247,0.6); }
-  .score-board .col-tag .id { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-4); }
-  .score-board .col:last-child .col-tag .id { color: rgba(255,253,247,0.5); }
-  .score-board .col h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 34px; margin: 0 0 14px; line-height: 1.05; letter-spacing: -0.02em; }
-  .score-board .col p { font-family: 'Newsreader', serif; font-size: 15px; line-height: 1.5; color: var(--ink-2); margin: 0 0 24px; }
-  .score-board .col:last-child p { color: rgba(255,253,247,0.7); }
-  .score-board .col .points { display: flex; align-items: baseline; gap: 4px; }
-  .score-board .col .points .big { font-family: 'Fraunces', serif; font-size: 64px; line-height: 1; font-weight: 400; letter-spacing: -0.03em; }
-  .score-board .col .points .small { font-family: 'Newsreader', serif; font-style: italic; font-size: 20px; color: var(--ink-3); }
-  .score-board .col:last-child .points .big { color: var(--ivory); }
-  .score-board .col:last-child .points .small { color: rgba(255,253,247,0.55); }
-  .score-board .col .topic-list { list-style: none; margin: 24px 0 0; padding: 0; font-size: 13px; color: var(--ink-2); display: flex; flex-direction: column; gap: 6px; }
-  .score-board .col:last-child .topic-list { color: rgba(255,253,247,0.75); }
-  .score-board .col .topic-list li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted var(--rule); }
-  .score-board .col:last-child .topic-list li { border-bottom-color: rgba(255,253,247,0.16); }
-  .score-board .col .topic-list li::before { content: ''; }
-  .score-board .col .topic-list .topic { font-family: 'Inter', sans-serif; }
-  .score-board .col .topic-list .mark { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-3); }
-  .score-board .col:last-child .topic-list .mark { color: rgba(255,253,247,0.55); }
+/* Score breakdown */
+.score-board { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.score-board .col { padding: 36px 32px; border-right: 1px solid var(--rule); position: relative; }
+.score-board .col:last-child { border-right: 0; background: var(--ink); color: var(--ivory); }
+.score-board .col-tag { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+.score-board .col-tag .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-3); }
+.score-board .col:last-child .col-tag .label { color: rgba(255,253,247,0.6); }
+.score-board .col-tag .id { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-4); }
+.score-board .col:last-child .col-tag .id { color: rgba(255,253,247,0.5); }
+.score-board .col h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 34px; margin: 0 0 14px; line-height: 1.05; letter-spacing: -0.02em; }
+.score-board .col p { font-family: 'Newsreader', serif; font-size: 15px; line-height: 1.5; color: var(--ink-2); margin: 0 0 24px; }
+.score-board .col:last-child p { color: rgba(255,253,247,0.7); }
+.score-board .col .points { display: flex; align-items: baseline; gap: 4px; }
+.score-board .col .points .big { font-family: 'Fraunces', serif; font-size: 64px; line-height: 1; font-weight: 400; letter-spacing: -0.03em; }
+.score-board .col .points .small { font-family: 'Newsreader', serif; font-style: italic; font-size: 20px; color: var(--ink-3); }
+.score-board .col:last-child .points .big { color: var(--ivory); }
+.score-board .col:last-child .points .small { color: rgba(255,253,247,0.55); }
+.score-board .col .topic-list { list-style: none; margin: 24px 0 0; padding: 0; font-size: 13px; color: var(--ink-2); display: flex; flex-direction: column; gap: 6px; }
+.score-board .col:last-child .topic-list { color: rgba(255,253,247,0.75); }
+.score-board .col .topic-list li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted var(--rule); }
+.score-board .col:last-child .topic-list li { border-bottom-color: rgba(255,253,247,0.16); }
+.score-board .col .topic-list li::before { content: ''; }
+.score-board .col .topic-list .topic { font-family: 'Inter', sans-serif; }
+.score-board .col .topic-list .mark { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-3); }
+.score-board .col:last-child .topic-list .mark { color: rgba(255,253,247,0.55); }
 
-  /* ─── Section: Process (4 acts) ─── */
-  .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--ink); }
-  .act { padding: 48px; border-bottom: 1px solid var(--ink); border-right: 1px solid var(--ink); position: relative; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; background: var(--ivory); }
-  .act:nth-child(2n) { border-right: 0; }
-  .act:nth-last-child(-n+2) { border-bottom: 0; }
-  .act .act-head { display: flex; justify-content: space-between; align-items: flex-start; }
-  .act .act-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.16em; color: var(--crimson); }
-  .act .act-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
-  .act h3 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 50; font-size: clamp(34px, 3.6vw, 48px); line-height: 1.02; letter-spacing: -0.02em; margin: 64px 0 16px; max-width: 14ch; }
-  .act h3 em { font-style: italic; color: var(--crimson); font-weight: 320; }
-  .act p { font-family: 'Newsreader', serif; font-size: 16px; line-height: 1.5; color: var(--ink-2); margin: 0; max-width: 40ch; }
-  .act-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 18px; border-top: 1px dotted var(--rule); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; color: var(--ink-3); text-transform: uppercase; }
+/* ─── Section: Process (4 acts) ─── */
+.acts { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--ink); }
+.act { padding: 48px; border-bottom: 1px solid var(--ink); border-right: 1px solid var(--ink); position: relative; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; background: var(--ivory); }
+.act:nth-child(2n) { border-right: 0; }
+.act:nth-last-child(-n+2) { border-bottom: 0; }
+.act .act-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.act .act-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.16em; color: var(--crimson); }
+.act .act-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
+.act h3 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 50; font-size: clamp(34px, 3.6vw, 48px); line-height: 1.02; letter-spacing: -0.02em; margin: 64px 0 16px; max-width: 14ch; }
+.act h3 em { font-style: italic; color: var(--crimson); font-weight: 320; }
+.act p { font-family: 'Newsreader', serif; font-size: 16px; line-height: 1.5; color: var(--ink-2); margin: 0; max-width: 40ch; }
+.act-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 18px; border-top: 1px dotted var(--rule); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; color: var(--ink-3); text-transform: uppercase; }
 
-  /* ─── About + Mission block ─── */
-  .about { display: block; }
-  .about-copy h2 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 40; font-size: clamp(48px, 5.4vw, 72px); letter-spacing: -0.025em; line-height: 1.02; margin: 0 0 32px; }
-  .about-copy h2 em { font-style: italic; color: var(--crimson); font-weight: 320; }
-  .about-copy .drop { font-family: 'Newsreader', serif; font-size: 19px; line-height: 1.6; color: var(--ink-2); margin: 0 0 24px; max-width: 56ch; }
-  .about-copy .drop::first-letter { font-family: 'Fraunces', serif; font-weight: 400; font-size: 64px; float: left; line-height: 0.92; margin: 6px 12px 0 0; color: var(--crimson); }
-  .about-copy .signature { display: flex; align-items: center; gap: 18px; margin-top: 28px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
-  .about-copy .signature .sig-name { font-family: 'Fraunces', serif; font-style: italic; font-size: 22px; color: var(--ink); text-transform: none; letter-spacing: -0.01em; }
+/* ─── About + Mission block ─── */
+.about { display: block; }
+.about-copy h2 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 40; font-size: clamp(48px, 5.4vw, 72px); letter-spacing: -0.025em; line-height: 1.02; margin: 0 0 32px; }
+.about-copy h2 em { font-style: italic; color: var(--crimson); font-weight: 320; }
+.about-copy .drop { font-family: 'Newsreader', serif; font-size: 19px; line-height: 1.6; color: var(--ink-2); margin: 0 0 24px; max-width: 56ch; }
+.about-copy .drop::first-letter { font-family: 'Fraunces', serif; font-weight: 400; font-size: 64px; float: left; line-height: 0.92; margin: 6px 12px 0 0; color: var(--crimson); }
+.about-copy .signature { display: flex; align-items: center; gap: 18px; margin-top: 28px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
+.about-copy .signature .sig-name { font-family: 'Fraunces', serif; font-style: italic; font-size: 22px; color: var(--ink); text-transform: none; letter-spacing: -0.01em; }
 
-  /* Pillars row */
-  .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 80px; border-top: 1px solid var(--ink); }
-  .pillar { padding: 32px 28px 32px 0; border-right: 1px solid var(--rule); padding-left: 28px; }
-  .pillar:first-child { padding-left: 0; }
-  .pillar:last-child { border-right: 0; padding-right: 0; }
-  .pillar .p-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--crimson); }
-  .pillar h4 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; margin: 20px 0 12px; }
-  .pillar p { font-family: 'Newsreader', serif; font-size: 15px; line-height: 1.55; color: var(--ink-3); margin: 0; }
+/* Pillars row */
+.pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 80px; border-top: 1px solid var(--ink); }
+.pillar { padding: 32px 28px 32px 0; border-right: 1px solid var(--rule); padding-left: 28px; }
+.pillar:first-child { padding-left: 0; }
+.pillar:last-child { border-right: 0; padding-right: 0; }
+.pillar .p-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--crimson); }
+.pillar h4 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; margin: 20px 0 12px; }
+.pillar p { font-family: 'Newsreader', serif; font-size: 15px; line-height: 1.55; color: var(--ink-3); margin: 0; }
 
-  /* ─── Curriculum ─── */
-  .curriculum { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; border: 1px solid var(--ink); }
-  .curriculum .col { padding: 36px 32px; border-right: 1px solid var(--rule); background: var(--ivory); display: flex; flex-direction: column; }
-  .curriculum .col:last-child { border-right: 0; }
-  .curriculum .col.feature { background: var(--crimson); color: var(--ivory); border-right-color: var(--crimson-2); }
-  .curriculum .col-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--ink-4); }
-  .curriculum .col.feature .col-num { color: rgba(255,253,247,0.7); }
-  .curriculum h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 30px; margin: 18px 0 14px; letter-spacing: -0.015em; line-height: 1.05; }
-  .curriculum .col p { font-family: 'Newsreader', serif; font-size: 15px; line-height: 1.5; color: var(--ink-3); margin: 0 0 24px; flex: 1; }
-  .curriculum .col.feature p { color: rgba(255,253,247,0.85); }
-  .curriculum .chip-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
-  .curriculum .chip { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; padding: 5px 9px; border: 1px solid var(--rule); color: var(--ink-2); text-transform: uppercase; background: transparent; }
-  .curriculum .col.feature .chip { color: var(--ivory); border-color: rgba(255,253,247,0.3); }
+/* ─── Curriculum ─── */
+.curriculum { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; border: 1px solid var(--ink); }
+.curriculum .col { padding: 36px 32px; border-right: 1px solid var(--rule); background: var(--ivory); display: flex; flex-direction: column; }
+.curriculum .col:last-child { border-right: 0; }
+.curriculum .col.feature { background: var(--crimson); color: var(--ivory); border-right-color: var(--crimson-2); }
+.curriculum .col-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--ink-4); }
+.curriculum .col.feature .col-num { color: rgba(255,253,247,0.7); }
+.curriculum h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 30px; margin: 18px 0 14px; letter-spacing: -0.015em; line-height: 1.05; }
+.curriculum .col p { font-family: 'Newsreader', serif; font-size: 15px; line-height: 1.5; color: var(--ink-3); margin: 0 0 24px; flex: 1; }
+.curriculum .col.feature p { color: rgba(255,253,247,0.85); }
+.curriculum .chip-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.curriculum .chip { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; padding: 5px 9px; border: 1px solid var(--rule); color: var(--ink-2); text-transform: uppercase; background: transparent; }
+.curriculum .col.feature .chip { color: var(--ivory); border-color: rgba(255,253,247,0.3); }
 
-  /* ─── Schedule strip ─── */
-  .schedule { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-  .schedule-left h2 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 50; font-size: clamp(40px, 4.6vw, 64px); letter-spacing: -0.025em; line-height: 1.02; margin: 18px 0 24px; }
-  .schedule-left h2 em { font-style: italic; color: var(--crimson); font-weight: 320; }
-  .schedule-left p { font-family: 'Newsreader', serif; font-size: 17px; line-height: 1.55; color: var(--ink-2); max-width: 44ch; margin: 0 0 32px; }
-  .calendar { border: 1px solid var(--ink); background: var(--ivory); padding: 28px; }
-  .cal-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
-  .cal-head .month { font-family: 'Fraunces', serif; font-size: 22px; font-style: italic; font-weight: 380; }
-  .cal-head .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .cal-grid .head-cell { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; color: var(--ink-3); text-align: center; padding: 8px 0; text-transform: uppercase; }
-  .cal-grid .day { aspect-ratio: 1; display: grid; place-items: center; font-family: 'Fraunces', serif; font-size: 16px; color: var(--ink-2); border: 1px solid transparent; position: relative; }
-  .cal-grid .day.muted { color: var(--ink-4); }
-  .cal-grid .day.session { background: var(--crimson); color: var(--ivory); font-weight: 500; }
-  .cal-grid .day.session::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: var(--ivory); border-radius: 50%; }
-  .cal-grid .day.today { border-color: var(--ink); }
+/* ─── Schedule strip ─── */
+.schedule { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.schedule-left h2 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 50; font-size: clamp(40px, 4.6vw, 64px); letter-spacing: -0.025em; line-height: 1.02; margin: 18px 0 24px; }
+.schedule-left h2 em { font-style: italic; color: var(--crimson); font-weight: 320; }
+.schedule-left p { font-family: 'Newsreader', serif; font-size: 17px; line-height: 1.55; color: var(--ink-2); max-width: 44ch; margin: 0 0 32px; }
+.calendar { border: 1px solid var(--ink); background: var(--ivory); padding: 28px; }
+.cal-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
+.cal-head .month { font-family: 'Fraunces', serif; font-size: 22px; font-style: italic; font-weight: 380; }
+.cal-head .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-grid .head-cell { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; color: var(--ink-3); text-align: center; padding: 8px 0; text-transform: uppercase; }
+.cal-grid .day { aspect-ratio: 1; display: grid; place-items: center; font-family: 'Fraunces', serif; font-size: 16px; color: var(--ink-2); border: 1px solid transparent; position: relative; }
+.cal-grid .day.muted { color: var(--ink-4); }
+.cal-grid .day.session { background: var(--crimson); color: var(--ivory); font-weight: 500; }
+.cal-grid .day.session::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: var(--ivory); border-radius: 50%; }
+.cal-grid .day.today { border-color: var(--ink); }
 
-  /* ─── FAQ ─── */
-  .faq-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; }
-  .faq-list { border-top: 1px solid var(--ink); }
-  details.faq { border-bottom: 1px solid var(--rule); padding: 0; }
-  details.faq[open] { background: var(--ivory); }
-  details.faq summary { list-style: none; cursor: pointer; padding: 28px 0; display: grid; grid-template-columns: 60px 1fr 32px; gap: 24px; align-items: center; }
-  details.faq summary::-webkit-details-marker { display: none; }
-  details.faq .q-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--crimson); padding-left: 6px; }
-  details.faq .q { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 400; color: var(--ink); letter-spacing: -0.01em; line-height: 1.2; }
-  details.faq .toggle { width: 28px; height: 28px; border: 1px solid var(--ink); display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ink); transition: background .15s, color .15s, transform .2s; }
-  details.faq[open] .toggle { background: var(--crimson); border-color: var(--crimson); color: var(--ivory); transform: rotate(45deg); }
-  details.faq .a { padding: 0 24px 32px 84px; font-family: 'Newsreader', serif; font-size: 17px; line-height: 1.6; color: var(--ink-2); max-width: 60ch; }
+/* ─── FAQ ─── */
+.faq-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; }
+.faq-list { border-top: 1px solid var(--ink); }
+details.faq { border-bottom: 1px solid var(--rule); padding: 0; }
+details.faq[open] { background: var(--ivory); }
+details.faq summary { list-style: none; cursor: pointer; padding: 28px 0; display: grid; grid-template-columns: 60px 1fr 32px; gap: 24px; align-items: center; }
+details.faq summary::-webkit-details-marker { display: none; }
+details.faq .q-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--crimson); padding-left: 6px; }
+details.faq .q { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 400; color: var(--ink); letter-spacing: -0.01em; line-height: 1.2; }
+details.faq .toggle { width: 28px; height: 28px; border: 1px solid var(--ink); display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ink); transition: background .15s, color .15s, transform .2s; }
+details.faq[open] .toggle { background: var(--crimson); border-color: var(--crimson); color: var(--ivory); transform: rotate(45deg); }
+details.faq .a { padding: 0 24px 32px 84px; font-family: 'Newsreader', serif; font-size: 17px; line-height: 1.6; color: var(--ink-2); max-width: 60ch; }
 
-  /* ─── Closing CTA ─── */
-  .closing { background: var(--ink); color: var(--ivory); padding: 120px 0; position: relative; overflow: hidden; }
-  .closing::before {
-    content: ''; position: absolute; inset: 0;
-    background:
-      radial-gradient(50% 60% at 100% 100%, rgba(212,54,75,0.30), transparent 70%),
-      radial-gradient(40% 40% at 0% 0%, rgba(212,54,75,0.18), transparent 65%);
-    pointer-events: none;
-  }
-  .closing .inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: end; }
-  .closing .eyebrow { color: var(--crimson-2); }
-  .closing h2 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 50; font-size: clamp(56px, 7vw, 104px); letter-spacing: -0.03em; line-height: 0.96; margin: 24px 0 0; color: var(--ivory); }
-  .closing h2 em { font-style: italic; color: var(--crimson-2); font-weight: 320; }
-  .closing .right-col { padding-bottom: 12px; }
-  .closing p { font-family: 'Newsreader', serif; font-size: 19px; line-height: 1.5; color: rgba(255,253,247,0.7); margin: 0 0 32px; max-width: 42ch; }
-  .closing .btn-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-  .closing .btn { background: var(--crimson); border-color: var(--crimson); color: var(--ivory); }
-  .closing .btn:hover { background: var(--crimson-2); border-color: var(--crimson-2); }
-  .closing .btn.ghost { background: transparent; border-color: rgba(255,253,247,0.3); color: var(--ivory); }
-  .closing .btn.ghost:hover { background: rgba(255,253,247,0.1); border-color: var(--ivory); }
+/* ─── Closing CTA ─── */
+.closing { background: var(--ink); color: var(--ivory); padding: 120px 0; position: relative; overflow: hidden; }
+.closing::before {
+content: ''; position: absolute; inset: 0;
+background:
+radial-gradient(50% 60% at 100% 100%, rgba(212,54,75,0.30), transparent 70%),
+radial-gradient(40% 40% at 0% 0%, rgba(212,54,75,0.18), transparent 65%);
+pointer-events: none;
+}
+.closing .inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: end; }
+.closing .eyebrow { color: var(--crimson-2); }
+.closing h2 { font-family: 'Fraunces', serif; font-weight: 360; font-variation-settings: "SOFT" 50; font-size: clamp(56px, 7vw, 104px); letter-spacing: -0.03em; line-height: 0.96; margin: 24px 0 0; color: var(--ivory); }
+.closing h2 em { font-style: italic; color: var(--crimson-2); font-weight: 320; }
+.closing .right-col { padding-bottom: 12px; }
+.closing p { font-family: 'Newsreader', serif; font-size: 19px; line-height: 1.5; color: rgba(255,253,247,0.7); margin: 0 0 32px; max-width: 42ch; }
+.closing .btn-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.closing .btn { background: var(--crimson); border-color: var(--crimson); color: var(--ivory); }
+.closing .btn:hover { background: var(--crimson-2); border-color: var(--crimson-2); }
+.closing .btn.ghost { background: transparent; border-color: rgba(255,253,247,0.3); color: var(--ivory); }
+.closing .btn.ghost:hover { background: rgba(255,253,247,0.1); border-color: var(--ivory); }
 
-  /* ─── Footer ─── */
-  footer { padding: 56px 0 40px; background: var(--ink); color: rgba(255,253,247,0.55); border-top: 1px solid rgba(255,253,247,0.08); }
-  footer .ftr { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 32px; border-bottom: 1px solid rgba(255,253,247,0.08); }
-  footer .brand { color: var(--ivory); }
-  footer .brand .seal { border-color: rgba(255,253,247,0.4); color: var(--crimson-2); }
-  footer .ftr p { font-family: 'Newsreader', serif; font-size: 15px; color: rgba(255,253,247,0.65); max-width: 36ch; margin: 18px 0 0; line-height: 1.5; }
-  footer h5 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,253,247,0.5); margin: 0 0 16px; font-weight: 500; }
-  footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
-  footer ul a { color: rgba(255,253,247,0.75); font-size: 14px; text-decoration: none; transition: color .15s; }
-  footer ul a:hover { color: var(--ivory); }
-  footer .colophon { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,253,247,0.4); }
+/* ─── Footer ─── */
+footer { padding: 56px 0 40px; background: var(--ink); color: rgba(255,253,247,0.55); border-top: 1px solid rgba(255,253,247,0.08); }
+footer .ftr { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 32px; border-bottom: 1px solid rgba(255,253,247,0.08); }
+footer .brand { color: var(--ivory); }
+footer .brand .seal { border-color: rgba(255,253,247,0.4); color: var(--crimson-2); }
+footer .ftr p { font-family: 'Newsreader', serif; font-size: 15px; color: rgba(255,253,247,0.65); max-width: 36ch; margin: 18px 0 0; line-height: 1.5; }
+footer h5 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,253,247,0.5); margin: 0 0 16px; font-weight: 500; }
+footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+footer ul a { color: rgba(255,253,247,0.75); font-size: 14px; text-decoration: none; transition: color .15s; }
+footer ul a:hover { color: var(--ivory); }
+footer .colophon { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,253,247,0.4); }
 
-  /* Responsive */
-  @media (max-width: 1080px) {
-    .nav ul { display: none; }
-    .nav-inner { grid-template-columns: auto 1fr auto; }
-    .hero-meta { grid-template-columns: 1fr; }
-    .hero-meta .cell { grid-column: span 12; padding: 18px 0; border-bottom: 1px solid var(--rule); border-left: 0 !important; padding-left: 0 !important; }
-    .hero-meta .cell:last-child { border-bottom: 0; }
-    .section-head, .about, .schedule, .faq-grid, .closing .inner { grid-template-columns: 1fr; gap: 36px; }
-    .score-board { grid-template-columns: 1fr; }
-    .score-board .col { border-right: 0; border-bottom: 1px solid var(--rule); }
-    .acts { grid-template-columns: 1fr; }
-    .act { border-right: 0 !important; }
-    .curriculum { grid-template-columns: 1fr; }
-    .pillars { grid-template-columns: 1fr 1fr; }
-    .pillar { border-right: 0; padding-left: 0; }
-    footer .ftr { grid-template-columns: 1fr 1fr; }
-  }
-  @media (max-width: 640px) {
-    .wrap { padding: 0 22px; }
-    .hero { padding: 56px 0 36px; }
-    .pillars { grid-template-columns: 1fr; }
-    footer .ftr { grid-template-columns: 1fr; }
-  }
+/* Responsive */
+@media (max-width: 1080px) {
+.nav ul { display: none; }
+.nav-inner { grid-template-columns: auto 1fr auto; }
+.hero-meta { grid-template-columns: 1fr; }
+.hero-meta .cell { grid-column: span 12; padding: 18px 0; border-bottom: 1px solid var(--rule); border-left: 0 !important; padding-left: 0 !important; }
+.hero-meta .cell:last-child { border-bottom: 0; }
+.section-head, .about, .schedule, .faq-grid, .closing .inner { grid-template-columns: 1fr; gap: 36px; }
+.score-board { grid-template-columns: 1fr; }
+.score-board .col { border-right: 0; border-bottom: 1px solid var(--rule); }
+.acts { grid-template-columns: 1fr; }
+.act { border-right: 0 !important; }
+.curriculum { grid-template-columns: 1fr; }
+.pillars { grid-template-columns: 1fr 1fr; }
+.pillar { border-right: 0; padding-left: 0; }
+footer .ftr { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+.wrap { padding: 0 22px; }
+.hero { padding: 56px 0 36px; }
+.pillars { grid-template-columns: 1fr; }
+footer .ftr { grid-template-columns: 1fr; }
+}
 
 
-    /* ── MODAL ── */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(10,2,3,0.90);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      z-index: 200; display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 1rem;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: #200710; border: 1px solid rgba(192,24,43,0.22); border-radius: 8px;
-      padding: 3rem; width: 90%; max-width: 468px;
-      transform: scale(0.94) translateY(14px);
-      transition: transform 0.4s cubic-bezier(.22,1,.36,1); position: relative;
-    }
-    .modal-overlay.open .modal { transform: scale(1) translateY(0); }
-    .modal-close { position: absolute; top: 1rem; right: 1.2rem; background: none; border: none; color: rgba(250,250,248,0.32); font-size: 1.35rem; cursor: pointer; transition: color 0.2s; line-height: 1; }
-    .modal-close:hover { color: #FAFAF8; }
-    .modal-eyebrow { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #C0182B; margin-bottom: 0.5rem; }
-    .modal h3 { font-family: 'Fraunces', serif; font-size: 1.7rem; font-weight: 400; margin-bottom: 0.45rem; color: #FAFAF8; }
-    .modal-sub { color: rgba(250,250,248,0.48); margin-bottom: 1.8rem; font-size: 0.88rem; line-height: 1.62; }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(250,250,248,0.42); margin-bottom: 0.42rem; }
-    .form-group input { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(192,24,43,0.18); border-radius: 2px; padding: 0.72rem 0.95rem; color: #FAFAF8; font-family: inherit; font-size: 0.88rem; transition: border-color 0.2s, background 0.2s; outline: none; }
-    .form-group input:focus { border-color: rgba(192,24,43,0.55); background: rgba(255,255,255,0.055); }
-    .ob-bar-wrap { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 2rem; overflow: hidden; }
-    .ob-bar { height: 100%; background: linear-gradient(90deg, #C0182B, #C8A96E); border-radius: 2px; transition: width 0.4s cubic-bezier(.22,1,.36,1); }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .ob-step { display: none; }
-    .ob-step.ob-active { display: block; animation: fadeUp 0.32s ease both; }
-    .ob-h3 { font-family: 'Fraunces', serif; font-size: 1.7rem; font-weight: 400; margin-bottom: 0.45rem; color: #FAFAF8; }
-    .ob-sub { color: rgba(250,250,248,0.48); font-size: 0.88rem; line-height: 1.62; margin-bottom: 1.8rem; }
-    .ob-btn-row { display: flex; gap: 0.75rem; margin-top: 1rem; }
-    .ob-back-btn { flex: 1; background: transparent; color: rgba(250,250,248,0.52); border: 1px solid rgba(255,255,255,0.1); padding: 0.88rem; border-radius: 2px; font-family: inherit; font-size: 0.92rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
-    .ob-back-btn:hover { border-color: rgba(255,255,255,0.22); color: #FAFAF8; }
-    .ob-continue-btn { flex: 2; background: #C0182B; color: #FAFAF8; border: none; padding: 0.88rem; border-radius: 2px; font-family: inherit; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; letter-spacing: 0.035em; width: 100%; }
-    .ob-continue-btn:hover { background: #d4364b; }
-    .ob-continue-btn:active { transform: scale(0.98); }
-    .ob-chip-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(250,250,248,0.38); margin-bottom: 0.6rem; }
-    .ob-grade-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1.4rem; }
-    .ob-score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
-    .ob-chip { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.62rem 0.4rem; color: rgba(250,250,248,0.72); font-family: inherit; font-size: 0.82rem; cursor: pointer; text-align: center; transition: all 0.18s; }
-    .ob-chip:hover { border-color: rgba(192,24,43,0.4); color: #FAFAF8; }
-    .ob-chip.ob-sel { background: #C0182B; border-color: #C0182B; color: #FAFAF8; }
-    .ob-chip-score { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.62rem 0.4rem; color: rgba(250,250,248,0.72); font-family: inherit; font-size: 0.78rem; cursor: pointer; text-align: center; transition: all 0.18s; }
-    .ob-chip-score:hover { border-color: rgba(200,169,110,0.5); color: #FAFAF8; }
-    .ob-chip-score.ob-sel { background: rgba(200,169,110,0.15); border-color: #C8A96E; color: #C8A96E; }
-    .ob-chip-target { padding: 0.55rem 0.9rem; border-radius: 6px; border: 1px solid rgba(200,169,110,0.2); background: transparent; color: rgba(250,250,248,0.65); font-size: 0.88rem; cursor: pointer; transition: all 0.15s; font-family: inherit; }
-    .ob-chip-target:hover { border-color: rgba(200,169,110,0.5); color: #FAFAF8; }
-    .ob-chip-target.ob-sel { background: rgba(200,169,110,0.15); border-color: #C8A96E; color: #C8A96E; }
-    .ob-privacy-box { background: rgba(200,169,110,0.06); border: 1px solid rgba(200,169,110,0.14); border-radius: 4px; padding: 0.75rem 0.9rem; display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1rem; }
-    .ob-privacy-box svg { flex-shrink: 0; margin-top: 2px; }
-    .ob-privacy-box p { font-size: 0.76rem; color: rgba(250,250,248,0.42); line-height: 1.5; margin: 0; }
-    .ob-success-wrap { text-align: center; padding: 1rem 0 0.25rem; }
-    .ob-success-icon { width: 52px; height: 52px; background: rgba(192,24,43,0.12); border: 1px solid rgba(192,24,43,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.4rem; }
-    .ob-success-wrap h3 { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 400; margin-bottom: 0.4rem; color: #FAFAF8; }
-    .ob-success-wrap p { color: rgba(250,250,248,0.48); font-size: 0.88rem; line-height: 1.65; margin-bottom: 1.5rem; }
-    .ob-info-rows { border-top: 1px solid rgba(255,255,255,0.07); }
-    .ob-info-row { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
-    .ob-info-row-label { font-size: 0.72rem; color: rgba(250,250,248,0.38); letter-spacing: 0.08em; text-transform: uppercase; }
-    .ob-info-row-val { font-size: 0.88rem; font-weight: 500; color: #FAFAF8; }
-    .ob-done-btn { width: 100%; background: #C0182B; color: #FAFAF8; border: none; padding: 0.88rem; border-radius: 2px; font-family: inherit; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; margin-top: 1.5rem; letter-spacing: 0.035em; }
-    .ob-done-btn:hover { background: #d4364b; }
-    .ob-done-btn:active { transform: scale(0.98); }
+/* ── MODAL ── */
+.modal-overlay {
+position: fixed; inset: 0;
+background: rgba(10,2,3,0.90);
+backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(10px);
+z-index: 200; display: flex; align-items: center; justify-content: center;
+opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 1rem;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+background: #200710; border: 1px solid rgba(192,24,43,0.22); border-radius: 8px;
+padding: 3rem; width: 90%; max-width: 468px;
+transform: scale(0.94) translateY(14px);
+transition: transform 0.4s cubic-bezier(.22,1,.36,1); position: relative;
+}
+.modal-overlay.open .modal { transform: scale(1) translateY(0); }
+.modal-close { position: absolute; top: 1rem; right: 1.2rem; background: none; border: none; color: rgba(250,250,248,0.32); font-size: 1.35rem; cursor: pointer; transition: color 0.2s; line-height: 1; }
+.modal-close:hover { color: #FAFAF8; }
+.modal-eyebrow { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #C0182B; margin-bottom: 0.5rem; }
+.modal h3 { font-family: 'Fraunces', serif; font-size: 1.7rem; font-weight: 400; margin-bottom: 0.45rem; color: #FAFAF8; }
+.modal-sub { color: rgba(250,250,248,0.48); margin-bottom: 1.8rem; font-size: 0.88rem; line-height: 1.62; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(250,250,248,0.42); margin-bottom: 0.42rem; }
+.form-group input { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(192,24,43,0.18); border-radius: 2px; padding: 0.72rem 0.95rem; color: #FAFAF8; font-family: inherit; font-size: 0.88rem; transition: border-color 0.2s, background 0.2s; outline: none; }
+.form-group input:focus { border-color: rgba(192,24,43,0.55); background: rgba(255,255,255,0.055); }
+.ob-bar-wrap { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 2rem; overflow: hidden; }
+.ob-bar { height: 100%; background: linear-gradient(90deg, #C0182B, #C8A96E); border-radius: 2px; transition: width 0.4s cubic-bezier(.22,1,.36,1); }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.ob-step { display: none; }
+.ob-step.ob-active { display: block; animation: fadeUp 0.32s ease both; }
+.ob-h3 { font-family: 'Fraunces', serif; font-size: 1.7rem; font-weight: 400; margin-bottom: 0.45rem; color: #FAFAF8; }
+.ob-sub { color: rgba(250,250,248,0.48); font-size: 0.88rem; line-height: 1.62; margin-bottom: 1.8rem; }
+.ob-btn-row { display: flex; gap: 0.75rem; margin-top: 1rem; }
+.ob-back-btn { flex: 1; background: transparent; color: rgba(250,250,248,0.52); border: 1px solid rgba(255,255,255,0.1); padding: 0.88rem; border-radius: 2px; font-family: inherit; font-size: 0.92rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+.ob-back-btn:hover { border-color: rgba(255,255,255,0.22); color: #FAFAF8; }
+.ob-continue-btn { flex: 2; background: #C0182B; color: #FAFAF8; border: none; padding: 0.88rem; border-radius: 2px; font-family: inherit; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; letter-spacing: 0.035em; width: 100%; }
+.ob-continue-btn:hover { background: #d4364b; }
+.ob-continue-btn:active { transform: scale(0.98); }
+.ob-chip-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(250,250,248,0.38); margin-bottom: 0.6rem; }
+.ob-grade-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1.4rem; }
+.ob-score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+.ob-chip { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.62rem 0.4rem; color: rgba(250,250,248,0.72); font-family: inherit; font-size: 0.82rem; cursor: pointer; text-align: center; transition: all 0.18s; }
+.ob-chip:hover { border-color: rgba(192,24,43,0.4); color: #FAFAF8; }
+.ob-chip.ob-sel { background: #C0182B; border-color: #C0182B; color: #FAFAF8; }
+.ob-chip-score { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.62rem 0.4rem; color: rgba(250,250,248,0.72); font-family: inherit; font-size: 0.78rem; cursor: pointer; text-align: center; transition: all 0.18s; }
+.ob-chip-score:hover { border-color: rgba(200,169,110,0.5); color: #FAFAF8; }
+.ob-chip-score.ob-sel { background: rgba(200,169,110,0.15); border-color: #C8A96E; color: #C8A96E; }
+.ob-chip-target { padding: 0.55rem 0.9rem; border-radius: 6px; border: 1px solid rgba(200,169,110,0.2); background: transparent; color: rgba(250,250,248,0.65); font-size: 0.88rem; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.ob-chip-target:hover { border-color: rgba(200,169,110,0.5); color: #FAFAF8; }
+.ob-chip-target.ob-sel { background: rgba(200,169,110,0.15); border-color: #C8A96E; color: #C8A96E; }
+.ob-privacy-box { background: rgba(200,169,110,0.06); border: 1px solid rgba(200,169,110,0.14); border-radius: 4px; padding: 0.75rem 0.9rem; display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1rem; }
+.ob-privacy-box svg { flex-shrink: 0; margin-top: 2px; }
+.ob-privacy-box p { font-size: 0.76rem; color: rgba(250,250,248,0.42); line-height: 1.5; margin: 0; }
+.ob-success-wrap { text-align: center; padding: 1rem 0 0.25rem; }
+.ob-success-icon { width: 52px; height: 52px; background: rgba(192,24,43,0.12); border: 1px solid rgba(192,24,43,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.4rem; }
+.ob-success-wrap h3 { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 400; margin-bottom: 0.4rem; color: #FAFAF8; }
+.ob-success-wrap p { color: rgba(250,250,248,0.48); font-size: 0.88rem; line-height: 1.65; margin-bottom: 1.5rem; }
+.ob-info-rows { border-top: 1px solid rgba(255,255,255,0.07); }
+.ob-info-row { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.ob-info-row-label { font-size: 0.72rem; color: rgba(250,250,248,0.38); letter-spacing: 0.08em; text-transform: uppercase; }
+.ob-info-row-val { font-size: 0.88rem; font-weight: 500; color: #FAFAF8; }
+.ob-done-btn { width: 100%; background: #C0182B; color: #FAFAF8; border: none; padding: 0.88rem; border-radius: 2px; font-family: inherit; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; margin-top: 1.5rem; letter-spacing: 0.035em; }
+.ob-done-btn:hover { background: #d4364b; }
+.ob-done-btn:active { transform: scale(0.98); }
 
-  </style>
+</style>
 </head>
 <body>
 
 <!-- ───────────────────────── NAV ───────────────────────── -->
 <nav class="nav">
-  <div class="wrap nav-inner">
-    <a href="#" class="brand">
-      <div class="seal">P</div>
-      <span>Packer<span class="x">·</span>SAT</span>
-    </a>
-    <ul>
-      <li><a href="#about">About</a></li>
-      <li><a href="#how">How It Works</a></li>
-      <li><a href="#subjects">Subjects</a></li>
-      <li><a href="#faq">FAQ</a></li>
-    </ul>
-    <div class="nav-cta">
-      <a href="https://www.packersat.org/portal/index.html" class="btn link">Log in &rarr;</a>
-      <button class="btn" onclick="openModal()">Sign up, it's free</button>
-    </div>
-  </div>
+<div class="wrap nav-inner">
+<a href="#" class="brand">
+<div class="seal">P</div>
+<span>Packer<span class="x">·</span>SAT</span>
+</a>
+<ul>
+<li><a href="#about">About</a></li>
+<li><a href="#how">How It Works</a></li>
+<li><a href="#subjects">Subjects</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ul>
+<div class="nav-cta">
+<a href="https://www.packersat.org/portal/index.html" class="btn link">Log in &rarr;</a>
+<button class="btn" onclick="openModal()">Sign up, it's free</button>
+</div>
+</div>
 </nav>
 
 <!-- ───────────────────────── HERO ───────────────────────── -->
 <header class="hero">
-  <div class="wrap">
-    <div class="hero-stamp">
-      <span class="eyebrow"><span class="dot"></span>The Packer Collegiate Institute · Brooklyn, NY</span>
-      <span class="line"></span>
-      <span class="eyebrow muted">Vol. III · Spring 2026</span>
-    </div>
+<div class="wrap">
+<div class="hero-stamp">
+<span class="eyebrow"><span class="dot"></span>The Packer Collegiate Institute · Brooklyn, NY</span>
+<span class="line"></span>
+<span class="eyebrow muted">Vol. III · Spring 2026</span>
+</div>
 
-    <h1 class="display hero-headline">
-      Conquer the SAT,<br />
-      <em>with your peers.</em>
-    </h1>
-    <p class="lede hero-lede">
-      Free, student-led SAT tutoring for every Packer student &ndash; one-on-one sessions, on campus, around your schedule. Run by upperclassmen who've sat the same test in the same chairs.
-    </p>
+<h1 class="display hero-headline">
+Conquer the SAT,<br />
+<em>with your peers.</em>
+</h1>
+<p class="lede hero-lede">
+Free, student-led SAT tutoring for every Packer student &ndash; one-on-one sessions, on campus, around your schedule. Run by upperclassmen who've sat the same test in the same chairs.
+</p>
 
-    <div class="hero-actions">
-      <button class="btn large" onclick="openModal()">Sign up, it's free <span class="arrow">&rarr;</span></button>
-      <a href="#how" class="btn ghost large">How it works</a>
-      <a href="https://www.packersat.org/portal/index.html" class="btn link" style="margin-left:8px;">Already a student? Log in &rarr;</a>
-    </div>
+<div class="hero-actions">
+<button class="btn large" onclick="openModal()">Sign up, it's free <span class="arrow">&rarr;</span></button>
+<a href="#how" class="btn ghost large">How it works</a>
+<a href="https://www.packersat.org/portal/index.html" class="btn link" style="margin-left:8px;">Already a student? Log in &rarr;</a>
+</div>
 
-    <div class="hero-meta">
-      <div class="cell">
-        <div class="n">100<span class="qual">% free</span></div>
-        <div class="l">Cost to you</div>
-        <p class="desc">No session fees, no materials. Not now. Not later.</p>
-      </div>
-      <div class="cell">
-        <div class="n">1–2<span class="qual"> / wk</span></div>
-        <div class="l">Sessions per week</div>
-        <p class="desc">On-campus, one-on-one, paced around your schedule.</p>
-      </div>
-      <div class="cell">
-        <div class="n">1600<span class="qual"> pts</span></div>
-        <div class="l">The Digital SAT</div>
-        <p class="desc">Both sections &ndash; Math and Reading &amp; Writing &ndash; covered in full.</p>
-      </div>
-    </div>
-  </div>
+<div class="hero-meta">
+<div class="cell">
+<div class="n">100<span class="qual">% free</span></div>
+<div class="l">Cost to you</div>
+<p class="desc">No session fees, no materials. Not now. Not later.</p>
+</div>
+<div class="cell">
+<div class="n">1–2<span class="qual"> / wk</span></div>
+<div class="l">Sessions per week</div>
+<p class="desc">On-campus, one-on-one, paced around your schedule.</p>
+</div>
+<div class="cell">
+<div class="n">1600<span class="qual"> pts</span></div>
+<div class="l">The Digital SAT</div>
+<p class="desc">Both sections &ndash; Math and Reading &amp; Writing &ndash; covered in full.</p>
+</div>
+</div>
+</div>
 </header>
 
 <!-- Ticker -->
 <div class="ticker">
-  <div class="ticker-track">
-    <span>
-      Free for every Packer student <span class="sep">/</span>
-      Digital SAT preparation <span class="sep">/</span>
-      Math &amp; Reading &amp; Writing <span class="sep">/</span>
-      One-on-one tutoring <span class="sep">/</span>
-      1–2 sessions per week <span class="sep">/</span>
-      Personalized curriculum <span class="sep">/</span>
-      No cost, ever <span class="sep">/</span>
-      Student-run program <span class="sep">/</span>
-    </span>
-    <span aria-hidden="true">
-      Free for every Packer student <span class="sep">/</span>
-      Digital SAT preparation <span class="sep">/</span>
-      Math &amp; Reading &amp; Writing <span class="sep">/</span>
-      One-on-one tutoring <span class="sep">/</span>
-      1–2 sessions per week <span class="sep">/</span>
-      Personalized curriculum <span class="sep">/</span>
-      No cost, ever <span class="sep">/</span>
-      Student-run program <span class="sep">/</span>
-    </span>
-  </div>
+<div class="ticker-track">
+<span>
+Free for every Packer student <span class="sep">/</span>
+Digital SAT preparation <span class="sep">/</span>
+Math &amp; Reading &amp; Writing <span class="sep">/</span>
+One-on-one tutoring <span class="sep">/</span>
+1–2 sessions per week <span class="sep">/</span>
+Personalized curriculum <span class="sep">/</span>
+No cost, ever <span class="sep">/</span>
+Student-run program <span class="sep">/</span>
+</span>
+<span aria-hidden="true">
+Free for every Packer student <span class="sep">/</span>
+Digital SAT preparation <span class="sep">/</span>
+Math &amp; Reading &amp; Writing <span class="sep">/</span>
+One-on-one tutoring <span class="sep">/</span>
+1–2 sessions per week <span class="sep">/</span>
+Personalized curriculum <span class="sep">/</span>
+No cost, ever <span class="sep">/</span>
+Student-run program <span class="sep">/</span>
+</span>
+</div>
 </div>
 
 <!-- ───────────────────────── THE TEST ───────────────────────── -->
 <section class="section" id="how">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="meta">
-        <span class="small-cap">&ndash; 01 · The Test</span>
-        <p class="blurb">A quick orientation. Two sections, one score, and a clear path to improving it.</p>
-      </div>
-      <h2>Two sections.<br /><em>One score.</em></h2>
-    </div>
+<div class="wrap">
+<div class="section-head">
+<div class="meta">
+<span class="small-cap">&ndash; 01 · The Test</span>
+<p class="blurb">A quick orientation. Two sections, one score, and a clear path to improving it.</p>
+</div>
+<h2>Two sections.<br /><em>One score.</em></h2>
+</div>
 
-    <div class="score-board">
-      <div class="col">
-        <div class="col-tag">
-          <span class="label">Section A</span>
-          <span class="id">/ Reading &amp; Writing</span>
-        </div>
-        <h3>Reading &amp; Writing</h3>
-        <p>Comprehension, vocabulary in context, evidence-based reasoning, and rhetorical analysis across a wide range of passages.</p>
-        <div class="points">
-          <span class="big">800</span>
-          <span class="small">of 800</span>
-        </div>
-        <ul class="topic-list">
-          <li><span class="topic">Reading Comprehension</span><span class="mark">&ndash; 1</span></li>
-          <li><span class="topic">Grammar</span><span class="mark">&ndash; 2</span></li>
-          <li><span class="topic">Vocabulary in Context</span><span class="mark">&ndash; 3</span></li>
-          <li><span class="topic">Rhetoric</span><span class="mark">&ndash; 4</span></li>
-          <li><span class="topic">Evidence Analysis</span><span class="mark">&ndash; 5</span></li>
-        </ul>
-      </div>
-      <div class="col">
-        <div class="col-tag">
-          <span class="label">Section B</span>
-          <span class="id">/ Mathematics</span>
-        </div>
-        <h3>Mathematics</h3>
-        <p>From algebra and geometry to data analysis and advanced problem-solving &ndash; every topic on the Digital SAT, drilled into muscle memory.</p>
-        <div class="points">
-          <span class="big">800</span>
-          <span class="small">of 800</span>
-        </div>
-        <ul class="topic-list">
-          <li><span class="topic">Algebra</span><span class="mark">&ndash; 1</span></li>
-          <li><span class="topic">Geometry</span><span class="mark">&ndash; 2</span></li>
-          <li><span class="topic">Statistics</span><span class="mark">&ndash; 3</span></li>
-          <li><span class="topic">Problem-Solving</span><span class="mark">&ndash; 4</span></li>
-          <li><span class="topic">Data Analysis</span><span class="mark">&ndash; 5</span></li>
-        </ul>
-      </div>
-      <div class="col">
-        <div class="col-tag">
-          <span class="label">Total</span>
-          <span class="id">/ Combined</span>
-        </div>
-        <h3>Your score.<br />Our goal.</h3>
-        <p>Wherever you start, we meet you there and build from it. The two sections, added together, are what the world sees on test day.</p>
-        <div class="points">
-          <span class="big">1600</span>
-          <span class="small">possible</span>
-        </div>
-        <ul class="topic-list">
-          <li><span class="topic">Diagnostic</span><span class="mark">&ndash; Wk 1</span></li>
-          <li><span class="topic">Foundations</span><span class="mark">&ndash; Wk 2–6</span></li>
-          <li><span class="topic">Drills &amp; Strategy</span><span class="mark">&ndash; Wk 7–12</span></li>
-          <li><span class="topic">Full-length Mock</span><span class="mark">&ndash; Wk 13</span></li>
-          <li><span class="topic">Test Day</span><span class="mark">&ndash; ✓</span></li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<div class="score-board">
+<div class="col">
+<div class="col-tag">
+<span class="label">Section A</span>
+<span class="id">/ Reading &amp; Writing</span>
+</div>
+<h3>Reading &amp; Writing</h3>
+<p>Comprehension, vocabulary in context, evidence-based reasoning, and rhetorical analysis across a wide range of passages.</p>
+<div class="points">
+<span class="big">800</span>
+<span class="small">of 800</span>
+</div>
+<ul class="topic-list">
+<li><span class="topic">Reading Comprehension</span><span class="mark">&ndash; 1</span></li>
+<li><span class="topic">Grammar</span><span class="mark">&ndash; 2</span></li>
+<li><span class="topic">Vocabulary in Context</span><span class="mark">&ndash; 3</span></li>
+<li><span class="topic">Rhetoric</span><span class="mark">&ndash; 4</span></li>
+<li><span class="topic">Evidence Analysis</span><span class="mark">&ndash; 5</span></li>
+</ul>
+</div>
+<div class="col">
+<div class="col-tag">
+<span class="label">Section B</span>
+<span class="id">/ Mathematics</span>
+</div>
+<h3>Mathematics</h3>
+<p>From algebra and geometry to data analysis and advanced problem-solving &ndash; every topic on the Digital SAT, drilled into muscle memory.</p>
+<div class="points">
+<span class="big">800</span>
+<span class="small">of 800</span>
+</div>
+<ul class="topic-list">
+<li><span class="topic">Algebra</span><span class="mark">&ndash; 1</span></li>
+<li><span class="topic">Geometry</span><span class="mark">&ndash; 2</span></li>
+<li><span class="topic">Statistics</span><span class="mark">&ndash; 3</span></li>
+<li><span class="topic">Problem-Solving</span><span class="mark">&ndash; 4</span></li>
+<li><span class="topic">Data Analysis</span><span class="mark">&ndash; 5</span></li>
+</ul>
+</div>
+<div class="col">
+<div class="col-tag">
+<span class="label">Total</span>
+<span class="id">/ Combined</span>
+</div>
+<h3>Your score.<br />Our goal.</h3>
+<p>Wherever you start, we meet you there and build from it. The two sections, added together, are what the world sees on test day.</p>
+<div class="points">
+<span class="big">1600</span>
+<span class="small">possible</span>
+</div>
+<ul class="topic-list">
+<li><span class="topic">Diagnostic</span><span class="mark">&ndash; Wk 1</span></li>
+<li><span class="topic">Foundations</span><span class="mark">&ndash; Wk 2–6</span></li>
+<li><span class="topic">Drills &amp; Strategy</span><span class="mark">&ndash; Wk 7–12</span></li>
+<li><span class="topic">Full-length Mock</span><span class="mark">&ndash; Wk 13</span></li>
+<li><span class="topic">Test Day</span><span class="mark">&ndash; ✓</span></li>
+</ul>
+</div>
+</div>
+</div>
 </section>
 
 <!-- ───────────────────────── PROCESS ───────────────────────── -->
 <section class="section" style="padding-top:0;">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="meta">
-        <span class="small-cap">&ndash; 02 · The Process</span>
-        <p class="blurb">Four chapters, in order. The same path every student walks, with the specifics shaped to you.</p>
-      </div>
-      <h2>Simple.<br />Structured.<br /><em>Effective.</em></h2>
-    </div>
+<div class="wrap">
+<div class="section-head">
+<div class="meta">
+<span class="small-cap">&ndash; 02 · The Process</span>
+<p class="blurb">Four chapters, in order. The same path every student walks, with the specifics shaped to you.</p>
+</div>
+<h2>Simple.<br />Structured.<br /><em>Effective.</em></h2>
+</div>
 
-    <div class="acts">
-      <article class="act">
-        <div class="act-head">
-          <span class="act-num">01</span>
-          <span class="act-tag">Test</span>
-        </div>
-        <h3>Two sections.<br /><em>One score.</em></h3>
-        <p>The Digital SAT measures Math and Reading &amp; Writing separately, each worth 800 points. Most students have real room to grow in at least one.</p>
-        <div class="act-foot"><span>Section A · Section B</span><span>1600 pts</span></div>
-      </article>
-      <article class="act">
-        <div class="act-head">
-          <span class="act-num">02</span>
-          <span class="act-tag">Gap</span>
-        </div>
-        <h3>We find <em>exactly</em> where you're losing points.</h3>
-        <p>Before anything else, your tutor identifies your specific weak spots &ndash; a question type, a pacing problem, a section that doesn't click yet.</p>
-        <div class="act-foot"><span>Diagnostic · Week 1</span><span>60 min</span></div>
-      </article>
-      <article class="act">
-        <div class="act-head">
-          <span class="act-num">03</span>
-          <span class="act-tag">Work</span>
-        </div>
-        <h3>Weekly sessions.<br /><em>Steady progress.</em></h3>
-        <p>One to two focused sessions per week, on campus. Consistent, structured practice is what turns a weak spot into a strength before test day.</p>
-        <div class="act-foot"><span>On campus · 1:1</span><span>1–2 / wk</span></div>
-      </article>
-      <article class="act">
-        <div class="act-head">
-          <span class="act-num">04</span>
-          <span class="act-tag">Cost</span>
-        </div>
-        <h3>Nothing. <em>Not a dollar.</em></h3>
-        <p>Test prep companies charge hundreds per hour. We think a Packer student's score shouldn't depend on what their family can afford. So it doesn't.</p>
-        <div class="act-foot"><span>Materials · Sessions</span><span>$0.00</span></div>
-      </article>
-    </div>
-  </div>
+<div class="acts">
+<article class="act">
+<div class="act-head">
+<span class="act-num">01</span>
+<span class="act-tag">Test</span>
+</div>
+<h3>Two sections.<br /><em>One score.</em></h3>
+<p>The Digital SAT measures Math and Reading &amp; Writing separately, each worth 800 points. Most students have real room to grow in at least one.</p>
+<div class="act-foot"><span>Section A · Section B</span><span>1600 pts</span></div>
+</article>
+<article class="act">
+<div class="act-head">
+<span class="act-num">02</span>
+<span class="act-tag">Gap</span>
+</div>
+<h3>We find <em>exactly</em> where you're losing points.</h3>
+<p>Before anything else, your tutor identifies your specific weak spots &ndash; a question type, a pacing problem, a section that doesn't click yet.</p>
+<div class="act-foot"><span>Diagnostic · Week 1</span><span>60 min</span></div>
+</article>
+<article class="act">
+<div class="act-head">
+<span class="act-num">03</span>
+<span class="act-tag">Work</span>
+</div>
+<h3>Weekly sessions.<br /><em>Steady progress.</em></h3>
+<p>One to two focused sessions per week, on campus. Consistent, structured practice is what turns a weak spot into a strength before test day.</p>
+<div class="act-foot"><span>On campus · 1:1</span><span>1–2 / wk</span></div>
+</article>
+<article class="act">
+<div class="act-head">
+<span class="act-num">04</span>
+<span class="act-tag">Cost</span>
+</div>
+<h3>Nothing. <em>Not a dollar.</em></h3>
+<p>Test prep companies charge hundreds per hour. We think a Packer student's score shouldn't depend on what their family can afford. So it doesn't.</p>
+<div class="act-foot"><span>Materials · Sessions</span><span>$0.00</span></div>
+</article>
+</div>
+</div>
 </section>
 
 <!-- ───────────────────────── ABOUT ───────────────────────── -->
 <section class="section" id="about" style="padding-top:0;">
-  <div class="wrap">
-    <div class="section-head" style="margin-bottom:48px;">
-      <div class="meta">
-        <span class="small-cap">&ndash; 03 · About the Program</span>
-      </div>
-      <h2>Built for Packer students,<br />by <em>Packer students.</em></h2>
-    </div>
+<div class="wrap">
+<div class="section-head" style="margin-bottom:48px;">
+<div class="meta">
+<span class="small-cap">&ndash; 03 · About the Program</span>
+</div>
+<h2>Built for Packer students,<br />by <em>Packer students.</em></h2>
+</div>
 
-    <div class="about">
-      <div class="about-copy">
-        <p class="drop">
-          We're a group of upperclassmen at The Packer Collegiate Institute who believe every student deserves access to quality SAT preparation without the price tag. Our sessions are tailored specifically to the skills tested on the Digital SAT &ndash; closing score gaps and building confidence through focused, consistent practice. Wherever you're starting from, we'll meet you there and build from it.
-        </p>
-        <div class="signature">
-          <span>Signed,</span>
-          <span class="sig-name">The Packer SAT team</span>
-          <span>&ndash; Brooklyn, NY</span>
-        </div>
+<div class="about">
+<div class="about-copy">
+<p class="drop">
+We're a group of upperclassmen at The Packer Collegiate Institute who believe every student deserves access to quality SAT preparation without the price tag. Our sessions are tailored specifically to the skills tested on the Digital SAT &ndash; closing score gaps and building confidence through focused, consistent practice. Wherever you're starting from, we'll meet you there and build from it.
+</p>
+<div class="signature">
+<span>Signed,</span>
+<span class="sig-name">The Packer SAT team</span>
+<span>&ndash; Brooklyn, NY</span>
+</div>
 
-        <div class="pillars">
-          <div class="pillar">
-            <div class="p-num">01</div>
-            <h4>Personalized sessions</h4>
-            <p>You're paired with a tutor based on your score goals, schedule, and areas that need the most work.</p>
-          </div>
-          <div class="pillar">
-            <div class="p-num">02</div>
-            <h4>Digital SAT focused</h4>
-            <p>Every drill reflects the current adaptive format &ndash; modules, question types, and timing.</p>
-          </div>
-          <div class="pillar">
-            <div class="p-num">03</div>
-            <h4>Real Packer tutors</h4>
-            <p>Your tutors are upperclassmen who've taken the same test at the same school. They know the pressure.</p>
-          </div>
-          <div class="pillar">
-            <div class="p-num">04</div>
-            <h4>Flexible scheduling</h4>
-            <p>One to two sessions per week, arranged around your existing Packer schedule and commitments.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="pillars">
+<div class="pillar">
+<div class="p-num">01</div>
+<h4>Personalized sessions</h4>
+<p>You're paired with a tutor based on your score goals, schedule, and areas that need the most work.</p>
+</div>
+<div class="pillar">
+<div class="p-num">02</div>
+<h4>Digital SAT focused</h4>
+<p>Every drill reflects the current adaptive format &ndash; modules, question types, and timing.</p>
+</div>
+<div class="pillar">
+<div class="p-num">03</div>
+<h4>Real Packer tutors</h4>
+<p>Your tutors are upperclassmen who've taken the same test at the same school. They know the pressure.</p>
+</div>
+<div class="pillar">
+<div class="p-num">04</div>
+<h4>Flexible scheduling</h4>
+<p>One to two sessions per week, arranged around your existing Packer schedule and commitments.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 
 <!-- ───────────────────────── CURRICULUM ───────────────────────── -->
 <section class="section" id="subjects" style="padding-top:0;">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="meta">
-        <span class="small-cap">&ndash; 04 · What We Cover</span>
-        <p class="blurb">Both sections of the Digital SAT, covered thoroughly and without gaps.</p>
-      </div>
-      <h2>The full<br /><em>curriculum.</em></h2>
-    </div>
+<div class="wrap">
+<div class="section-head">
+<div class="meta">
+<span class="small-cap">&ndash; 04 · What We Cover</span>
+<p class="blurb">Both sections of the Digital SAT, covered thoroughly and without gaps.</p>
+</div>
+<h2>The full<br /><em>curriculum.</em></h2>
+</div>
 
-    <div class="curriculum">
-      <div class="col feature">
-        <span class="col-num">A · Featured</span>
-        <h3>Mathematics</h3>
-        <p>From algebra and geometry to advanced problem-solving and data analysis &ndash; every math topic on the Digital SAT, taught with structured drills and strategy.</p>
-        <div class="chip-list">
-          <span class="chip">Algebra</span>
-          <span class="chip">Geometry</span>
-          <span class="chip">Statistics</span>
-          <span class="chip">Problem-Solving</span>
-          <span class="chip">Data Analysis</span>
-          <span class="chip">Trigonometry</span>
-        </div>
-      </div>
-      <div class="col">
-        <span class="col-num">B</span>
-        <h3>Reading &amp; Writing</h3>
-        <p>Sharpen comprehension, build vocabulary in context, and master evidence-based reasoning across a wide range of passages.</p>
-        <div class="chip-list">
-          <span class="chip">Comprehension</span>
-          <span class="chip">Grammar</span>
-          <span class="chip">Vocab in Context</span>
-          <span class="chip">Rhetoric</span>
-          <span class="chip">Evidence</span>
-        </div>
-      </div>
-      <div class="col">
-        <span class="col-num">C</span>
-        <h3>Test Strategy</h3>
-        <p>The pacing techniques, elimination tactics, and mental frameworks that separate good scores from great ones.</p>
-        <div class="chip-list">
-          <span class="chip">Pacing</span>
-          <span class="chip">Elimination</span>
-          <span class="chip">Guessing</span>
-          <span class="chip">Stress</span>
-        </div>
-      </div>
-      <div class="col">
-        <span class="col-num">D</span>
-        <h3>Practice Tests</h3>
-        <p>Full-length Digital SAT mock exams with detailed score breakdowns and personalized feedback on what to fix.</p>
-        <div class="chip-list">
-          <span class="chip">Mock Exams</span>
-          <span class="chip">Score Reports</span>
-          <span class="chip">Adaptive Sets</span>
-          <span class="chip">Question Banks</span>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="curriculum">
+<div class="col feature">
+<span class="col-num">A · Featured</span>
+<h3>Mathematics</h3>
+<p>From algebra and geometry to advanced problem-solving and data analysis &ndash; every math topic on the Digital SAT, taught with structured drills and strategy.</p>
+<div class="chip-list">
+<span class="chip">Algebra</span>
+<span class="chip">Geometry</span>
+<span class="chip">Statistics</span>
+<span class="chip">Problem-Solving</span>
+<span class="chip">Data Analysis</span>
+<span class="chip">Trigonometry</span>
+</div>
+</div>
+<div class="col">
+<span class="col-num">B</span>
+<h3>Reading &amp; Writing</h3>
+<p>Sharpen comprehension, build vocabulary in context, and master evidence-based reasoning across a wide range of passages.</p>
+<div class="chip-list">
+<span class="chip">Comprehension</span>
+<span class="chip">Grammar</span>
+<span class="chip">Vocab in Context</span>
+<span class="chip">Rhetoric</span>
+<span class="chip">Evidence</span>
+</div>
+</div>
+<div class="col">
+<span class="col-num">C</span>
+<h3>Test Strategy</h3>
+<p>The pacing techniques, elimination tactics, and mental frameworks that separate good scores from great ones.</p>
+<div class="chip-list">
+<span class="chip">Pacing</span>
+<span class="chip">Elimination</span>
+<span class="chip">Guessing</span>
+<span class="chip">Stress</span>
+</div>
+</div>
+<div class="col">
+<span class="col-num">D</span>
+<h3>Practice Tests</h3>
+<p>Full-length Digital SAT mock exams with detailed score breakdowns and personalized feedback on what to fix.</p>
+<div class="chip-list">
+<span class="chip">Mock Exams</span>
+<span class="chip">Score Reports</span>
+<span class="chip">Adaptive Sets</span>
+<span class="chip">Question Banks</span>
+</div>
+</div>
+</div>
+</div>
 </section>
 
 <!-- ───────────────────────── SCHEDULE STRIP ───────────────────────── -->
 <section class="section" style="padding-top:0;">
-  <div class="wrap">
-    <div class="schedule">
-      <div class="schedule-left">
-        <span class="small-cap">&ndash; 05 · Your Week</span>
-        <h2>One to two<br />sessions, <em>weekly.</em></h2>
-        <p>Sessions happen on campus, one-on-one, around your existing schedule. Most students meet their tutor on the same days each week &ndash; a small, steady habit that adds up by test day.</p>
-        <button class="btn large" onclick="openModal()">Reserve your slot <span class="arrow">&rarr;</span></button>
-      </div>
-      <div class="calendar">
-        <div class="cal-head">
-          <div class="month">March, '26</div>
-          <div class="label">Sample week</div>
-        </div>
-        <div class="cal-grid">
-          <div class="head-cell">S</div>
-          <div class="head-cell">M</div>
-          <div class="head-cell">T</div>
-          <div class="head-cell">W</div>
-          <div class="head-cell">T</div>
-          <div class="head-cell">F</div>
-          <div class="head-cell">S</div>
+<div class="wrap">
+<div class="schedule">
+<div class="schedule-left">
+<span class="small-cap">&ndash; 05 · Your Week</span>
+<h2>One to two<br />sessions, <em>weekly.</em></h2>
+<p>Sessions happen on campus, one-on-one, around your existing schedule. Most students meet their tutor on the same days each week &ndash; a small, steady habit that adds up by test day.</p>
+<button class="btn large" onclick="openModal()">Reserve your slot <span class="arrow">&rarr;</span></button>
+</div>
+<div class="calendar">
+<div class="cal-head">
+<div class="month">March, '26</div>
+<div class="label">Sample week</div>
+</div>
+<div class="cal-grid">
+<div class="head-cell">S</div>
+<div class="head-cell">M</div>
+<div class="head-cell">T</div>
+<div class="head-cell">W</div>
+<div class="head-cell">T</div>
+<div class="head-cell">F</div>
+<div class="head-cell">S</div>
 
-          <div class="day muted">1</div>
-          <div class="day">2</div>
-          <div class="day session">3</div>
-          <div class="day">4</div>
-          <div class="day">5</div>
-          <div class="day session">6</div>
-          <div class="day">7</div>
+<div class="day muted">1</div>
+<div class="day">2</div>
+<div class="day session">3</div>
+<div class="day">4</div>
+<div class="day">5</div>
+<div class="day session">6</div>
+<div class="day">7</div>
 
-          <div class="day">8</div>
-          <div class="day">9</div>
-          <div class="day session">10</div>
-          <div class="day today">11</div>
-          <div class="day">12</div>
-          <div class="day session">13</div>
-          <div class="day">14</div>
+<div class="day">8</div>
+<div class="day">9</div>
+<div class="day session">10</div>
+<div class="day today">11</div>
+<div class="day">12</div>
+<div class="day session">13</div>
+<div class="day">14</div>
 
-          <div class="day">15</div>
-          <div class="day">16</div>
-          <div class="day session">17</div>
-          <div class="day">18</div>
-          <div class="day">19</div>
-          <div class="day session">20</div>
-          <div class="day">21</div>
+<div class="day">15</div>
+<div class="day">16</div>
+<div class="day session">17</div>
+<div class="day">18</div>
+<div class="day">19</div>
+<div class="day session">20</div>
+<div class="day">21</div>
 
-          <div class="day">22</div>
-          <div class="day">23</div>
-          <div class="day session">24</div>
-          <div class="day">25</div>
-          <div class="day">26</div>
-          <div class="day session">27</div>
-          <div class="day">28</div>
+<div class="day">22</div>
+<div class="day">23</div>
+<div class="day session">24</div>
+<div class="day">25</div>
+<div class="day">26</div>
+<div class="day session">27</div>
+<div class="day">28</div>
 
-          <div class="day">29</div>
-          <div class="day">30</div>
-          <div class="day session">31</div>
-          <div class="day muted">1</div>
-          <div class="day muted">2</div>
-          <div class="day muted">3</div>
-          <div class="day muted">4</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="day">29</div>
+<div class="day">30</div>
+<div class="day session">31</div>
+<div class="day muted">1</div>
+<div class="day muted">2</div>
+<div class="day muted">3</div>
+<div class="day muted">4</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 
 <!-- ───────────────────────── FAQ ───────────────────────── -->
 <section class="section" id="faq" style="padding-top:0;">
-  <div class="wrap">
-    <div class="faq-grid">
-      <div>
-        <span class="small-cap">&ndash; 06 · Common Questions</span>
-        <h2 style="font-family:'Fraunces',serif; font-weight:360; font-variation-settings:'SOFT' 50; font-size:clamp(40px,4.8vw,64px); letter-spacing:-0.025em; line-height:1.02; margin:18px 0 24px;">Frequently<br /><em style="color:var(--crimson);font-style:italic;font-weight:320;">asked.</em></h2>
-        <p style="font-family:'Newsreader',serif; font-size:16px; line-height:1.55; color:var(--ink-3); max-width:32ch;">Everything you need to know before signing up. Still wondering something? Email us at <a href="mailto:support@packersat.org" style="color:var(--crimson); text-decoration:underline;">support@packersat.org</a>.</p>
-      </div>
-      <div class="faq-list">
-        <details class="faq">
-          <summary>
-            <span class="q-num">Q.01</span>
-            <span class="q">Who can join this program?</span>
-            <span class="toggle">+</span>
-          </summary>
-          <div class="a">Any current student at The Packer Collegiate Institute who is preparing for the SAT. Whether you're a sophomore just starting out or a junior retaking the test, you're welcome here.</div>
-        </details>
-        <details class="faq">
-          <summary>
-            <span class="q-num">Q.02</span>
-            <span class="q">When and where do sessions take place?</span>
-            <span class="toggle">+</span>
-          </summary>
-          <div class="a">Sessions are held one to two times a week, on campus. Exact times and room locations are shared after you sign up. We do our best to work around different schedules.</div>
-        </details>
-        <details class="faq">
-          <summary>
-            <span class="q-num">Q.03</span>
-            <span class="q">What if I'm already scoring high?</span>
-            <span class="toggle">+</span>
-          </summary>
-          <div class="a">Great &ndash; we work with students at every level. For high scorers, we focus on eliminating small errors, mastering the hardest question types, and perfecting test-day strategy to push toward 1550+.</div>
-        </details>
-        <details class="faq">
-          <summary>
-            <span class="q-num">Q.04</span>
-            <span class="q">How do I sign up?</span>
-            <span class="toggle">+</span>
-          </summary>
-          <div class="a">Click the "Sign Up" button anywhere on this page and fill out the short form. We'll reach out within a couple days to confirm your spot and share session details.</div>
-        </details>
-        <details class="faq">
-          <summary>
-            <span class="q-num">Q.05</span>
-            <span class="q">Is there really no cost?</span>
-            <span class="toggle">+</span>
-          </summary>
-          <div class="a">Really. No session fees, no materials cost, no fine print. This program is run by Packer students, for Packer students, and it's free for every one of them.</div>
-        </details>
-      </div>
-    </div>
-  </div>
+<div class="wrap">
+<div class="faq-grid">
+<div>
+<span class="small-cap">&ndash; 06 · Common Questions</span>
+<h2 style="font-family:'Fraunces',serif; font-weight:360; font-variation-settings:'SOFT' 50; font-size:clamp(40px,4.8vw,64px); letter-spacing:-0.025em; line-height:1.02; margin:18px 0 24px;">Frequently<br /><em style="color:var(--crimson);font-style:italic;font-weight:320;">asked.</em></h2>
+        <p style="font-family:'Newsreader',serif; font-size:16px; line-height:1.55; color:var(--ink-3); max-width:32ch;">Everything you need to know before signing up. Still wondering something? Email us at <a href="mailto:hello@packersat.org" style="color:var(--crimson); text-decoration:underline;">hello@packersat.org</a>.</p>
+        <p style="font-family:'Newsreader',serif; font-size:16px; line-height:1.55; color:var(--ink-3); max-width:32ch;">Everything you need to know before signing up. Still wondering something? Email us at <a href="mailto:support@packersat.org" style="color:var(--crimson); text-decoration:underline;">hello@packersat.org</a>.</p>
+</div>
+<div class="faq-list">
+<details class="faq">
+<summary>
+<span class="q-num">Q.01</span>
+<span class="q">Who can join this program?</span>
+<span class="toggle">+</span>
+</summary>
+<div class="a">Any current student at The Packer Collegiate Institute who is preparing for the SAT. Whether you're a sophomore just starting out or a junior retaking the test, you're welcome here.</div>
+</details>
+<details class="faq">
+<summary>
+<span class="q-num">Q.02</span>
+<span class="q">When and where do sessions take place?</span>
+<span class="toggle">+</span>
+</summary>
+<div class="a">Sessions are held one to two times a week, on campus. Exact times and room locations are shared after you sign up. We do our best to work around different schedules.</div>
+</details>
+<details class="faq">
+<summary>
+<span class="q-num">Q.03</span>
+<span class="q">What if I'm already scoring high?</span>
+<span class="toggle">+</span>
+</summary>
+<div class="a">Great &ndash; we work with students at every level. For high scorers, we focus on eliminating small errors, mastering the hardest question types, and perfecting test-day strategy to push toward 1550+.</div>
+</details>
+<details class="faq">
+<summary>
+<span class="q-num">Q.04</span>
+<span class="q">How do I sign up?</span>
+<span class="toggle">+</span>
+</summary>
+<div class="a">Click the "Sign Up" button anywhere on this page and fill out the short form. We'll reach out within a couple days to confirm your spot and share session details.</div>
+</details>
+<details class="faq">
+<summary>
+<span class="q-num">Q.05</span>
+<span class="q">Is there really no cost?</span>
+<span class="toggle">+</span>
+</summary>
+<div class="a">Really. No session fees, no materials cost, no fine print. This program is run by Packer students, for Packer students, and it's free for every one of them.</div>
+</details>
+</div>
+</div>
+</div>
 </section>
 
 <!-- ───────────────────────── CLOSING CTA ───────────────────────── -->
 <section class="closing" id="signup">
-  <div class="wrap inner">
-    <div>
-      <span class="eyebrow"><span class="dot" style="background:var(--crimson-2)"></span>Ready when you are</span>
-      <h2>Raise your<br />score.<br /><em>It costs nothing.</em></h2>
-    </div>
-    <div class="right-col">
-      <p>Spots fill up. Sign up now to secure your place in the program &ndash; we'll send session details to your Packer email within a couple of days.</p>
-      <div class="btn-row">
-        <button class="btn large" onclick="openModal()">Sign up for free <span class="arrow">&rarr;</span></button>
-        <a href="https://www.packersat.org/portal/index.html" class="btn ghost large">Log in to portal</a>
-      </div>
-    </div>
-  </div>
+<div class="wrap inner">
+<div>
+<span class="eyebrow"><span class="dot" style="background:var(--crimson-2)"></span>Ready when you are</span>
+<h2>Raise your<br />score.<br /><em>It costs nothing.</em></h2>
+</div>
+<div class="right-col">
+<p>Spots fill up. Sign up now to secure your place in the program &ndash; we'll send session details to your Packer email within a couple of days.</p>
+<div class="btn-row">
+<button class="btn large" onclick="openModal()">Sign up for free <span class="arrow">&rarr;</span></button>
+<a href="https://www.packersat.org/portal/index.html" class="btn ghost large">Log in to portal</a>
+</div>
+</div>
+</div>
 </section>
 
 <!-- ───────────────────────── FOOTER ───────────────────────── -->
 <footer>
-  <div class="wrap">
-    <div class="ftr">
-      <div>
-        <a href="#" class="brand">
-          <div class="seal">P</div>
-          <span>Packer<span class="x">·</span>SAT</span>
-        </a>
-        <p>Free, student-led SAT preparation, exclusively for students of The Packer Collegiate Institute · Brooklyn, NY.</p>
-      </div>
-      <div>
-        <h5>Program</h5>
-        <ul>
-          <li><a href="#about">About</a></li>
-          <li><a href="#how">How it works</a></li>
-          <li><a href="#subjects">Subjects</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>Get involved</h5>
-        <ul>
-          <li><a href="#" onclick="openModal();return false;">Sign up as a student</a></li>
-          <li><a href="#">Become a tutor</a></li>
-          <li><a href="mailto:hello@packersat.org">Email us</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>Portal</h5>
-        <ul>
-          <li><a href="https://www.packersat.org/portal/index.html">Log in</a></li>
-          <li><a href="#">Reset password</a></li>
-          <li><a href="mailto:help@packersat.org">Get help</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="colophon">
-      <span>© 2026 · Packer SAT Prep</span>
-      <span>Not affiliated with College Board.</span>
-      <span>Brooklyn · NY · 11201</span>
-    </div>
-  </div>
+<div class="wrap">
+<div class="ftr">
+<div>
+<a href="#" class="brand">
+<div class="seal">P</div>
+<span>Packer<span class="x">·</span>SAT</span>
+</a>
+<p>Free, student-led SAT preparation, exclusively for students of The Packer Collegiate Institute · Brooklyn, NY.</p>
+</div>
+<div>
+<h5>Program</h5>
+<ul>
+<li><a href="#about">About</a></li>
+<li><a href="#how">How it works</a></li>
+<li><a href="#subjects">Subjects</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ul>
+</div>
+<div>
+<h5>Get involved</h5>
+<ul>
+<li><a href="#" onclick="openModal();return false;">Sign up as a student</a></li>
+<li><a href="#">Become a tutor</a></li>
+<li><a href="mailto:hello@packersat.org">Email us</a></li>
+</ul>
+</div>
+<div>
+<h5>Portal</h5>
+<ul>
+<li><a href="https://www.packersat.org/portal/index.html">Log in</a></li>
+<li><a href="#">Reset password</a></li>
+<li><a href="mailto:help@packersat.org">Get help</a></li>
+</ul>
+</div>
+</div>
+<div class="colophon">
+<span>© 2026 · Packer SAT Prep</span>
+<span>Not affiliated with College Board.</span>
+<span>Brooklyn · NY · 11201</span>
+</div>
+</div>
 </footer>
 
 <!-- ── SIGNUP MODAL ── -->
 <div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">&times;</button>
+<div class="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
 
-    <div class="ob-step ob-active" data-ob="0">
-      <div class="modal-eyebrow">Welcome</div>
-      <h3 class="ob-h3">Let's get started.</h3>
-      <p class="ob-sub">Free SAT prep, zero commitment. Tell us your name and we'll take it from there.</p>
-      <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="ob-name" placeholder="First and last name" autocomplete="name" />
-      </div>
-      <button class="ob-continue-btn" onclick="obNext()">Continue &rarr;</button>
-    </div>
+<div class="ob-step ob-active" data-ob="0">
+<div class="modal-eyebrow">Welcome</div>
+<h3 class="ob-h3">Let's get started.</h3>
+<p class="ob-sub">Free SAT prep, zero commitment. Tell us your name and we'll take it from there.</p>
+<div class="form-group">
+<label>Your Name</label>
+<input type="text" id="ob-name" placeholder="First and last name" autocomplete="name" />
+</div>
+<button class="ob-continue-btn" onclick="obNext()">Continue &rarr;</button>
+</div>
 
-    <div class="ob-step" data-ob="1">
-      <div class="ob-bar-wrap"><div class="ob-bar" style="width:40%"></div></div>
-      <div class="modal-eyebrow">Step 2 of 5</div>
-      <h3 class="ob-h3">Your school email.</h3>
-      <p class="ob-sub">We'll send session details here. Use your Packer email if you have one.</p>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="ob-email" placeholder="you@packer.edu" autocomplete="email" />
-      </div>
-      <div class="ob-btn-row">
-        <button class="ob-back-btn" onclick="obBack()">&larr; Back</button>
-        <button class="ob-continue-btn" onclick="obNext()">Continue &rarr;</button>
-      </div>
-    </div>
+<div class="ob-step" data-ob="1">
+<div class="ob-bar-wrap"><div class="ob-bar" style="width:40%"></div></div>
+<div class="modal-eyebrow">Step 2 of 5</div>
+<h3 class="ob-h3">Your school email.</h3>
+<p class="ob-sub">We'll send session details here. Use your Packer email if you have one.</p>
+<div class="form-group">
+<label>Email</label>
+<input type="email" id="ob-email" placeholder="you@packer.edu" autocomplete="email" />
+</div>
+<div class="ob-btn-row">
+<button class="ob-back-btn" onclick="obBack()">&larr; Back</button>
+<button class="ob-continue-btn" onclick="obNext()">Continue &rarr;</button>
+</div>
+</div>
 
-    <div class="ob-step" data-ob="2">
-      <div class="ob-bar-wrap"><div class="ob-bar" style="width:60%"></div></div>
-      <div class="modal-eyebrow">Step 3 of 5</div>
-      <h3 class="ob-h3">A bit about you.</h3>
-      <p class="ob-sub">This helps us match you with the right tutor.</p>
-      <div class="ob-chip-label">What grade are you in?</div>
-      <div class="ob-grade-grid">
-        <button class="ob-chip" data-grade="9th">9th</button>
-        <button class="ob-chip" data-grade="10th">10th</button>
-        <button class="ob-chip" data-grade="11th">11th</button>
-        <button class="ob-chip" data-grade="12th">12th</button>
-      </div>
-      <div class="ob-chip-label">Current SAT score range?</div>
-      <div class="ob-score-grid">
-        <button class="ob-chip-score" data-score="No score yet">No score yet</button>
-        <button class="ob-chip-score" data-score="400-800">400&ndash;800</button>
-        <button class="ob-chip-score" data-score="800-1000">800&ndash;1000</button>
-        <button class="ob-chip-score" data-score="1000-1200">1000&ndash;1200</button>
-        <button class="ob-chip-score" data-score="1200-1400">1200&ndash;1400</button>
-        <button class="ob-chip-score" data-score="1400+">1400+</button>
-      </div>
-      <div class="ob-btn-row">
-        <button class="ob-back-btn" onclick="obBack()">&larr; Back</button>
-        <button class="ob-continue-btn" onclick="obNext()">Continue &rarr;</button>
-      </div>
-    </div>
+<div class="ob-step" data-ob="2">
+<div class="ob-bar-wrap"><div class="ob-bar" style="width:60%"></div></div>
+<div class="modal-eyebrow">Step 3 of 5</div>
+<h3 class="ob-h3">A bit about you.</h3>
+<p class="ob-sub">This helps us match you with the right tutor.</p>
+<div class="ob-chip-label">What grade are you in?</div>
+<div class="ob-grade-grid">
+<button class="ob-chip" data-grade="9th">9th</button>
+<button class="ob-chip" data-grade="10th">10th</button>
+<button class="ob-chip" data-grade="11th">11th</button>
+<button class="ob-chip" data-grade="12th">12th</button>
+</div>
+<div class="ob-chip-label">Current SAT score range?</div>
+<div class="ob-score-grid">
+<button class="ob-chip-score" data-score="No score yet">No score yet</button>
+<button class="ob-chip-score" data-score="400-800">400&ndash;800</button>
+<button class="ob-chip-score" data-score="800-1000">800&ndash;1000</button>
+<button class="ob-chip-score" data-score="1000-1200">1000&ndash;1200</button>
+<button class="ob-chip-score" data-score="1200-1400">1200&ndash;1400</button>
+<button class="ob-chip-score" data-score="1400+">1400+</button>
+</div>
+<div class="ob-btn-row">
+<button class="ob-back-btn" onclick="obBack()">&larr; Back</button>
+<button class="ob-continue-btn" onclick="obNext()">Continue &rarr;</button>
+</div>
+</div>
 
-    <div class="ob-step" data-ob="3">
-      <div class="ob-bar-wrap"><div class="ob-bar" style="width:85%"></div></div>
-      <div class="modal-eyebrow">Step 4 of 5</div>
-      <h3 class="ob-h3">Where do you want to get?</h3>
-      <p class="ob-sub">Setting a target helps your tutor build a plan around your goal.</p>
-      <div class="ob-chip-label">Target SAT score</div>
-      <div class="ob-score-grid">
-        <button class="ob-chip-target" data-target="1000+">1000+</button>
-        <button class="ob-chip-target" data-target="1100+">1100+</button>
-        <button class="ob-chip-target" data-target="1200+">1200+</button>
-        <button class="ob-chip-target" data-target="1300+">1300+</button>
-        <button class="ob-chip-target" data-target="1400+">1400+</button>
-        <button class="ob-chip-target" data-target="1500+">1500+</button>
-      </div>
-      <div class="ob-privacy-box">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(200,169,110,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <p>Your info is only used to organize sessions, never shared or sold.</p>
-      </div>
-      <div class="ob-btn-row">
-        <button class="ob-back-btn" onclick="obBack()">&larr; Back</button>
-        <button class="ob-continue-btn" id="ob-submit-btn" onclick="obSubmit()">Join the Program &rarr;</button>
-      </div>
-    </div>
+<div class="ob-step" data-ob="3">
+<div class="ob-bar-wrap"><div class="ob-bar" style="width:85%"></div></div>
+<div class="modal-eyebrow">Step 4 of 5</div>
+<h3 class="ob-h3">Where do you want to get?</h3>
+<p class="ob-sub">Setting a target helps your tutor build a plan around your goal.</p>
+<div class="ob-chip-label">Target SAT score</div>
+<div class="ob-score-grid">
+<button class="ob-chip-target" data-target="1000+">1000+</button>
+<button class="ob-chip-target" data-target="1100+">1100+</button>
+<button class="ob-chip-target" data-target="1200+">1200+</button>
+<button class="ob-chip-target" data-target="1300+">1300+</button>
+<button class="ob-chip-target" data-target="1400+">1400+</button>
+<button class="ob-chip-target" data-target="1500+">1500+</button>
+</div>
+<div class="ob-privacy-box">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(200,169,110,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+<p>Your info is only used to organize sessions, never shared or sold.</p>
+</div>
+<div class="ob-btn-row">
+<button class="ob-back-btn" onclick="obBack()">&larr; Back</button>
+<button class="ob-continue-btn" id="ob-submit-btn" onclick="obSubmit()">Join the Program &rarr;</button>
+</div>
+</div>
 
-    <div class="ob-step" data-ob="4">
-      <div class="ob-success-wrap">
-        <div class="ob-success-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(192,24,43,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <h3>You're on the list.</h3>
-        <p>We'll reach out within a couple days with session details. See you soon.</p>
-      </div>
-      <div class="ob-info-rows">
-        <div class="ob-info-row"><span class="ob-info-row-label">Sessions</span><span class="ob-info-row-val">Weekly, 1 hour</span></div>
-        <div class="ob-info-row"><span class="ob-info-row-label">Location</span><span class="ob-info-row-val">Packer Campus</span></div>
-        <div class="ob-info-row"><span class="ob-info-row-label">Cost</span><span class="ob-info-row-val">Free. Always.</span></div>
-      </div>
-      <button class="ob-done-btn" onclick="closeModal()">Done</button>
-    </div>
-  </div>
+<div class="ob-step" data-ob="4">
+<div class="ob-success-wrap">
+<div class="ob-success-icon">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(192,24,43,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+</div>
+<h3>You're on the list.</h3>
+<p>We'll reach out within a couple days with session details. See you soon.</p>
+</div>
+<div class="ob-info-rows">
+<div class="ob-info-row"><span class="ob-info-row-label">Sessions</span><span class="ob-info-row-val">Weekly, 1 hour</span></div>
+<div class="ob-info-row"><span class="ob-info-row-label">Location</span><span class="ob-info-row-val">Packer Campus</span></div>
+<div class="ob-info-row"><span class="ob-info-row-label">Cost</span><span class="ob-info-row-val">Free. Always.</span></div>
+</div>
+<button class="ob-done-btn" onclick="closeModal()">Done</button>
+</div>
+</div>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  const firebaseConfig = {
-    apiKey:            "AIzaSyAgl3-vGO-FAHSodXvTFtWv7V5_48qW22w",
-    authDomain:        "packer-sat.firebaseapp.com",
-    projectId:         "packer-sat",
-    storageBucket:     "packer-sat.firebasestorage.app",
-    messagingSenderId: "442480334688",
-    appId:             "1:442480334688:web:9c22966209985694bb7005"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
-  window._submitToFirestore = async function(data) {
-    await addDoc(collection(db, 'waitlist'), {
-      name:         data.name,
-      email:        data.email,
-      grade:        data.grade         || '',
-      currentScore: data.current_score || '',
-      targetScore:  data.target_score  || '',
-      status:       'pending',
-      createdAt:    new Date().toISOString()
-    });
-  };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig = {
+apiKey:            "AIzaSyAgl3-vGO-FAHSodXvTFtWv7V5_48qW22w",
+authDomain:        "packer-sat.firebaseapp.com",
+projectId:         "packer-sat",
+storageBucket:     "packer-sat.firebasestorage.app",
+messagingSenderId: "442480334688",
+appId:             "1:442480334688:web:9c22966209985694bb7005"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+window._submitToFirestore = async function(data) {
+await addDoc(collection(db, 'waitlist'), {
+name:         data.name,
+email:        data.email,
+grade:        data.grade         || '',
+currentScore: data.current_score || '',
+targetScore:  data.target_score  || '',
+status:       'pending',
+createdAt:    new Date().toISOString()
+});
+};
 </script>
 
 <script>
-  /* ── MODAL STATE ── */
-  let _obStep = 0;
-  const _obData = {};
+/* ── MODAL STATE ── */
+let _obStep = 0;
+const _obData = {};
 
-  function _obShow(step) {
-    document.querySelectorAll('.ob-step').forEach((el, i) => {
-      el.classList.toggle('ob-active', i === step);
-    });
-    _obStep = step;
-  }
+function _obShow(step) {
+document.querySelectorAll('.ob-step').forEach((el, i) => {
+el.classList.toggle('ob-active', i === step);
+});
+_obStep = step;
+}
 
-  function openModal() {
-    _obData.grade  = '';
-    _obData.score  = '';
-    _obData.target = '';
-    document.querySelectorAll('.ob-chip').forEach(c => c.classList.remove('ob-sel'));
-    document.querySelectorAll('.ob-chip-score').forEach(c => c.classList.remove('ob-sel'));
-    document.querySelectorAll('.ob-chip-target').forEach(c => c.classList.remove('ob-sel'));
-    const nameInp  = document.getElementById('ob-name');
-    const emailInp = document.getElementById('ob-email');
-    if (nameInp)  nameInp.value  = '';
-    if (emailInp) emailInp.value = '';
-    _obShow(0);
-    document.getElementById('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => { if (nameInp) nameInp.focus(); }, 60);
-  }
+function openModal() {
+_obData.grade  = '';
+_obData.score  = '';
+_obData.target = '';
+document.querySelectorAll('.ob-chip').forEach(c => c.classList.remove('ob-sel'));
+document.querySelectorAll('.ob-chip-score').forEach(c => c.classList.remove('ob-sel'));
+document.querySelectorAll('.ob-chip-target').forEach(c => c.classList.remove('ob-sel'));
+const nameInp  = document.getElementById('ob-name');
+const emailInp = document.getElementById('ob-email');
+if (nameInp)  nameInp.value  = '';
+if (emailInp) emailInp.value = '';
+_obShow(0);
+document.getElementById('modal').classList.add('open');
+document.body.style.overflow = 'hidden';
+setTimeout(() => { if (nameInp) nameInp.focus(); }, 60);
+}
 
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
+function closeModal() {
+document.getElementById('modal').classList.remove('open');
+document.body.style.overflow = '';
+}
 
-  function closeModalOnOverlay(e) {
-    if (e.target.id === 'modal') closeModal();
-  }
+function closeModalOnOverlay(e) {
+if (e.target.id === 'modal') closeModal();
+}
 
-  function obNext() {
-    if (_obStep === 0) {
-      const name = (document.getElementById('ob-name').value || '').trim();
-      if (!name) { document.getElementById('ob-name').focus(); return; }
-      _obData.name = name;
-      _obShow(1);
-      setTimeout(() => { const inp = document.getElementById('ob-email'); if (inp) inp.focus(); }, 60);
-    } else if (_obStep === 1) {
-      const email = (document.getElementById('ob-email').value || '').trim();
-      if (!email || !email.includes('@')) { document.getElementById('ob-email').focus(); return; }
-      _obData.email = email;
-      _obShow(2);
-    } else if (_obStep === 2) {
-      _obShow(3);
-    }
-  }
+function obNext() {
+if (_obStep === 0) {
+const name = (document.getElementById('ob-name').value || '').trim();
+if (!name) { document.getElementById('ob-name').focus(); return; }
+_obData.name = name;
+_obShow(1);
+setTimeout(() => { const inp = document.getElementById('ob-email'); if (inp) inp.focus(); }, 60);
+} else if (_obStep === 1) {
+const email = (document.getElementById('ob-email').value || '').trim();
+if (!email || !email.includes('@')) { document.getElementById('ob-email').focus(); return; }
+_obData.email = email;
+_obShow(2);
+} else if (_obStep === 2) {
+_obShow(3);
+}
+}
 
-  function obBack() {
-    if (_obStep > 0) _obShow(_obStep - 1);
-  }
+function obBack() {
+if (_obStep > 0) _obShow(_obStep - 1);
+}
 
-  document.addEventListener('click', function(e) {
-    if (e.target.matches('.ob-chip[data-grade]')) {
-      document.querySelectorAll('.ob-chip[data-grade]').forEach(c => c.classList.remove('ob-sel'));
-      e.target.classList.add('ob-sel');
-      _obData.grade = e.target.dataset.grade;
-    }
-    if (e.target.matches('.ob-chip-score[data-score]')) {
-      document.querySelectorAll('.ob-chip-score[data-score]').forEach(c => c.classList.remove('ob-sel'));
-      e.target.classList.add('ob-sel');
-      _obData.score = e.target.dataset.score;
-    }
-    if (e.target.matches('.ob-chip-target[data-target]')) {
-      document.querySelectorAll('.ob-chip-target[data-target]').forEach(c => c.classList.remove('ob-sel'));
-      e.target.classList.add('ob-sel');
-      _obData.target = e.target.dataset.target;
-    }
-  });
+document.addEventListener('click', function(e) {
+if (e.target.matches('.ob-chip[data-grade]')) {
+document.querySelectorAll('.ob-chip[data-grade]').forEach(c => c.classList.remove('ob-sel'));
+e.target.classList.add('ob-sel');
+_obData.grade = e.target.dataset.grade;
+}
+if (e.target.matches('.ob-chip-score[data-score]')) {
+document.querySelectorAll('.ob-chip-score[data-score]').forEach(c => c.classList.remove('ob-sel'));
+e.target.classList.add('ob-sel');
+_obData.score = e.target.dataset.score;
+}
+if (e.target.matches('.ob-chip-target[data-target]')) {
+document.querySelectorAll('.ob-chip-target[data-target]').forEach(c => c.classList.remove('ob-sel'));
+e.target.classList.add('ob-sel');
+_obData.target = e.target.dataset.target;
+}
+});
 
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.getElementById('modal').classList.contains('open')) closeModal();
-    if (e.key === 'Enter'  && document.getElementById('modal').classList.contains('open')) {
-      if (_obStep === 0 || _obStep === 1 || _obStep === 2) obNext();
-    }
-  });
+document.addEventListener('keydown', function(e) {
+if (e.key === 'Escape' && document.getElementById('modal').classList.contains('open')) closeModal();
+if (e.key === 'Enter'  && document.getElementById('modal').classList.contains('open')) {
+if (_obStep === 0 || _obStep === 1 || _obStep === 2) obNext();
+}
+});
 
-  /* ── SUBMIT ── */
-  async function obSubmit() {
-    const btn = document.getElementById('ob-submit-btn');
-    btn.textContent = 'Submitting...';
-    btn.disabled = true;
+/* ── SUBMIT ── */
+async function obSubmit() {
+const btn = document.getElementById('ob-submit-btn');
+btn.textContent = 'Submitting...';
+btn.disabled = true;
 
-    const data = {
-      name:          _obData.name   || '',
-      email:         _obData.email  || '',
-      grade:         _obData.grade  || 'Not specified',
-      current_score: _obData.score  || 'Not specified',
-      target_score:  _obData.target || 'Not specified',
-    };
+const data = {
+name:          _obData.name   || '',
+email:         _obData.email  || '',
+grade:         _obData.grade  || 'Not specified',
+current_score: _obData.score  || 'Not specified',
+target_score:  _obData.target || 'Not specified',
+};
 
-    try {
-      await window._submitToFirestore(data);
-      try {
-        await fetch('https://packersat.vercel.app/api/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to_email:     data.email,
-            to_name:      data.name,
-            subject:      "You're on the Packer SAT Tutoring waitlist",
-            html_content: buildWaitlistEmail(data),
-          })
-        });
-      } catch (emailErr) { console.warn('Confirmation email failed:', emailErr); }
-      _obShow(4);
-    } catch (err) {
-      console.error('Firestore error:', err);
-      btn.textContent = 'Something went wrong, try again.';
-      btn.disabled = false;
-    }
-  }
+try {
+await window._submitToFirestore(data);
+try {
+await fetch('https://packersat.vercel.app/api/send-email', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+to_email:     data.email,
+to_name:      data.name,
+subject:      "You're on the Packer SAT Tutoring waitlist",
+html_content: buildWaitlistEmail(data),
+})
+});
+} catch (emailErr) { console.warn('Confirmation email failed:', emailErr); }
+_obShow(4);
+} catch (err) {
+console.error('Firestore error:', err);
+btn.textContent = 'Something went wrong, try again.';
+btn.disabled = false;
+}
+}
 
-  function buildWaitlistEmail(d) {
-    return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+function buildWaitlistEmail(d) {
+return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#1A0508;font-family:'Helvetica Neue',Arial,sans-serif">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">
 <tr><td align="center"><table width="600" style="max-width:600px;width:100%">
@@ -1149,7 +1150,7 @@
 <p style="margin:0;color:rgba(250,250,248,0.35);font-size:12px">Questions? Visit <a href="https://www.packersat.org" style="color:#C0182B;text-decoration:none">packersat.org</a></p>
 </td></tr>
 </table></td></tr></table></body></html>`;
-  }
+}
 </script>
 
 </body>
