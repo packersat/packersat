@@ -1745,13 +1745,13 @@
     const btn = document.getElementById('login-btn');
     const err = document.getElementById('login-error');
     err.style.display = 'none';
-    btn.disabled = true; btn.textContent = 'Signing in...';
+    btn.disabled = true; btn.innerHTML = 'Signing in&hellip; <span class="arrow"></span>';
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (e) {
       err.textContent = friendlyError(e.code);
       err.style.display = 'block';
-      btn.disabled = false; btn.textContent = 'Sign In';
+      btn.disabled = false; btn.innerHTML = 'Continue <span class="arrow">&rarr;</span>';
     }
   };
 
@@ -1803,7 +1803,7 @@
     const btn = document.getElementById('google-btn');
     const err = document.getElementById('login-error');
     err.style.display = 'none';
-    btn.disabled = true; btn.textContent = 'Signing in...';
+    btn.disabled = true; btn.textContent = 'Signing in…';
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
@@ -1824,7 +1824,7 @@
         err.textContent = friendlyError(e.code);
         err.style.display = 'block';
       }
-      btn.disabled = false; btn.textContent = 'Sign in with Google';
+      btn.disabled = false; btn.textContent = 'Continue with Google';
     }
   };
 
@@ -1854,8 +1854,8 @@
     document.getElementById('portal-screen').classList.remove('active');
     document.getElementById('login-screen').classList.add('active');
     document.getElementById('login-btn').disabled = false;
-    document.getElementById('login-btn').textContent = 'Sign In';
-    CU = null; allUsers = {};
+    document.getElementById('login-btn').disabled = false;
+    document.getElementById('login-btn').innerHTML = 'Continue <span class="arrow">&rarr;</span>';
   }
 
   // ─────────────────────────────────────────
