@@ -1203,271 +1203,153 @@ let _obStep = 0;
 const _obData = {};
 
 function _obShow(step) {
-document.querySelectorAll('.ob-step').forEach((el, i) => {
-el.classList.toggle('ob-active', i === step);
-});
-_obStep = step;
+  document.querySelectorAll('.ob-step').forEach((el, i) => {
+    el.classList.toggle('ob-active', i === step);
+  });
+  _obStep = step;
 }
 
 function openModal() {
-_obData.grade  = '';
-_obData.score  = '';
-_obData.target = '';
-document.querySelectorAll('.ob-chip').forEach(c => c.classList.remove('ob-sel'));
-document.querySelectorAll('.ob-chip-score').forEach(c => c.classList.remove('ob-sel'));
-document.querySelectorAll('.ob-chip-target').forEach(c => c.classList.remove('ob-sel'));
-const nameInp  = document.getElementById('ob-name');
-const emailInp = document.getElementById('ob-email');
-if (nameInp)  nameInp.value  = '';
-if (emailInp) emailInp.value = '';
-_obShow(0);
-document.getElementById('modal').classList.add('open');
-document.body.style.overflow = 'hidden';
-setTimeout(() => { if (nameInp) nameInp.focus(); }, 60);
+  _obData.grade  = '';
+  _obData.score  = '';
+  _obData.target = '';
+  document.querySelectorAll('.ob-chip').forEach(c => c.classList.remove('ob-sel'));
+  document.querySelectorAll('.ob-chip-score').forEach(c => c.classList.remove('ob-sel'));
+  document.querySelectorAll('.ob-chip-target').forEach(c => c.classList.remove('ob-sel'));
+  const nameInp  = document.getElementById('ob-name');
+  const emailInp = document.getElementById('ob-email');
+  if (nameInp)  nameInp.value  = '';
+  if (emailInp) emailInp.value = '';
+  _obShow(0);
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => { if (nameInp) nameInp.focus(); }, 60);
 }
 
 function closeModal() {
-document.getElementById('modal').classList.remove('open');
-document.body.style.overflow = '';
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function closeModalOnOverlay(e) {
-if (e.target.id === 'modal') closeModal();
+  if (e.target.id === 'modal') closeModal();
 }
 
 function obNext() {
-if (_obStep === 0) {
-const name = (document.getElementById('ob-name').value || '').trim();
-if (!name) { document.getElementById('ob-name').focus(); return; }
-_obData.name = name;
-_obShow(1);
-setTimeout(() => { const inp = document.getElementById('ob-email'); if (inp) inp.focus(); }, 60);
-} else if (_obStep === 1) {
-const email = (document.getElementById('ob-email').value || '').trim();
-if (!email || !email.includes('@')) { document.getElementById('ob-email').focus(); return; }
-_obData.email = email;
-_obShow(2);
-} else if (_obStep === 2) {
-_obShow(3);
-}
+  if (_obStep === 0) {
+    const name = (document.getElementById('ob-name').value || '').trim();
+    if (!name) { document.getElementById('ob-name').focus(); return; }
+    _obData.name = name;
+    _obShow(1);
+    setTimeout(() => { const inp = document.getElementById('ob-email'); if (inp) inp.focus(); }, 60);
+  } else if (_obStep === 1) {
+    const email = (document.getElementById('ob-email').value || '').trim();
+    if (!email || !email.includes('@')) { document.getElementById('ob-email').focus(); return; }
+    _obData.email = email;
+    _obShow(2);
+  } else if (_obStep === 2) {
+    _obShow(3);
+  }
 }
 
 function obBack() {
-if (_obStep > 0) _obShow(_obStep - 1);
+  if (_obStep > 0) _obShow(_obStep - 1);
 }
 
 document.addEventListener('click', function(e) {
-if (e.target.matches('.ob-chip[data-grade]')) {
-document.querySelectorAll('.ob-chip[data-grade]').forEach(c => c.classList.remove('ob-sel'));
-e.target.classList.add('ob-sel');
-_obData.grade = e.target.dataset.grade;
-}
-if (e.target.matches('.ob-chip-score[data-score]')) {
-document.querySelectorAll('.ob-chip-score[data-score]').forEach(c => c.classList.remove('ob-sel'));
-e.target.classList.add('ob-sel');
-_obData.score = e.target.dataset.score;
-}
-if (e.target.matches('.ob-chip-target[data-target]')) {
-document.querySelectorAll('.ob-chip-target[data-target]').forEach(c => c.classList.remove('ob-sel'));
-e.target.classList.add('ob-sel');
-_obData.target = e.target.dataset.target;
-}
+  if (e.target.matches('.ob-chip[data-grade]')) {
+    document.querySelectorAll('.ob-chip[data-grade]').forEach(c => c.classList.remove('ob-sel'));
+    e.target.classList.add('ob-sel');
+    _obData.grade = e.target.dataset.grade;
+  }
+  if (e.target.matches('.ob-chip-score[data-score]')) {
+    document.querySelectorAll('.ob-chip-score[data-score]').forEach(c => c.classList.remove('ob-sel'));
+    e.target.classList.add('ob-sel');
+    _obData.score = e.target.dataset.score;
+  }
+  if (e.target.matches('.ob-chip-target[data-target]')) {
+    document.querySelectorAll('.ob-chip-target[data-target]').forEach(c => c.classList.remove('ob-sel'));
+    e.target.classList.add('ob-sel');
+    _obData.target = e.target.dataset.target;
+  }
 });
 
 document.addEventListener('keydown', function(e) {
-if (e.key === 'Escape' && document.getElementById('modal').classList.contains('open')) closeModal();
-if (e.key === 'Enter'  && document.getElementById('modal').classList.contains('open')) {
-if (_obStep === 0 || _obStep === 1 || _obStep === 2) obNext();
-}
+  if (e.key === 'Escape' && document.getElementById('modal').classList.contains('open')) closeModal();
+  if (e.key === 'Enter'  && document.getElementById('modal').classList.contains('open')) {
+    if (_obStep === 0 || _obStep === 1 || _obStep === 2) obNext();
+  }
 });
 
-/* ── SUBMIT ── */
 async function obSubmit() {
-const btn = document.getElementById('ob-submit-btn');
-btn.textContent = 'Submitting...';
-btn.disabled = true;
-
-const data = {
-name:          _obData.name   || '',
-email:         _obData.email  || '',
-grade:         _obData.grade  || 'Not specified',
-current_score: _obData.score  || 'Not specified',
-target_score:  _obData.target || 'Not specified',
-};
-
-try {
-await window._submitToFirestore(data);
-try {
-await fetch('https://packersat.vercel.app/api/send-email', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({
-to_email:     data.email,
-to_name:      data.name,
-subject:      "You're on the Packer SAT Tutoring waitlist",
-html_content: buildWaitlistEmail(data),
-})
-});
-} catch (emailErr) { console.warn('Confirmation email failed:', emailErr); }
-_obShow(4);
-} catch (err) {
-console.error('Firestore error:', err);
-btn.textContent = 'Something went wrong, try again.';
-btn.disabled = false;
-}
+  const btn = document.getElementById('ob-submit-btn');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+  const data = {
+    name:          _obData.name   || '',
+    email:         _obData.email  || '',
+    grade:         _obData.grade  || 'Not specified',
+    current_score: _obData.score  || 'Not specified',
+    target_score:  _obData.target || 'Not specified',
+  };
+  try {
+    await window._submitToFirestore(data);
+    try {
+      await fetch('https://packersat.vercel.app/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to_email:     data.email,
+          to_name:      data.name,
+          subject:      "You're on the Packer SAT Tutoring waitlist",
+          html_content: buildWaitlistEmail(data),
+        })
+      });
+    } catch (emailErr) { console.warn('Confirmation email failed:', emailErr); }
+    _obShow(4);
+  } catch (err) {
+    console.error('Firestore error:', err);
+    btn.textContent = 'Something went wrong, try again.';
+    btn.disabled = false;
+  }
 }
 
 function buildWaitlistEmail(d) {
-return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#1A0508;font-family:'Helvetica Neue',Arial,sans-serif">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">
-<tr><td align="center"><table width="600" style="max-width:600px;width:100%">
-<tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:36px 40px;border-radius:8px 8px 0 0;text-align:center">
-<h1 style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</h1>
-<p style="margin:8px 0 0;color:rgba(250,250,248,0.75);font-size:12px;letter-spacing:0.12em;text-transform:uppercase">The Packer Collegiate Institute</p>
-</td></tr>
-<tr><td style="background:#2A0A10;padding:40px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
-<p style="margin:0 0 8px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi <strong>${d.name}</strong>,</p>
-<p style="margin:0 0 24px;color:#FAFAF8;font-size:15px;line-height:1.75">You're on the waitlist for Packer SAT Tutoring. We'll reach out soon to pair you with a tutor and get you set up.</p>
-<div style="border-top:1px solid rgba(192,24,43,0.25);margin:0 0 24px"></div>
-<p style="margin:0 0 14px;color:#C8A96E;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase">Your submission</p>
-<table width="100%" style="margin-bottom:28px">
-<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.08);border-radius:6px 6px 0 0;border-bottom:1px solid rgba(192,24,43,0.15)"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Name</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">${d.name}</span></td></tr>
-<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.06);border-bottom:1px solid rgba(192,24,43,0.15)"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Email</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">${d.email}</span></td></tr>
-<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.08);border-bottom:1px solid rgba(192,24,43,0.15)"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Grade</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">${d.grade}</span></td></tr>
-<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.06);border-bottom:1px solid rgba(192,24,43,0.15)"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Current Score</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">${d.current_score}</span></td></tr>
-<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.08);border-radius:0 0 6px 6px"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Target Score</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">${d.target_score}</span></td></tr>
-</table>
-<div style="border-top:1px solid rgba(192,24,43,0.25);margin:0 0 24px"></div>
-<p style="margin:0 0 14px;color:#C8A96E;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase">What happens next</p>
-<p style="margin:0 0 10px;color:rgba(250,250,248,0.7);font-size:14px;line-height:1.75">&#10003; We'll match you with a Packer upperclassman tutor.</p>
-<p style="margin:0 0 10px;color:rgba(250,250,248,0.7);font-size:14px;line-height:1.75">&#10003; You'll receive an email with your login details and tutor assignment.</p>
-<p style="margin:0;color:rgba(250,250,248,0.7);font-size:14px;line-height:1.75">&#10003; Your tutor will reach out to schedule your first session.</p>
-</td></tr>
-<tr><td style="background:#1A0508;padding:24px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
-<p style="margin:0;color:rgba(250,250,248,0.35);font-size:12px">Questions? Visit <a href="https://www.packersat.org" style="color:#C0182B;text-decoration:none">packersat.org</a></p>
-</td></tr>
-</table></td></tr></table>
-<script>
-// ─── Page loader: hide after window loads (with a minimum on-screen time) ───
-  (function(){
-    var loader = document.getElementById('page-loader');
-    var minVisible = 700;
-    var loaderStart = performance.now();
-    function hideLoader() {
-      var elapsed = performance.now() - loaderStart;
-      var remaining = Math.max(0, minVisible - elapsed);
-      setTimeout(function() {
-        loader.classList.add('is-out');
-        document.body.classList.add('is-ready');
-      }, remaining);
-    }
-    if (document.readyState === 'complete') {
-      hideLoader();
-    } else {
-      window.addEventListener('load', hideLoader);
-    }
-    // Safety net
-    setTimeout(hideLoader, 2200);
-  })();
-
-  // ─── Scroll reveal ───
-  (function(){
-    var io = new IntersectionObserver(function(entries) {
-      entries.forEach(function(e){
-        if (e.isIntersecting) {
-          e.target.classList.add('is-in');
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
-
-    // Auto-tag candidates so we don't have to sprinkle .reveal everywhere
-    var sels = [
-      '.section-head', '.section-head h2', '.section-head .meta',
-      '.score-board .col',
-      '.acts .act',
-      '.about-photo', '.about-copy', '.about-copy .pillar',
-      '.curriculum .col',
-      '.schedule-left', '.calendar',
-      '.faq-grid > div', 'details.faq',
-      '.closing .inner > *',
-      'footer .ftr > div', 'footer .colophon'
-    ];
-    sels.forEach(function(sel){
-      document.querySelectorAll(sel).forEach(function(el, i){
-        el.classList.add('reveal');
-        if (!el.dataset.d) el.dataset.d = String(Math.min(6, (i % 6) + 1));
-        io.observe(el);
-      });
-    });
-
-    // Also draw under .display em on entry
-    document.querySelectorAll('.section-head h2 em, .schedule-left h2 em, .closing h2 em').forEach(function(el){
-      el.classList.add('draw-under');
-      io.observe(el);
-    });
-  })();
-
-  // ─── Number counters ───
-  (function(){
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if (!e.isIntersecting) return;
-        var el = e.target;
-        var target = parseInt(el.dataset.target, 10);
-        var suffix = el.dataset.suffix || '';
-        var duration = 1400;
-        var start = performance.now();
-        var from = 0;
-        function tick(now){
-          var t = Math.min(1, (now - start) / duration);
-          // easeOutCubic
-          var eased = 1 - Math.pow(1 - t, 3);
-          var val = Math.round(from + (target - from) * eased);
-          el.textContent = val.toLocaleString() + suffix;
-          if (t < 1) requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
-        io.unobserve(el);
-      });
-    }, { threshold: 0.5 });
-    document.querySelectorAll('.count[data-target]').forEach(function(el){
-      // Wait until hero loader is done before starting
-      var begin = function() { io.observe(el); };
-      if (document.body.classList.contains('is-ready')) begin();
-      else {
-        var obs = new MutationObserver(function(){
-          if (document.body.classList.contains('is-ready')) { begin(); obs.disconnect(); }
-        });
-        obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-      }
-    });
-  })();
-
-  // ─── Smooth in-page anchor scrolling ───
-  document.querySelectorAll('a[href^="#"]').forEach(function(a){
-    a.addEventListener('click', function(e){
-      var id = a.getAttribute('href');
-      if (id.length < 2) return;
-      var target = document.querySelector(id);
-      if (!target) return;
-      e.preventDefault();
-      var rect = target.getBoundingClientRect();
-      var navH = 72;
-      var top = window.pageYOffset + rect.top - navH;
-      window.scrollTo({ top: top, behavior: 'smooth' });
-    });
-  });
-</script>
-
-</body></html>`;
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
+    + '<body style="margin:0;padding:0;background:#1A0508;font-family:\'Helvetica Neue\',Arial,sans-serif">'
+    + '<table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">'
+    + '<tr><td align="center"><table width="600" style="max-width:600px;width:100%">'
+    + '<tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:36px 40px;border-radius:8px 8px 0 0;text-align:center">'
+    + '<h1 style="margin:0;font-family:Georgia,serif;font-size:26px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</h1>'
+    + '<p style="margin:8px 0 0;color:rgba(250,250,248,0.75);font-size:12px;letter-spacing:0.12em;text-transform:uppercase">The Packer Collegiate Institute</p>'
+    + '</td></tr>'
+    + '<tr><td style="background:#2A0A10;padding:40px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">'
+    + '<p style="margin:0 0 8px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi <strong>' + d.name + '</strong>,</p>'
+    + '<p style="margin:0 0 24px;color:#FAFAF8;font-size:15px;line-height:1.75">You\'re on the waitlist for Packer SAT Tutoring. We\'ll reach out soon to pair you with a tutor.</p>'
+    + '<div style="border-top:1px solid rgba(192,24,43,0.25);margin:0 0 24px"></div>'
+    + '<p style="margin:0 0 14px;color:#C8A96E;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase">Your submission</p>'
+    + '<table width="100%" style="margin-bottom:28px">'
+    + '<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.08);border-radius:6px 6px 0 0;border-bottom:1px solid rgba(192,24,43,0.15)"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Name</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">' + d.name + '</span></td></tr>'
+    + '<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.06);border-bottom:1px solid rgba(192,24,43,0.15)"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Email</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">' + d.email + '</span></td></tr>'
+    + '<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.08);border-bottom:1px solid rgba(192,24,43,0.15)"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Grade</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">' + d.grade + '</span></td></tr>'
+    + '<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.06);border-bottom:1px solid rgba(192,24,43,0.15)"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Current Score</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">' + d.current_score + '</span></td></tr>'
+    + '<tr><td style="padding:10px 14px;background:rgba(192,24,43,0.08);border-radius:0 0 6px 6px"><span style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;display:block;margin-bottom:3px">Target Score</span><span style="font-size:14px;color:#FAFAF8;font-weight:500">' + d.target_score + '</span></td></tr>'
+    + '</table>'
+    + '<p style="margin:0 0 14px;color:#C8A96E;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase">What happens next</p>'
+    + '<p style="margin:0 0 10px;color:rgba(250,250,248,0.7);font-size:14px;line-height:1.75">&#10003; We\'ll match you with a Packer upperclassman tutor.</p>'
+    + '<p style="margin:0 0 10px;color:rgba(250,250,248,0.7);font-size:14px;line-height:1.75">&#10003; You\'ll receive an email with your login details and tutor assignment.</p>'
+    + '<p style="margin:0;color:rgba(250,250,248,0.7);font-size:14px;line-height:1.75">&#10003; Your tutor will reach out to schedule your first session.</p>'
+    + '</td></tr>'
+    + '<tr><td style="background:#1A0508;padding:24px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">'
+    + '<p style="margin:0;color:rgba(250,250,248,0.35);font-size:12px">Questions? Visit <a href="https://www.packersat.org" style="color:#C0182B;text-decoration:none">packersat.org</a></p>'
+    + '</td></tr>'
+    + '</table></td></tr></table>'
+    + '</body></html>';
 }
 </script>
 
-
 <script>
-// ─── Page loader: hide after window loads (with a minimum on-screen time) ───
+  // --- Page loader: hide after window loads (with a minimum on-screen time) ---
   (function(){
     var loader = document.getElementById('page-loader');
     var minVisible = 700;
@@ -1485,11 +1367,10 @@ return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
     } else {
       window.addEventListener('load', hideLoader);
     }
-    // Safety net
     setTimeout(hideLoader, 2200);
   })();
 
-  // ─── Scroll reveal ───
+  // --- Scroll reveal ---
   (function(){
     var io = new IntersectionObserver(function(entries) {
       entries.forEach(function(e){
@@ -1500,12 +1381,11 @@ return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
       });
     }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
 
-    // Auto-tag candidates so we don't have to sprinkle .reveal everywhere
     var sels = [
       '.section-head', '.section-head h2', '.section-head .meta',
       '.score-board .col',
       '.acts .act',
-      '.about-photo', '.about-copy', '.about-copy .pillar',
+      '.about-copy', '.about-copy .pillar',
       '.curriculum .col',
       '.schedule-left', '.calendar',
       '.faq-grid > div', 'details.faq',
@@ -1520,14 +1400,13 @@ return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
       });
     });
 
-    // Also draw under .display em on entry
     document.querySelectorAll('.section-head h2 em, .schedule-left h2 em, .closing h2 em').forEach(function(el){
       el.classList.add('draw-under');
       io.observe(el);
     });
   })();
 
-  // ─── Number counters ───
+  // --- Number counters ---
   (function(){
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(e){
@@ -1537,12 +1416,10 @@ return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
         var suffix = el.dataset.suffix || '';
         var duration = 1400;
         var start = performance.now();
-        var from = 0;
         function tick(now){
           var t = Math.min(1, (now - start) / duration);
-          // easeOutCubic
           var eased = 1 - Math.pow(1 - t, 3);
-          var val = Math.round(from + (target - from) * eased);
+          var val = Math.round(target * eased);
           el.textContent = val.toLocaleString() + suffix;
           if (t < 1) requestAnimationFrame(tick);
         }
@@ -1551,7 +1428,6 @@ return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
       });
     }, { threshold: 0.5 });
     document.querySelectorAll('.count[data-target]').forEach(function(el){
-      // Wait until hero loader is done before starting
       var begin = function() { io.observe(el); };
       if (document.body.classList.contains('is-ready')) begin();
       else {
@@ -1563,7 +1439,7 @@ return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
     });
   })();
 
-  // ─── Smooth in-page anchor scrolling ───
+  // --- Smooth in-page anchor scrolling ---
   document.querySelectorAll('a[href^="#"]').forEach(function(a){
     a.addEventListener('click', function(e){
       var id = a.getAttribute('href');
@@ -1578,6 +1454,7 @@ return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
     });
   });
 </script>
+
 
 
 <script>
