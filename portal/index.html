@@ -1876,26 +1876,60 @@
     'Tallying your streak\u2026',
     'Almost there\u2026'
   ];
-  let _loadingTipTimer = null;
-  let _loadingTipIdx   = 0;
+  let _loadingTipTimer  = null;
+  let _loadingTipIdx    = 0;
+  let _loadingDone      = false;  // true once all tips have played
+  let _loadingCallback  = null;   // queued action to run after animation finishes
 
   function showLoginLoading() {
     const el = document.getElementById('login-loading');
     if (!el) return;
-    _loadingTipIdx = 0;
+    _loadingTipIdx   = 0;
+    _loadingDone     = false;
+    _loadingCallback = null;
     _updateLoadingTip();
     el.classList.add('active');
     _loadingTipTimer = setInterval(() => {
-      _loadingTipIdx = Math.min(_loadingTipIdx + 1, _loadingTips.length - 1);
-      _updateLoadingTip();
+      _loadingTipIdx++;
+      if (_loadingTipIdx >= _loadingTips.length) {
+        // All steps played — mark done and fire any queued callback
+        clearInterval(_loadingTipTimer);
+        _loadingTipTimer = null;
+        _loadingTipIdx   = _loadingTips.length - 1;
+        _loadingDone     = true;
+        if (_loadingCallback) {
+          const cb = _loadingCallback;
+          _loadingCallback = null;
+          _doHideLoginLoading(cb);
+        }
+      } else {
+        _updateLoadingTip();
+      }
     }, 1500);
   }
 
-  function hideLoginLoading() {
+  function _doHideLoginLoading(callback) {
     const el = document.getElementById('login-loading');
     if (el) el.classList.remove('active');
-    if (_loadingTipTimer) { clearInterval(_loadingTipTimer); _loadingTipTimer = null; }
-    _loadingTipIdx = 0;
+    _loadingTipIdx   = 0;
+    _loadingDone     = false;
+    _loadingCallback = null;
+    if (callback) callback();
+  }
+
+  function hideLoginLoading(callback) {
+    if (_loadingTipTimer === null && !_loadingDone) {
+      // Loading was never started (e.g. error before it began) — dismiss immediately
+      _doHideLoginLoading(callback);
+      return;
+    }
+    if (_loadingDone) {
+      // Animation already finished — dismiss immediately
+      _doHideLoginLoading(callback);
+    } else {
+      // Still animating — queue the callback for when it finishes
+      _loadingCallback = callback || (() => {});
+    }
   }
 
   function _updateLoadingTip() {
@@ -1928,11 +1962,9 @@
           await updateDoc(doc(db, 'users', user.uid), { lastLoginAt: new Date().toISOString() });
         } catch(e) { /* non-critical */ }
         await cacheAllUsers();
-        hideLoginLoading();
-        enterPortal();
+        hideLoginLoading(() => enterPortal());
       } else {
-        hideLoginLoading();
-        await signOut(auth);
+        hideLoginLoading(() => signOut(auth));
       }
     } else {
       hideLoginLoading();
