@@ -1,22 +1,35 @@
-// Domain codes for practicesat.vercel.app/api/get-questions
-const MATH_DOMAINS    = ['H', 'P', 'Q', 'S'];   // Algebra, Advanced Math, Problem Solving, Geometry
-const ENGLISH_DOMAINS = ['INI', 'CAS', 'EOI', 'SEC']; // Info&Ideas, Craft&Structure, Expr of Ideas, Std English
-
+const MATH_DOMAINS    = ['H', 'P', 'Q', 'S'];
+const ENGLISH_DOMAINS = ['INI', 'CAS', 'EOI', 'SEC'];
 const BASE = 'https://practicesat.vercel.app/api';
 
-// Strip HTML tags for plain-text rendering (MathJax handles math)
-function stripHtml(html) {
+// Sanitize HTML: keep math/formatting tags, strip dangerous ones, clean up styles
+function sanitizeHtml(html) {
   if (!html) return '';
   return html
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&rsquo;/g, "'").replace(/&ldquo;/g, '"').replace(/&rdquo;/g, '"')
+    // Remove inline style attributes (they use dark colors, will clash with portal theme)
+    .replace(/ style="[^"]*"/g, '')
+    // Remove figure/image wrappers but keep SVG (handled below)
+    .replace(/<figure[^>]*>/gi, '').replace(/<\/figure>/gi, '')
+    // Keep <p>, <math>, <mfrac>, <mn>, <mi>, <mo>, <mrow>, <mfenced>, <msup>, <msub>,
+    //      <munder>, <mover>, <mtable>, <mtr>, <mtd>, <em>, <strong>, <sup>, <sub>, <br>, SVG
+    // Strip only truly unsafe tags
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '')
+    // Decode common HTML entities that survive tag stripping
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&rsquo;/g, '\u2019').replace(/&lsquo;/g, '\u2018')
+    .replace(/&ldquo;/g, '\u201C').replace(/&rdquo;/g, '\u201D')
     .replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<')
-    .replace(/&nbsp;/g, ' ').replace(/&#62;/g, '>').replace(/&#60;/g, '<')
-    .replace(/&#8804;/g, '≤').replace(/&#8805;/g, '≥').replace(/&#8800;/g, '≠')
-    .replace(/&#8734;/g, '∞').replace(/&#177;/g, '±').replace(/&#x2264;/g, '≤')
-    .replace(/&le;/g, '≤').replace(/&ge;/g, '≥').replace(/&ne;/g, '≠')
-    .replace(/&pi;/g, 'π').replace(/&times;/g, '×').replace(/&divide;/g, '÷')
-    .replace(/\s+/g, ' ').trim();
+    .trim();
+}
+
+// For plain text fields (explanation) — strip all HTML
+function stripHtml(html) {
+  if (!html) return '';
+  return sanitizeHtml(html)
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export default async function handler(req, res) {
@@ -30,7 +43,7 @@ export default async function handler(req, res) {
   const domains = isMath ? MATH_DOMAINS : ENGLISH_DOMAINS;
 
   try {
-    // 1. Fetch question list for all domains in this section (MCQ only)
+    // 1. Fetch metadata for all domains in this section
     const listResults = await Promise.all(
       domains.map(d =>
         fetch(`${BASE}/get-questions?domains=${d}`)
@@ -40,16 +53,18 @@ export default async function handler(req, res) {
       )
     );
 
-    // Flatten, keep only MCQ-likely entries (most are MCQ), shuffle, take sample
+    // Shuffle and cap to avoid huge upstream request count
     let allMeta = listResults.flat()
       .sort(() => Math.random() - 0.5)
-      .slice(0, Math.min(Number(limit) * 4, 200)); // fetch extra to allow for SPR filtering
+      .slice(0, Math.min(Number(limit) * 5, 250));
 
-    // 2. Fetch full details in parallel (batched to avoid rate limiting)
-    const BATCH = 20;
+    // 2. Fetch full details in batches
+    const BATCH  = 20;
+    const target = Number(limit);
     const questions = [];
-    for (let i = 0; i < allMeta.length && questions.length < Number(limit); i += BATCH) {
-      const batch = allMeta.slice(i, i + BATCH);
+
+    for (let i = 0; i < allMeta.length && questions.length < target; i += BATCH) {
+      const batch   = allMeta.slice(i, i + BATCH);
       const details = await Promise.all(
         batch.map(meta =>
           fetch(`${BASE}/question/${meta.external_id}`)
@@ -60,37 +75,39 @@ export default async function handler(req, res) {
       );
 
       for (const item of details) {
-        if (!item || !item.detail) continue;
+        if (!item?.detail) continue;
         const { meta, detail } = item;
 
-        // Skip free-response (SPR) — only use MCQ
+        // MCQ only; must have all 4 options
         if (detail.type !== 'mcq') continue;
-        if (!detail.answerOptions || !detail.correct_answer?.[0]) continue;
-
         const opts = detail.answerOptions;
-        // Must have all 4 options A-D
-        if (!opts.A || !opts.B || !opts.C || !opts.D) continue;
-
-        const answer = detail.correct_answer[0]; // 'A'|'B'|'C'|'D'
+        if (!opts?.A || !opts?.B || !opts?.C || !opts?.D) continue;
+        const answer = detail.correct_answer?.[0];
         if (!['A','B','C','D'].includes(answer)) continue;
 
+        // Skip questions that are purely SVG-graph (no readable text/math)
+        const stemText = stripHtml(detail.stem || '');
+        if (!stemText && /<svg/i.test(detail.stem)) continue;
+
         questions.push({
-          domain: meta.primary_class_cd_desc || meta.skill_desc || meta.domain_code,
+          domain: meta.primary_class_cd_desc || meta.skill_desc || '',
           question: {
-            question:       stripHtml(detail.stem),
+            // Pass HTML directly so MathML renders in the browser
+            question:       sanitizeHtml(detail.stem),
             choices: {
-              A: stripHtml(opts.A),
-              B: stripHtml(opts.B),
-              C: stripHtml(opts.C),
-              D: stripHtml(opts.D),
+              A: sanitizeHtml(opts.A),
+              B: sanitizeHtml(opts.B),
+              C: sanitizeHtml(opts.C),
+              D: sanitizeHtml(opts.D),
             },
             correct_answer: answer,
-            paragraph:      detail.stimulus ? stripHtml(detail.stimulus) : null,
-            explanation:    detail.rationale ? stripHtml(detail.rationale) : '',
+            paragraph:      detail.stimulus ? sanitizeHtml(detail.stimulus) : null,
+            // Explanation as plain text (used in hint tooltips)
+            explanation:    stripHtml(detail.rationale || ''),
           }
         });
 
-        if (questions.length >= Number(limit)) break;
+        if (questions.length >= target) break;
       }
     }
 
