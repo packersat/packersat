@@ -1416,7 +1416,7 @@
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-  <!-- MathJax: renders LaTeX math in practice problems -->
+  <!-- MathJax: renders both MathML and LaTeX math in practice problems -->
   <script>
     window.MathJax = {
       tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
@@ -1424,12 +1424,20 @@
       startup: { typeset: false }
     };
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.js" id="MathJax-script" async></script>
   <style>
-    /* Make MathJax rendered math match portal text color */
+    /* MathML and MathJax rendering in practice questions */
     #prac-q-text mjx-container, #prac-q-context mjx-container,
     #prac-choices mjx-container { color: inherit; }
     mjx-container { font-size: 1em !important; }
+    /* Native MathML (rendered by browser for practicesat API questions) */
+    #prac-question-area math, #prac-question-area mjx-container { color: inherit; display: inline; vertical-align: middle; }
+    #prac-question-area mfrac { display: inline-table; vertical-align: middle; text-align: center; }
+    #prac-question-area mfrac > * { display: block; padding: 0 0.2em; }
+    #prac-question-area mfrac > mn:first-child,
+    #prac-question-area mfrac > mrow:first-child { border-bottom: 1px solid currentColor; }
+    #prac-question-area p { margin: 0.4rem 0; line-height: 1.7; }
+    #prac-question-area svg { max-width: 100%; height: auto; filter: invert(1) hue-rotate(180deg); }
   </style>
 
 </head>
@@ -7022,27 +7030,27 @@ Good luck!`,
         const q = item.question;
         if (!q || !q.question || !q.choices || !q.correct_answer) continue;
 
-        const choices = ['A','B','C','D'].map(k => cleanLatex(q.choices[k])).filter(Boolean);
+        // Choices and question text are HTML with MathML — pass through directly
+        const choices = ['A','B','C','D'].map(k => q.choices[k]).filter(Boolean);
         if (choices.length !== 4) continue;
 
         const answerIdx = ['A','B','C','D'].indexOf(q.correct_answer);
         if (answerIdx === -1) continue;
 
-        // Strip LaTeX from question text
-        const questionText = cleanLatex(q.question);
+        const questionText = q.question || '';
 
         // Paragraph: only show if it's a real non-null non-empty string
         const rawParagraph = q.paragraph;
         const paragraph = (rawParagraph && typeof rawParagraph === 'string' &&
           rawParagraph.trim() !== '' && rawParagraph.trim().toLowerCase() !== 'null')
-          ? cleanLatex(rawParagraph.trim()) : null;
+          ? rawParagraph.trim() : null;
 
-        // Build progressive hints from explanation
-        const explanation = cleanLatex(q.explanation || '');
+        // Explanation is plain text; build progressive hints
+        const explanation = q.explanation || '';
         const sentences   = explanation.match(/[^.!?]+[.!?]+/g) || [];
         const hint1 = sentences[0]?.trim() || 'Re-read the question carefully and eliminate obviously wrong answers.';
         const hint2 = sentences[1]?.trim() || 'Consider each answer choice against the question.';
-        const hint3 = `The correct answer is ${q.correct_answer}: ${choices[answerIdx]}. ${sentences[2]?.trim() || explanation.slice(0, 120)}`;
+        const hint3 = `The correct answer is ${q.correct_answer}. ${sentences[2]?.trim() || ''}`.trim();
 
         mapped.push({
           q:      questionText,
