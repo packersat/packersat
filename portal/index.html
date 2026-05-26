@@ -61,12 +61,24 @@
     #login-screen.active {
       display: grid;
     }
+    #login-screen {
+      transition: opacity 0.4s ease;
+    }
+    #login-screen.fading-out {
+      opacity: 0;
+      pointer-events: none;
+    }
     #portal-screen.active {
       display: flex;
       flex: 1;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
+      animation: portal-fade-in 0.4s ease both;
+    }
+    @keyframes portal-fade-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
 
     /* ── LOGIN — V1 Editorial Daylight ── */
@@ -2100,17 +2112,24 @@
   // PORTAL ENTRY — routes by role
   // ─────────────────────────────────────────
   function enterPortal() {
-    document.getElementById('login-screen').classList.remove('active');
-    document.getElementById('portal-screen').classList.add('active');
+    const loginEl  = document.getElementById('login-screen');
+    const portalEl = document.getElementById('portal-screen');
+
+    // Populate portal content immediately (hidden) so it's ready
     document.getElementById('nav-username').textContent = CU.name || CU.email;
     document.getElementById('nav-role').textContent = CU.role;
-
     if (CU.role === 'admin') buildAdminPortal();
     else if (CU.role === 'tutor') buildTutorPortal();
     else buildStudentPortal();
-
-    // Show announcement popup if enabled (once per session)
     maybeShowAnnouncementPopup();
+
+    // Fade out the login screen, then swap
+    loginEl.classList.add('fading-out');
+    setTimeout(() => {
+      loginEl.classList.remove('active');
+      loginEl.classList.remove('fading-out');
+      portalEl.classList.add('active');
+    }, 380); // just under the 0.4s transition
   }
 
   function showLogin() {
