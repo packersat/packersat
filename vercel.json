@@ -1,4 +1,7 @@
 {
+  "redirects": [
+    { "source": "/portal/index.html", "destination": "/portal", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/portal", "destination": "/portal/index.html" }
   ],
