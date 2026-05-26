@@ -1700,17 +1700,17 @@
 <!-- Assign Tutor -->
 <div class="modal-overlay" id="modal-assign">
   <div class="modal">
-    <h3>Assign Tutor</h3>
+    <h3>Assign Tutors</h3>
     <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="assign-student-name"></strong></p>
     <div class="form-row full">
       <div>
-        <div class="field-label">Select Tutor</div>
-        <select class="input-field" id="assign-tutor-select"></select>
+        <div class="field-label">Select tutors (check all that apply)</div>
+        <div id="assign-tutor-checklist" style="display:flex;flex-direction:column;gap:0.5rem;max-height:260px;overflow-y:auto;padding:0.4rem 0;"></div>
       </div>
     </div>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeModal('modal-assign')">Cancel</button>
-      <button class="btn-red" id="confirm-assign-btn">Assign</button>
+      <button class="btn-red" id="confirm-assign-btn">Save</button>
     </div>
     <div class="form-msg" id="assign-msg"></div>
   </div>
@@ -1874,6 +1874,21 @@
   let CU = null; // current user object
   let allUsers = {}; // uid -> user data cache
   const googleProvider = new GoogleAuthProvider();
+
+  // ── Tutor assignment helpers ───────────────────────────────────────────────
+  // Normalizes both legacy tutorId (string) and new tutorIds (array) on a user doc
+  function getTutorIds(user) {
+    if (!user) return [];
+    if (Array.isArray(user.tutorIds)) return user.tutorIds;
+    if (user.tutorId) return [user.tutorId];
+    return [];
+  }
+  function isTutorOf(tutorUid, user) {
+    return getTutorIds(user).includes(tutorUid);
+  }
+  function getMyStudents() {
+    return Object.entries(allUsers).filter(([,u]) => u.role === 'student' && isTutorOf(CU.uid, u));
+  }
 
   // ─────────────────────────────────────────
   // LOGIN LOADING SCREEN
@@ -2992,8 +3007,10 @@
       tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No users yet.</div></td></tr>'; return;
     }
     entries.forEach(([uid, u]) => {
-      const assignedTutor = u.tutorId ? (allUsers[u.tutorId]?.name || 'Unknown') : '—';
-      const tutorOptions = tutors.map(([tid, t]) => `<option value="${tid}" ${u.tutorId===tid?'selected':''}>${t.name||t.email}</option>`).join('');
+      const assignedTutorIds = getTutorIds(u);
+      const assignedTutor = assignedTutorIds.length
+        ? assignedTutorIds.map(tid => allUsers[tid]?.name || 'Unknown').join(', ')
+        : '—';
       const lastLogin = u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Never';
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -3225,7 +3242,7 @@
     // When student is selected, auto-select their assigned tutor
     ssel.onchange = function() {
       const student = allUsers[ssel.value];
-      if (student?.tutorId) tsel.value = student.tutorId;
+      const firstTutor = getTutorIds(student)[0]; if (firstTutor) tsel.value = firstTutor;
     };
     openModal('modal-session');
     document.getElementById('confirm-session-btn').onclick = saveSession;
@@ -3299,18 +3316,35 @@
   // Assign tutor
   window.openAssignModal = function(studentId, studentName) {
     document.getElementById('assign-student-name').textContent = studentName;
-    const sel = document.getElementById('assign-tutor-select');
-    sel.innerHTML = '<option value="">Unassign</option>';
-    Object.entries(allUsers).filter(([,u])=>u.role==='tutor').forEach(([uid,u])=>{
-      sel.innerHTML += `<option value="${uid}">${u.name||u.email}</option>`;
-    });
+    const checklist = document.getElementById('assign-tutor-checklist');
+    const currentIds = getTutorIds(allUsers[studentId] || {});
+    const tutors = Object.entries(allUsers).filter(([,u]) => u.role === 'tutor');
+
+    checklist.innerHTML = tutors.length
+      ? tutors.map(([tid, t]) => `
+          <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;padding:0.45rem 0.6rem;border:1px solid rgba(255,255,255,0.08);border-radius:4px;transition:background 0.15s;"
+                 onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+            <input type="checkbox" value="${tid}" ${currentIds.includes(tid) ? 'checked' : ''}
+                   style="accent-color:var(--red);width:15px;height:15px;cursor:pointer;" />
+            <span style="font-size:0.9rem;color:rgba(250,250,248,0.9)">${t.name || t.email}</span>
+          </label>`).join('')
+      : '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem">No tutors found. Create a tutor account first.</div>';
+
     openModal('modal-assign');
     document.getElementById('confirm-assign-btn').onclick = async function() {
-      const tutorId = sel.value.trim();
-      await updateDoc(doc(db,'users',studentId), { tutorId: tutorId||null });
-      allUsers[studentId].tutorId = tutorId||null;
-      showMsg(document.getElementById('assign-msg'), tutorId ? 'Tutor assigned!' : 'Tutor removed.', 'success');
-      setTimeout(()=>{ closeModal('modal-assign'); loadUsersTable(); }, 800);
+      const checked = [...checklist.querySelectorAll('input[type=checkbox]:checked')].map(cb => cb.value);
+      // Save as tutorIds array; also keep legacy tutorId as first entry for backward compat
+      await updateDoc(doc(db, 'users', studentId), {
+        tutorIds: checked,
+        tutorId:  checked[0] || null,
+      });
+      allUsers[studentId].tutorIds = checked;
+      allUsers[studentId].tutorId  = checked[0] || null;
+      const msg = checked.length
+        ? `${checked.length} tutor${checked.length > 1 ? 's' : ''} assigned!`
+        : 'Tutors removed.';
+      showMsg(document.getElementById('assign-msg'), msg, 'success');
+      setTimeout(() => { closeModal('modal-assign'); loadUsersTable(); }, 800);
     };
   };
 
@@ -3834,7 +3868,7 @@
     // Always reload fresh from Firestore so tutorId assignments are up to date
     await cacheAllUsers();
     // My students
-    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
+    const myStudents = getMyStudents();
     document.getElementById('tutor-stat-students').textContent = myStudents.length;
 
     // Sessions — split into upcoming vs past using same 30-min cutoff
@@ -3925,7 +3959,7 @@
 
   async function loadTutorStudentsPage() {
     await cacheAllUsers();
-    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
+    const myStudents = getMyStudents();
     window._tutorMyStudents = myStudents;
     loadTutorStudentsList(myStudents);
   }
@@ -3948,7 +3982,7 @@
     sessSnap.forEach(d => {
       const s = { id: d.id, ...d.data() };
       const myStudentIds = Object.entries(allUsers)
-        .filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim())
+        .filter(([,u])=>u.role==='student'&&isTutorOf(CU.uid,u))
         .map(([uid])=>uid);
       if (s.tutorId !== CU.uid && !myStudentIds.includes(s.studentId)) return;
       if (!s.date) return;
@@ -4079,7 +4113,7 @@
   window.openTutorSessionModal = function() {
     const sel = document.getElementById('session-student');
     sel.innerHTML = '<option value="">Select student</option>';
-    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
+    const myStudents = getMyStudents();
     myStudents.forEach(([uid,u])=>{ sel.innerHTML += `<option value="${uid}">${u.name||u.email}</option>`; });
     // Hide tutor row for tutors — they can only schedule for themselves
     const trow = document.getElementById('session-tutor-row');
@@ -4125,7 +4159,9 @@
       <div class="sidebar-item" onclick="showPage('student-practice',this)"><span class="sidebar-icon"></span>Practice Problems</div>
     `;
 
-    const tutorName = CU.tutorId ? (allUsers[CU.tutorId]?.name || 'Assigned') : null;
+    const tutorIds  = getTutorIds(CU);
+    const tutorNames = tutorIds.map(tid => allUsers[tid]?.name).filter(Boolean);
+    const tutorLabel = tutorNames.length ? tutorNames.join(' & ') : null;
 
     document.getElementById('main-content').innerHTML = `
       <!-- STUDENT DASHBOARD -->
@@ -4134,12 +4170,12 @@
           <h3>Welcome back, ${CU.name||'Student'}!</h3>
           <p>Track your progress, scores, and upcoming sessions here.</p>
         </div>
-        ${tutorName ? `<div class="card" style="margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
+        ${tutorLabel ? `<div class="card" style="margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
           <div>
-            <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem">Your Tutor</div>
-            <span class="tutor-chip"> ${tutorName}</span>
+            <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem">Your Tutor${tutorNames.length > 1 ? 's' : ''}</div>
+            <span class="tutor-chip"> ${tutorLabel}</span>
           </div>
-        </div>` : `<div class="card" style="margin-bottom:1.5rem"><p style="color:rgba(250,250,248,0.4);font-size:0.88rem">No tutor assigned yet. Your admin will assign one soon.</p></div>`}
+        </div>` : `<div class="card" style="margin-bottom:1.5rem"><p style="color:rgba(250,250,248,0.4);font-size:0.88rem">No tutor assigned yet. Contact your admin.</p></div>`}
         <div id="student-countdown"></div>
         <div class="grid-2" style="margin-bottom:1.5rem">
           <div class="card">
@@ -5290,7 +5326,7 @@
     const el = document.getElementById('tutor-assignments-list');
     if (!el) return;
     await cacheAllUsers();
-    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
+    const myStudents = getMyStudents();
     const studentIds = myStudents.map(([uid])=>uid);
 
     const snap = await getDocs(collection(db,'assignments'));
@@ -6285,7 +6321,7 @@ Good luck!`,
     }
 
     const typeLabel = {practice:'Practice Test',worksheet:'Worksheet',reading:'Reading',review:'Review',khan:'Khan Academy',other:'Other'};
-    const myStudents = Object.entries(allUsers).filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim());
+    const myStudents = getMyStudents();
 
     el.innerHTML = templates.map(t => `
       <div class="card" style="margin-bottom:0.8rem">
@@ -7346,7 +7382,7 @@ Good luck!`,
     // Filter by tutor's students if tutor
     if (role === 'tutor') {
       const myStudentIds = Object.entries(allUsers)
-        .filter(([, u]) => u.role === 'student' && (u.tutorId || '').trim() === (CU.uid || '').trim())
+        .filter(([, u]) => u.role === 'student' && isTutorOf(CU.uid, u))
         .map(([uid]) => uid);
       sessions = sessions.filter(s => myStudentIds.includes(s.studentId));
     }
@@ -7646,7 +7682,7 @@ Good luck!`,
       // Auto-select tutor when student is picked
       sSel.onchange = () => {
         const student = allUsers[sSel.value];
-        if (student?.tutorId) tSel.value = student.tutorId;
+        const firstTutor = getTutorIds(student)[0]; if (firstTutor) tSel.value = firstTutor;
       };
     } else {
       tRow.style.display = 'none';
@@ -7770,7 +7806,7 @@ Good luck!`,
     const sessSnap = await getDocs(collection(db, 'sessions'));
     const pastSessions = [];
     const myStudentIds = Object.entries(allUsers)
-      .filter(([,u])=>u.role==='student'&&(u.tutorId||'').trim()===(CU.uid||'').trim())
+      .filter(([,u])=>u.role==='student'&&isTutorOf(CU.uid,u))
       .map(([uid])=>uid);
     sessSnap.forEach(d => {
       const s = { id: d.id, ...d.data() };
