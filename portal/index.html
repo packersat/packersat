@@ -4206,9 +4206,12 @@
   // ████  STUDENT PORTAL
   // ─────────────────────────────────────────
   function buildStudentPortal() {
-    // Check if student has ACT scores — sidebar link shown only if they do
-    getDocs(query(collection(db,'actScores'), where('studentId','==',CU.uid))).then(snap => {
-      const hasACT = !snap.empty;
+    const tutorIds   = getTutorIds(CU);
+    const tutorNames = tutorIds.map(tid => allUsers[tid]?.name).filter(Boolean);
+    const tutorLabel = tutorNames.length ? tutorNames.join(' & ') : null;
+
+    // ── Write sidebar immediately (synchronous) ──────────────────────
+    function renderSidebar(hasACT) {
       document.getElementById('sidebar').innerHTML = `
         <div class="sidebar-section">Main</div>
         <div class="sidebar-item active" onclick="showPage('student-dashboard',this)"><span class="sidebar-icon"></span>Dashboard</div>
@@ -4227,10 +4230,13 @@
         <div class="sidebar-item" onclick="showPage('student-onboarding',this)"><span class="sidebar-icon"></span>Onboarding Guide</div>
         <div class="sidebar-item" onclick="showPage('student-practice',this)"><span class="sidebar-icon"></span>Practice</div>
       `;
-    });
-    const tutorIds  = getTutorIds(CU);
-    const tutorNames = tutorIds.map(tid => allUsers[tid]?.name).filter(Boolean);
-    const tutorLabel = tutorNames.length ? tutorNames.join(' & ') : null;
+    }
+
+    // Render sidebar immediately without ACT link, then re-render if they have ACT scores
+    renderSidebar(false);
+    getDocs(query(collection(db,'actScores'), where('studentId','==',CU.uid))).then(snap => {
+      if (!snap.empty) renderSidebar(true);
+    }).catch(() => {}); // silently ignore if ACT check fails
 
     document.getElementById('main-content').innerHTML = `
       <!-- STUDENT DASHBOARD -->
@@ -9696,7 +9702,6 @@ Good luck!`,
   function convertWaitlistToUser(id)   { window.convertWaitlistToUser && window.convertWaitlistToUser(id); }
   function removeFromWaitlist(id)      { window.removeFromWaitlist && window.removeFromWaitlist(id); }
   function addToWaitlist()             { window.addToWaitlist && window.addToWaitlist(); }
-  function adminLogScore(uid,name)     { window.adminLogScore && window.adminLogScore(uid,name); }
   function adminDeleteScore(id,uid)    { window.adminDeleteScore && window.adminDeleteScore(id,uid); }
   function adminDeleteNote(id,uid)     { window.adminDeleteNote && window.adminDeleteNote(id,uid); }
   function adminDeleteAssignment(id,uid){ window.adminDeleteAssignment && window.adminDeleteAssignment(id,uid); }
