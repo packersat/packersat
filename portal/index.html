@@ -2290,12 +2290,14 @@
       <!-- ADMIN SCORES -->
       <div class="page" id="page-admin-scores">
         <div class="page-header"><h2>Practice Test Scores</h2><p>Log and track scores for all students.</p></div>
+
+        <!-- SAT -->
         <div class="card" style="margin-bottom:1.5rem">
-          <div class="card-title">Log a Score</div>
+          <div class="card-title">Log SAT Score</div>
           <div class="form-row full" style="margin-bottom:0.8rem">
-          <div><div class="field-label">Student</div><select class="input-field" id="admin-score-student"></select></div>
-        </div>
-        <div class="form-row three">
+            <div><div class="field-label">Student</div><select class="input-field" id="admin-score-student"></select></div>
+          </div>
+          <div class="form-row three">
             <div><div class="field-label">Module</div>
               <select class="input-field" id="admin-score-module" onchange="toggleAdminScoreFields()">
                 <option value="both">Both (Full Test)</option>
@@ -2310,12 +2312,36 @@
             <div><div class="field-label">Date</div><input class="input-field" type="date" id="admin-score-date" /></div>
             <div><div class="field-label">Notes (optional)</div><input class="input-field" type="text" id="admin-score-notes" placeholder="Brief notes" /></div>
           </div>
-          <button class="btn-red" onclick="adminLogScore()">Save Score</button>
+          <button class="btn-red" onclick="adminLogScore()">Save SAT Score</button>
           <div class="form-msg" id="admin-score-msg"></div>
         </div>
-        <div class="card">
-          <div class="card-title"> All Scores <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.4rem">️ Export CSV</button></div>
+        <div class="card" style="margin-bottom:2rem">
+          <div class="card-title"> All SAT Scores <button class="btn-ghost" onclick="adminExportCSV()" style="font-size:0.75rem;padding:0.25rem 0.7rem;margin-left:0.75rem">Export CSV</button></div>
           <div class="table-wrap"><table><thead><tr><th>Student</th><th>Date</th><th>Math</th><th>R&W</th><th>Total</th><th>Notes</th><th></th></tr></thead><tbody id="admin-scores-tbody"><tr><td colspan="7"><div class="empty-state"><div class="icon"></div>No scores logged yet.</div></td></tr></tbody></table></div>
+        </div>
+
+        <!-- ACT -->
+        <div class="card" style="margin-bottom:1.5rem;border-top:2px solid rgba(200,169,110,0.25);padding-top:1.5rem">
+          <div class="card-title" style="color:#C8A96E">Log ACT Score</div>
+          <div class="form-row full" style="margin-bottom:0.8rem">
+            <div><div class="field-label">Student</div><select class="input-field" id="admin-act-student"></select></div>
+          </div>
+          <div class="form-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+            <div><div class="field-label">English (1–36)</div><input class="input-field" type="number" id="admin-act-english" placeholder="1–36" min="1" max="36" /></div>
+            <div><div class="field-label">Math (1–36)</div><input class="input-field" type="number" id="admin-act-math" placeholder="1–36" min="1" max="36" /></div>
+            <div><div class="field-label">Reading (1–36)</div><input class="input-field" type="number" id="admin-act-reading" placeholder="1–36" min="1" max="36" /></div>
+            <div><div class="field-label">Science (1–36)</div><input class="input-field" type="number" id="admin-act-science" placeholder="1–36" min="1" max="36" /></div>
+          </div>
+          <div class="form-row">
+            <div><div class="field-label">Date</div><input class="input-field" type="date" id="admin-act-date" /></div>
+            <div><div class="field-label">Notes (optional)</div><input class="input-field" type="text" id="admin-act-notes" placeholder="Brief notes" /></div>
+          </div>
+          <button class="btn-red" onclick="adminLogACTScore()">Save ACT Score</button>
+          <div class="form-msg" id="admin-act-msg"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:#C8A96E"> All ACT Scores</div>
+          <div class="table-wrap"><table><thead><tr><th>Student</th><th>Date</th><th>English</th><th>Math</th><th>Reading</th><th>Science</th><th>Composite</th><th>Notes</th><th></th></tr></thead><tbody id="admin-act-scores-tbody"><tr><td colspan="9"><div class="empty-state"><div class="icon"></div>No ACT scores logged yet.</div></td></tr></tbody></table></div>
         </div>
       </div>
 
@@ -3086,6 +3112,15 @@
 
   function populateAdminScoreStudents() {
     const sel = document.getElementById('admin-score-student');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Select student</option>';
+    Object.entries(allUsers).filter(([,u])=>u.role==='student').forEach(([uid,u])=>{
+      sel.innerHTML += `<option value="${uid}">${u.name||u.email}</option>`;
+    });
+  }
+
+  function populateAdminACTStudents() {
+    const sel = document.getElementById('admin-act-student');
     if (!sel) return;
     sel.innerHTML = '<option value="">Select student</option>';
     Object.entries(allUsers).filter(([,u])=>u.role==='student').forEach(([uid,u])=>{
@@ -4160,24 +4195,28 @@
   // ████  STUDENT PORTAL
   // ─────────────────────────────────────────
   function buildStudentPortal() {
-    document.getElementById('sidebar').innerHTML = `
-      <div class="sidebar-section">Main</div>
-      <div class="sidebar-item active" onclick="showPage('student-dashboard',this)"><span class="sidebar-icon"></span>Dashboard</div>
-      <div class="sidebar-section">My Info</div>
-      <div class="sidebar-item" onclick="showPage('student-scores',this)"><span class="sidebar-icon"></span>My Scores</div>
-      <div class="sidebar-item" onclick="showPage('student-sessions',this)"><span class="sidebar-icon"></span>My Sessions</div>
-      <div class="sidebar-item" onclick="showPage('student-notes',this)"><span class="sidebar-icon"></span>Tutor Notes</div>
-      <div class="sidebar-item" onclick="showPage('student-assignments',this)"><span class="sidebar-icon"></span>Assignments</div>
-      <div class="sidebar-item" onclick="showPage('student-documents',this)"><span class="sidebar-icon"></span>My Documents</div>
-      <div class="sidebar-section">Support</div>
-      <div class="sidebar-item" onclick="showPage('student-messages',this)"><span class="sidebar-icon"></span>Messages <span id="student-msg-badge" style="display:none;background:#c0182b;color:#fff;font-size:0.65rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:20px;margin-left:0.3rem"></span></div>
-      <div class="sidebar-section">Resources</div>
-      <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
-      <div class="sidebar-item" onclick="showPage('student-achievements',this)"><span class="sidebar-icon"></span>Achievements</div>
-      <div class="sidebar-item" onclick="showPage('student-onboarding',this)"><span class="sidebar-icon"></span>Getting Started</div>
-      <div class="sidebar-item" onclick="showPage('student-practice',this)"><span class="sidebar-icon"></span>Practice Problems</div>
-    `;
-
+    // Check if student has ACT scores — sidebar link shown only if they do
+    getDocs(query(collection(db,'actScores'), where('studentId','==',CU.uid))).then(snap => {
+      const hasACT = !snap.empty;
+      document.getElementById('sidebar').innerHTML = `
+        <div class="sidebar-section">Main</div>
+        <div class="sidebar-item active" onclick="showPage('student-dashboard',this)"><span class="sidebar-icon"></span>Dashboard</div>
+        <div class="sidebar-section">My Info</div>
+        <div class="sidebar-item" onclick="showPage('student-scores',this)"><span class="sidebar-icon"></span>My SAT Scores</div>
+        ${hasACT ? `<div class="sidebar-item" onclick="showPage('student-act-scores',this)"><span class="sidebar-icon"></span>My ACT Scores</div>` : ''}
+        <div class="sidebar-item" onclick="showPage('student-sessions',this)"><span class="sidebar-icon"></span>My Sessions</div>
+        <div class="sidebar-item" onclick="showPage('student-notes',this)"><span class="sidebar-icon"></span>Tutor Notes</div>
+        <div class="sidebar-item" onclick="showPage('student-assignments',this)"><span class="sidebar-icon"></span>Assignments</div>
+        <div class="sidebar-item" onclick="showPage('student-documents',this)"><span class="sidebar-icon"></span>Documents</div>
+        <div class="sidebar-section">Support</div>
+        <div class="sidebar-item" onclick="showPage('student-messages',this)"><span class="sidebar-icon"></span>Messages</div>
+        <div class="sidebar-section">Resources</div>
+        <div class="sidebar-item" onclick="showPage('resources',this)"><span class="sidebar-icon"></span>Prep Resources</div>
+        <div class="sidebar-item" onclick="showPage('student-achievements',this)"><span class="sidebar-icon"></span>Achievements</div>
+        <div class="sidebar-item" onclick="showPage('student-onboarding',this)"><span class="sidebar-icon"></span>Onboarding Guide</div>
+        <div class="sidebar-item" onclick="showPage('student-practice',this)"><span class="sidebar-icon"></span>Practice</div>
+      `;
+    });
     const tutorIds  = getTutorIds(CU);
     const tutorNames = tutorIds.map(tid => allUsers[tid]?.name).filter(Boolean);
     const tutorLabel = tutorNames.length ? tutorNames.join(' & ') : null;
@@ -4224,9 +4263,24 @@
 
       <!-- STUDENT SCORES -->
       <div class="page" id="page-student-scores">
-        <div class="page-header"><h2>My Scores</h2><p>All your practice test results.</p></div>
+        <div class="page-header"><h2>My SAT Scores</h2><p>All your SAT practice test results.</p></div>
         <div class="card">
-          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Math</th><th>R&W</th><th>Total</th><th>Change</th><th>Notes</th></tr></thead><tbody id="student-scores-tbody"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Math</th><th>R&W</th><th>Total</th><th>Change</th><th>Notes</th></tr></thead><tbody id="student-scores-tbody"><tr><td colspan="6"><div class="empty-state"><div class="icon"></div>No scores logged yet.</div></td></tr></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- STUDENT ACT SCORES -->
+      <div class="page" id="page-student-act-scores">
+        <div class="page-header"><h2>My ACT Scores</h2><p>Your ACT test results, logged by your admin.</p></div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card-title" style="color:#C8A96E"> ACT Score Chart</div>
+          <div id="student-act-chart-wrap" style="height:220px"><div class="empty-state"><div class="icon"></div>No ACT scores yet.</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:#C8A96E"> ACT Score History</div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>English</th><th>Math</th><th>Reading</th><th>Science</th><th>Composite</th><th>Notes</th></tr></thead><tbody id="student-act-scores-tbody"><tr><td colspan="7"><div class="empty-state"><div class="icon"></div>No ACT scores yet.</div></td></tr></tbody></table></div>
+        </div>
+      </div>ange</th><th>Notes</th></tr></thead><tbody id="student-scores-tbody"></tbody></table></div>
         </div>
       </div>
 
@@ -5210,6 +5264,129 @@
     loadAdminProfiles();
     loadAllScores();
   };
+
+  // ─────────────────────────────────────────
+  // ACT SCORES (admin-only logging)
+  // ─────────────────────────────────────────
+  window.adminLogACTScore = async function() {
+    const studentId = document.getElementById('admin-act-student').value;
+    const eng   = parseInt(document.getElementById('admin-act-english').value);
+    const math  = parseInt(document.getElementById('admin-act-math').value);
+    const read  = parseInt(document.getElementById('admin-act-reading').value);
+    const sci   = parseInt(document.getElementById('admin-act-science').value);
+    const date  = document.getElementById('admin-act-date').value;
+    const notes = document.getElementById('admin-act-notes').value.trim();
+    const msg   = document.getElementById('admin-act-msg');
+
+    if (!studentId) { showMsg(msg, 'Please select a student.', 'error'); return; }
+    if (!date)      { showMsg(msg, 'Please enter a date.', 'error'); return; }
+    const vals = [eng, math, read, sci].filter(v => !isNaN(v) && v >= 1 && v <= 36);
+    if (vals.length < 4) { showMsg(msg, 'Please enter all four section scores (1–36).', 'error'); return; }
+
+    const composite = Math.round((eng + math + read + sci) / 4);
+    await addDoc(collection(db, 'actScores'), {
+      studentId, english: eng, math, reading: read, science: sci,
+      composite, date, notes, loggedBy: CU.uid, createdAt: new Date().toISOString()
+    });
+    showMsg(msg, `ACT composite ${composite} saved!`, 'success');
+    ['admin-act-english','admin-act-math','admin-act-reading','admin-act-science','admin-act-notes']
+      .forEach(id => { document.getElementById(id).value = ''; });
+    loadAllACTScores();
+  };
+
+  async function loadAllACTScores() {
+    const tbody = document.getElementById('admin-act-scores-tbody');
+    if (!tbody) return;
+    const snap = await getDocs(collection(db, 'actScores'));
+    const rows = [];
+    snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
+    rows.sort((a,b) => b.date.localeCompare(a.date));
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon"></div>No ACT scores logged yet.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => {
+      const moduleTag = `<span style="font-size:0.68rem;font-weight:600;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.25);color:#C8A96E;padding:0.1rem 0.5rem;border-radius:20px;margin-left:0.4rem">ACT</span>`;
+      return `<tr>
+        <td>${allUsers[r.studentId]?.name||'Unknown'}${moduleTag}</td>
+        <td>${formatDate(r.date)}</td>
+        <td>${r.english||'—'}</td>
+        <td>${r.math||'—'}</td>
+        <td>${r.reading||'—'}</td>
+        <td>${r.science||'—'}</td>
+        <td><span class="score-pill">${r.composite||'—'}</span></td>
+        <td style="color:rgba(250,250,248,0.45);font-size:0.82rem">${r.notes||'—'}</td>
+        <td><button class="action-btn danger" onclick="adminDeleteACTScore('${r.id}')">Remove</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  window.adminDeleteACTScore = async function(scoreId) {
+    if (!confirm('Delete this ACT score? This cannot be undone.')) return;
+    await deleteDoc(doc(db, 'actScores', scoreId));
+    loadAllACTScores();
+  };
+
+  async function loadStudentACTScores() {
+    // Load ACT scores for the current student (only visible to the student themselves + admin)
+    const chartWrap = document.getElementById('student-act-chart-wrap');
+    const tbody     = document.getElementById('student-act-scores-tbody');
+    if (!chartWrap && !tbody) return;
+
+    const snap = await getDocs(query(collection(db,'actScores'), where('studentId','==',CU.uid)));
+    const scores = [];
+    snap.forEach(d => scores.push({ id: d.id, ...d.data() }));
+    scores.sort((a,b) => a.date.localeCompare(b.date));
+
+    if (!scores.length) return;
+
+    // Table
+    if (tbody) {
+      tbody.innerHTML = scores.slice().reverse().map((s,i) => {
+        const prev   = scores.slice().reverse()[i+1];
+        const change = prev ? s.composite - prev.composite : null;
+        const changeHtml = change !== null
+          ? `<span class="${change>=0?'score-change-pos':'score-change-neg'}">${change>=0?'+':''}${change}</span>`
+          : '—';
+        return `<tr>
+          <td>${formatDate(s.date)}</td>
+          <td>${s.english||'—'}</td>
+          <td>${s.math||'—'}</td>
+          <td>${s.reading||'—'}</td>
+          <td>${s.science||'—'}</td>
+          <td><span class="score-pill">${s.composite||'—'}</span></td>
+          <td style="font-size:0.82rem;color:rgba(250,250,248,0.45)">${s.notes||'—'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // Chart
+    if (chartWrap && scores.length >= 1) {
+      chartWrap.innerHTML = '<div class="chart-wrap"><canvas id="act-score-chart"></canvas></div>';
+      const ctx = document.getElementById('act-score-chart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: scores.map(s => formatDate(s.date)),
+          datasets: [
+            { label: 'Composite', data: scores.map(s=>s.composite||null), borderColor: '#C8A96E', backgroundColor: 'rgba(200,169,110,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#C8A96E', pointRadius: 4, spanGaps: true },
+            { label: 'English',   data: scores.map(s=>s.english||null),   borderColor: '#C0182B', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, spanGaps: true },
+            { label: 'Math',      data: scores.map(s=>s.math||null),      borderColor: 'rgba(250,250,248,0.5)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, spanGaps: true },
+            { label: 'Reading',   data: scores.map(s=>s.reading||null),   borderColor: 'rgba(200,169,110,0.5)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, spanGaps: true },
+            { label: 'Science',   data: scores.map(s=>s.science||null),   borderColor: 'rgba(192,24,43,0.4)',   backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, spanGaps: true },
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: 'rgba(250,250,248,0.6)', font: { size: 11 }, boxWidth: 16 } } },
+          scales: {
+            x: { ticks: { color: 'rgba(250,250,248,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } },
+            y: { min: 1, max: 36, ticks: { color: 'rgba(250,250,248,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } }
+          }
+        }
+      });
+    }
+  }
 
   window.adminDeleteNote = async function(noteId, studentId) {
     if (!confirm('Delete this note? This cannot be undone.')) return;
@@ -9279,13 +9456,14 @@ Good luck!`,
     if (pageId==='admin-messages') { populateDMRecipients(); loadDMHistory(); loadDMInbox(); loadEmailReplies(); }
     if (pageId==='admin-emails') { loadAdminEmailsPage(); loadSchedulePickerStudents(); addScheduleSlot(); }
     if (pageId==='admin-waitlist') loadWaitlist();
-    if (pageId==='admin-scores') { loadAllScores(); populateAdminScoreStudents(); }
+    if (pageId==='admin-scores') { loadAllScores(); loadAllACTScores(); populateAdminScoreStudents(); populateAdminACTStudents(); }
     if (pageId==='admin-sessions') { loadAdminSessions(); loadGroupSessions(); }
     if (pageId==='admin-session-logs') loadAdminSessionLogs();
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='admin-dashboard') loadReminderToggle();
     if (pageId==='admin-dashboard') loadPopupSettings();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
+    if (pageId==='student-act-scores') loadStudentACTScores();
     if (pageId==='student-sessions') { loadStudentSessionRequests(); loadGroupSessions(); }
     if (pageId==='student-documents') loadStudentDocuments();
     if (pageId==='student-messages') loadUserDMThread('student');
