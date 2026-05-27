@@ -5339,6 +5339,7 @@
   };
 
   async function loadAllACTScores() {
+    window.loadAllACTScores = loadAllACTScores;
     const tbody = document.getElementById('admin-act-scores-tbody');
     if (!tbody) return;
     const snap = await getDocs(collection(db, 'actScores'));
@@ -5367,13 +5368,14 @@
     }).join('');
   }
 
-  window.adminDeleteACTScore = async function(scoreId) {
+  window.adminDeleteACTScore   = async function(scoreId) {
     if (!confirm('Delete this ACT score? This cannot be undone.')) return;
     await deleteDoc(doc(db, 'actScores', scoreId));
     loadAllACTScores();
   };
 
   async function loadStudentACTScores() {
+    window.loadStudentACTScores = loadStudentACTScores;
     // Load ACT scores for the current student (only visible to the student themselves + admin)
     const chartWrap = document.getElementById('student-act-chart-wrap');
     const tbody     = document.getElementById('student-act-scores-tbody');
@@ -9700,7 +9702,10 @@ Good luck!`,
   function convertWaitlistToUser(id)   { window.convertWaitlistToUser && window.convertWaitlistToUser(id); }
   function removeFromWaitlist(id)      { window.removeFromWaitlist && window.removeFromWaitlist(id); }
   function addToWaitlist()             { window.addToWaitlist && window.addToWaitlist(); }
-  function adminDeleteScore(id,uid)    { window.adminDeleteScore && window.adminDeleteScore(id,uid); }
+  function adminLogACTScore()          { window.adminLogACTScore    && window.adminLogACTScore(); }
+  function adminDeleteACTScore(id)     { window.adminDeleteACTScore && window.adminDeleteACTScore(id); }
+  function loadAllACTScores()          { window.loadAllACTScores    && window.loadAllACTScores(); }
+  function loadStudentACTScores()      { window.loadStudentACTScores && window.loadStudentACTScores(); }
   function adminDeleteNote(id,uid)     { window.adminDeleteNote && window.adminDeleteNote(id,uid); }
   function adminDeleteAssignment(id,uid){ window.adminDeleteAssignment && window.adminDeleteAssignment(id,uid); }
   function adminExportCSV()            { window.adminExportCSV && window.adminExportCSV(); }
