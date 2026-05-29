@@ -10,25 +10,38 @@ const R2 = new S3Client({
   },
 });
 
-// Guess MIME type from file extension if browser didn't provide one
+// Resolve MIME from extension — covers all common student submission types
 function guessMime(fileName, provided) {
-  if (provided && provided !== 'application/octet-stream') return provided;
+  // Trust browser if it gave something real
+  if (provided && provided !== 'application/octet-stream' && provided !== '') return provided;
   const ext = (fileName || '').split('.').pop().toLowerCase();
   const map = {
+    // Images
     jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
-    gif: 'image/gif',  webp: 'image/webp', heic: 'image/heic',
-    heif: 'image/heif', pdf: 'application/pdf',
-    doc: 'application/msword',
+    gif: 'image/gif',  webp: 'image/webp', bmp: 'image/bmp',
+    tiff: 'image/tiff', tif: 'image/tiff',
+    heic: 'image/heic', heif: 'image/heif',
+    svg: 'image/svg+xml',
+    // Documents
+    pdf: 'application/pdf',
+    doc:  'application/msword',
     docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    txt: 'text/plain',
+    xls:  'application/vnd.ms-excel',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ppt:  'application/vnd.ms-powerpoint',
+    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    txt:  'text/plain', rtf: 'text/rtf', csv: 'text/csv',
+    // Other
+    zip: 'application/zip', mp4: 'video/mp4', mov: 'video/quicktime',
+    mp3: 'audio/mpeg', m4a: 'audio/mp4',
   };
   return map[ext] || 'application/octet-stream';
 }
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -39,11 +52,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Resolve MIME type — fall back to extension if browser gave empty/octet-stream
     const resolvedType = guessMime(fileName, fileType);
-
-    const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const key = `submissions/${assignmentId}/${Date.now()}_${safeName}`;
+    const safeName     = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const key          = `submissions/${assignmentId}/${Date.now()}_${safeName}`;
 
     const command = new PutObjectCommand({
       Bucket:      process.env.R2_BUCKET_NAME,
@@ -52,7 +63,8 @@ export default async function handler(req, res) {
     });
 
     const presignedUrl = await getSignedUrl(R2, command, { expiresIn: 300 });
-    const publicUrl = `${process.env.R2_PUBLIC_URL}/${key}`;
+    const publicUrl    = `${process.env.R2_PUBLIC_URL}/${key}`;
+
     return res.status(200).json({ presignedUrl, publicUrl, key, fileName, resolvedType });
 
   } catch (err) {
