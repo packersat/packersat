@@ -23,23 +23,33 @@
       --light-red: #E8293C;
       --white: #FAFAF8;
       --cream: #EDE0D4;
-      --dark: #1A0508;
-      --darker: #110305;
+      --dark: #fffdf7;
+      --darker: #f4ecd9;
       --gold: #C8A96E;
       --green: #2ecc71;
       --border: rgba(192,24,43,0.18);
+      /* editorial light tokens */
+      --ink: #1a1715;
+      --ink-2: #4a423a;
+      --ink-3: #6b6258;
+      --ink-4: #8a8278;
+      --paper: #f4ecd9;
+      --paper-2: #efe6d0;
+      --ivory: #fffdf7;
+      --rule: rgba(26,23,21,0.14);
+      --rule-soft: rgba(26,23,21,0.08);
 
       /* Refined system tokens */
-      --surface-0: rgba(17,3,5,1);
-      --surface-1: rgba(26,5,8,0.92);
-      --surface-2: rgba(36,8,12,0.7);
+      --surface-0: #fffdf7;
+      --surface-1: #fffdf7;
+      --surface-2: #f8f1de;
       --radius-sm: 5px;
       --radius-md: 8px;
       --radius-lg: 12px;
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-      --shadow-card: 0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.03);
-      --shadow-modal: 0 4px 6px rgba(0,0,0,0.5), 0 24px 48px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+      --shadow-card: 0 1px 2px rgba(26,23,21,0.05), 0 10px 28px rgba(26,23,21,0.07);
+      --shadow-modal: 0 14px 48px rgba(26,23,21,0.20);
     }
 
     /* ── RESET ── */
@@ -48,7 +58,7 @@
     body {
       font-family: 'DM Sans', sans-serif;
       background: var(--darker);
-      color: var(--white);
+      color: var(--ink);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -423,6 +433,7 @@
       position: relative; width: 132px; height: 132px; margin-bottom: 42px;
     }
     .loading-spinner svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .spin-globe { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
     .spin-track { stroke: rgba(26,23,21,0.10); }
     .spin-arc {
       stroke: #a31621; stroke-linecap: round;
@@ -434,7 +445,7 @@
       position: absolute; inset: 0;
       display: grid; place-items: center;
       font-family: 'Fraunces', serif;
-      font-style: italic; font-size: 44px;
+      font-style: normal; font-size: 26px;
       font-weight: 400; color: #1a1715;
     }
     .loading-headline {
@@ -496,7 +507,7 @@
       justify-content: space-between;
       padding: 0 2rem;
       height: 56px;
-      background: rgba(17,3,5,0.96);
+      background: rgba(255,253,247,0.96);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
@@ -524,7 +535,7 @@
       align-items: center;
       gap: 0.55rem;
       font-size: 0.86rem;
-      color: rgba(250,250,248,0.55);
+      color: rgba(26,23,21,0.55);
     }
 
     .role-pill {
@@ -541,8 +552,8 @@
 
     .logout-btn {
       background: transparent;
-      border: 1px solid rgba(250,250,248,0.12);
-      color: rgba(250,250,248,0.45);
+      border: 1px solid rgba(26,23,21,0.12);
+      color: rgba(26,23,21,0.45);
       padding: 0.36rem 0.9rem;
       border-radius: var(--radius-sm);
       font-family: 'DM Sans', sans-serif;
@@ -552,9 +563,9 @@
       white-space: nowrap;
     }
     .logout-btn:hover {
-      border-color: rgba(250,250,248,0.32);
-      color: var(--white);
-      background: rgba(255,255,255,0.04);
+      border-color: rgba(26,23,21,0.32);
+      color: var(--ink);
+      background: rgba(26,23,21,0.04);
     }
 
     .portal-body { display: flex; flex: 1; min-height: calc(100dvh - 56px); }
@@ -565,7 +576,7 @@
     .sidebar {
       width: 216px;
       flex-shrink: 0;
-      background: rgba(17,3,5,0.7);
+      background: rgba(255,253,247,0.7);
       border-right: 1px solid var(--border);
       padding: 1.25rem 0;
       overflow-y: auto;
@@ -576,7 +587,7 @@
       font-weight: 700;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: rgba(250,250,248,0.18);
+      color: rgba(26,23,21,0.18);
       padding: 1.1rem 1.4rem 0.35rem;
     }
 
@@ -585,7 +596,7 @@
       align-items: center;
       gap: 0.65rem;
       padding: 0.68rem 1.4rem;
-      color: rgba(250,250,248,0.48);
+      color: rgba(26,23,21,0.48);
       font-size: 0.86rem;
       font-weight: 500;
       cursor: pointer;
@@ -594,11 +605,11 @@
       position: relative;
     }
     .sidebar-item:hover {
-      color: rgba(250,250,248,0.88);
+      color: rgba(26,23,21,0.88);
       background: rgba(192,24,43,0.07);
     }
     .sidebar-item.active {
-      color: var(--white);
+      color: var(--ink);
       background: rgba(192,24,43,0.1);
       border-left-color: var(--red);
     }
@@ -624,7 +635,7 @@
       line-height: 1.2;
     }
     .page-header p {
-      color: rgba(250,250,248,0.42);
+      color: rgba(26,23,21,0.42);
       margin-top: 0.28rem;
       font-size: 0.88rem;
       line-height: 1.5;
@@ -636,7 +647,7 @@
     .card {
       background: var(--surface-1);
       border: 1px solid var(--border);
-      border-top: 1px solid rgba(255,255,255,0.04);
+      border-top: 1px solid rgba(26,23,21,0.04);
       border-radius: var(--radius-md);
       padding: 1.4rem;
       margin-bottom: 1.4rem;
@@ -665,9 +676,9 @@
       margin-bottom: 1.4rem;
     }
     .stat-card {
-      background: rgba(26,5,8,0.75);
+      background: rgba(255,253,247,0.75);
       border: 1px solid var(--border);
-      border-top: 1px solid rgba(255,255,255,0.05);
+      border-top: 1px solid rgba(26,23,21,0.05);
       border-radius: var(--radius-md);
       padding: 1.25rem 1.4rem;
       position: relative;
@@ -692,7 +703,7 @@
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.11em;
-      color: rgba(250,250,248,0.38);
+      color: rgba(26,23,21,0.38);
       margin-top: 0.35rem;
     }
 
@@ -702,7 +713,7 @@
     .welcome-banner {
       background: linear-gradient(125deg, var(--maroon) 0%, rgba(107,15,26,0.75) 60%, rgba(60,8,14,0.9) 100%);
       border: 1px solid rgba(192,24,43,0.28);
-      border-top: 1px solid rgba(255,255,255,0.06);
+      border-top: 1px solid rgba(26,23,21,0.06);
       border-radius: var(--radius-md);
       padding: 1.75rem 2rem;
       margin-bottom: 1.4rem;
@@ -715,7 +726,7 @@
       position: absolute;
       top: -40px; right: -40px;
       width: 160px; height: 160px;
-      background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(26,23,21,0.06) 0%, transparent 65%);
       border-radius: 50%;
     }
     .welcome-banner::after {
@@ -735,7 +746,7 @@
       letter-spacing: -0.01em;
     }
     .welcome-banner p {
-      color: rgba(250,250,248,0.65);
+      color: rgba(26,23,21,0.65);
       font-size: 0.88rem;
       position: relative;
       z-index: 1;
@@ -753,7 +764,7 @@
       font-weight: 600;
       letter-spacing: 0.11em;
       text-transform: uppercase;
-      color: rgba(250,250,248,0.35);
+      color: rgba(26,23,21,0.35);
       padding: 0.55rem 0.9rem;
       border-bottom: 1px solid rgba(192,24,43,0.14);
     }
@@ -761,7 +772,7 @@
       padding: 0.85rem 0.9rem;
       font-size: 0.87rem;
       border-bottom: 1px solid rgba(192,24,43,0.07);
-      color: rgba(250,250,248,0.78);
+      color: rgba(26,23,21,0.78);
       vertical-align: middle;
     }
     tr:last-child td { border-bottom: none; }
@@ -792,9 +803,9 @@
       color: #ffaaaa;
     }
     .badge-student {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(250,250,248,0.55);
+      background: rgba(26,23,21,0.05);
+      border: 1px solid rgba(26,23,21,0.1);
+      color: rgba(26,23,21,0.55);
     }
 
     /* ──────────────────────────────────────
@@ -802,7 +813,7 @@
     ────────────────────────────────────── */
     .btn-red {
       background: var(--red);
-      color: var(--white);
+      color: var(--ink);
       border: none;
       border-radius: var(--radius-sm);
       padding: 0.58rem 1.15rem;
@@ -824,7 +835,7 @@
     .btn-ghost {
       background: transparent;
       border: 1px solid rgba(192,24,43,0.22);
-      color: rgba(250,250,248,0.48);
+      color: rgba(26,23,21,0.48);
       padding: 0.58rem 1.15rem;
       border-radius: var(--radius-sm);
       font-family: 'DM Sans', sans-serif;
@@ -833,16 +844,16 @@
       transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.12s;
     }
     .btn-ghost:hover {
-      color: var(--white);
-      border-color: rgba(250,250,248,0.28);
-      background: rgba(255,255,255,0.04);
+      color: var(--ink);
+      border-color: rgba(26,23,21,0.28);
+      background: rgba(26,23,21,0.04);
     }
     .btn-ghost:active { transform: scale(0.97) translateY(1px); }
 
     .action-btn {
       background: transparent;
       border: 1px solid rgba(192,24,43,0.18);
-      color: rgba(250,250,248,0.45);
+      color: rgba(26,23,21,0.45);
       padding: 0.25rem 0.6rem;
       border-radius: var(--radius-sm);
       font-family: 'DM Sans', sans-serif;
@@ -853,7 +864,7 @@
     }
     .action-btn:hover {
       border-color: rgba(192,24,43,0.55);
-      color: var(--white);
+      color: var(--ink);
       background: rgba(192,24,43,0.08);
     }
     .action-btn.danger:hover {
@@ -866,11 +877,11 @@
        INPUTS
     ────────────────────────────────────── */
     .input-field {
-      background: rgba(255,255,255,0.04);
+      background: rgba(26,23,21,0.04);
       border: 1px solid rgba(192,24,43,0.22);
       border-radius: var(--radius-sm);
       padding: 0.62rem 0.88rem;
-      color: var(--white);
+      color: var(--ink);
       font-family: 'DM Sans', sans-serif;
       font-size: 0.87rem;
       outline: none;
@@ -879,11 +890,11 @@
     }
     .input-field:focus {
       border-color: rgba(192,24,43,0.6);
-      background: rgba(255,255,255,0.06);
+      background: rgba(26,23,21,0.06);
       box-shadow: 0 0 0 3px rgba(192,24,43,0.1);
     }
-    .input-field::placeholder { color: rgba(250,250,248,0.22); }
-    select.input-field option { background: #1a0508; color: var(--white); }
+    .input-field::placeholder { color: rgba(26,23,21,0.22); }
+    select.input-field option { background: #fffdf7; color: var(--ink); }
 
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
     .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
@@ -894,7 +905,7 @@
       font-weight: 600;
       letter-spacing: 0.09em;
       text-transform: uppercase;
-      color: rgba(250,250,248,0.38);
+      color: rgba(26,23,21,0.38);
       margin-bottom: 0.4rem;
     }
 
@@ -940,7 +951,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(8,1,2,0.8);
+      background: rgba(26,23,21,0.8);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       z-index: 200;
@@ -954,9 +965,9 @@
     .modal-overlay.open { opacity: 1; pointer-events: all; }
 
     .modal {
-      background: rgba(22,4,7,0.97);
+      background: rgba(255,253,247,0.97);
       border: 1px solid rgba(192,24,43,0.24);
-      border-top: 1px solid rgba(255,255,255,0.06);
+      border-top: 1px solid rgba(26,23,21,0.06);
       border-radius: var(--radius-lg);
       padding: 1.9rem;
       width: 90%;
@@ -979,7 +990,7 @@
     ────────────────────────────────────── */
     textarea.input-field { resize: vertical; min-height: 80px; }
     .note-item {
-      background: rgba(255,255,255,0.025);
+      background: rgba(26,23,21,0.025);
       border: 1px solid rgba(192,24,43,0.15);
       border-radius: var(--radius-sm);
       padding: 0.95rem;
@@ -989,7 +1000,7 @@
     .note-item:hover { border-color: rgba(192,24,43,0.28); }
     .note-meta {
       font-size: 0.73rem;
-      color: rgba(250,250,248,0.3);
+      color: rgba(26,23,21,0.3);
       margin-top: 0.45rem;
     }
 
@@ -997,7 +1008,7 @@
        ANNOUNCEMENTS
     ────────────────────────────────────── */
     .announce-item {
-      background: rgba(255,255,255,0.02);
+      background: rgba(26,23,21,0.02);
       border-left: 2px solid var(--red);
       padding: 0.95rem 1.15rem;
       margin-bottom: 0.75rem;
@@ -1013,10 +1024,10 @@
     }
     .announce-item p {
       font-size: 0.84rem;
-      color: rgba(250,250,248,0.58);
+      color: rgba(26,23,21,0.58);
       line-height: 1.6;
     }
-    .announce-meta { font-size: 0.7rem; color: rgba(250,250,248,0.28); margin-top: 0.4rem; }
+    .announce-meta { font-size: 0.7rem; color: rgba(26,23,21,0.28); margin-top: 0.4rem; }
 
     /* ──────────────────────────────────────
        TUTOR CHIP
@@ -1039,7 +1050,7 @@
     .empty-state {
       text-align: center;
       padding: 2.8rem 1rem;
-      color: rgba(250,250,248,0.25);
+      color: rgba(26,23,21,0.25);
       font-size: 0.86rem;
       line-height: 1.5;
     }
@@ -1058,7 +1069,7 @@
     .progress-summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 1rem; }
 
     .progress-student-card {
-      background: rgba(26,5,8,0.7);
+      background: rgba(255,253,247,0.7);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 1.15rem;
@@ -1077,12 +1088,12 @@
       display: flex;
       justify-content: space-between;
       font-size: 0.73rem;
-      color: rgba(250,250,248,0.45);
+      color: rgba(26,23,21,0.45);
       margin-bottom: 0.28rem;
     }
     .progress-bar-track {
       height: 5px;
-      background: rgba(255,255,255,0.07);
+      background: rgba(26,23,21,0.07);
       border-radius: 3px;
       overflow: hidden;
     }
@@ -1094,9 +1105,9 @@
     }
 
     .countdown-box {
-      background: linear-gradient(130deg, rgba(107,15,26,0.38), rgba(26,5,8,0.88));
+      background: linear-gradient(130deg, rgba(107,15,26,0.38), rgba(255,253,247,0.88));
       border: 1px solid rgba(192,24,43,0.32);
-      border-top: 1px solid rgba(255,255,255,0.04);
+      border-top: 1px solid rgba(26,23,21,0.04);
       border-radius: var(--radius-md);
       padding: 1.4rem;
       display: flex;
@@ -1110,13 +1121,13 @@
       font-size: 3.2rem;
       font-weight: 900;
       line-height: 1;
-      color: var(--white);
+      color: var(--ink);
       flex-shrink: 0;
       letter-spacing: -0.03em;
     }
     .countdown-days span {
       font-size: 0.88rem;
-      color: rgba(250,250,248,0.38);
+      color: rgba(26,23,21,0.38);
       font-family: 'DM Sans', sans-serif;
       font-weight: 400;
       display: block;
@@ -1134,11 +1145,11 @@
     }
     .countdown-info .ci-detail {
       font-size: 0.92rem;
-      color: var(--white);
+      color: var(--ink);
       font-weight: 500;
       margin-bottom: 0.18rem;
     }
-    .countdown-info .ci-sub { font-size: 0.8rem; color: rgba(250,250,248,0.42); }
+    .countdown-info .ci-sub { font-size: 0.8rem; color: rgba(26,23,21,0.42); }
 
     .improvement-chip {
       display: inline-flex;
@@ -1161,9 +1172,9 @@
       color: #ffa0a0;
     }
     .improvement-neu {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(250,250,248,0.45);
+      background: rgba(26,23,21,0.05);
+      border: 1px solid rgba(26,23,21,0.1);
+      color: rgba(26,23,21,0.45);
     }
 
     /* ──────────────────────────────────────
@@ -1193,7 +1204,7 @@
       font-family: 'Playfair Display', serif;
       font-size: 0.97rem;
       font-weight: 700;
-      color: var(--white);
+      color: var(--ink);
       letter-spacing: -0.01em;
     }
     .assignment-type-tag {
@@ -1205,18 +1216,18 @@
       border-radius: 20px;
       background: rgba(192,24,43,0.13);
       border: 1px solid rgba(192,24,43,0.28);
-      color: rgba(250,250,248,0.58);
+      color: rgba(26,23,21,0.58);
       white-space: nowrap;
     }
     .assignment-desc {
       font-size: 0.84rem;
-      color: rgba(250,250,248,0.52);
+      color: rgba(26,23,21,0.52);
       line-height: 1.65;
       margin-bottom: 0.75rem;
     }
     .assignment-meta {
       font-size: 0.73rem;
-      color: rgba(250,250,248,0.28);
+      color: rgba(26,23,21,0.28);
       margin-bottom: 0.75rem;
     }
     .assignment-actions { display: flex; gap: 0.55rem; flex-wrap: wrap; align-items: center; }
@@ -1275,13 +1286,13 @@
       font-family: 'Playfair Display', serif;
       font-size: 0.97rem;
       font-weight: 700;
-      color: var(--white);
+      color: var(--ink);
       margin-bottom: 0.35rem;
       letter-spacing: -0.01em;
     }
     .resource-desc {
       font-size: 0.79rem;
-      color: rgba(250,250,248,0.48);
+      color: rgba(26,23,21,0.48);
       line-height: 1.62;
       margin-bottom: 0.55rem;
     }
@@ -1289,7 +1300,7 @@
       display: inline-block;
       background: rgba(192,24,43,0.1);
       border: 1px solid rgba(192,24,43,0.22);
-      color: rgba(250,250,248,0.55);
+      color: rgba(26,23,21,0.55);
       font-size: 0.66rem;
       font-weight: 600;
       letter-spacing: 0.07em;
@@ -1329,7 +1340,7 @@
         display: block;
         width: 22px;
         height: 2px;
-        background: rgba(250,250,248,0.65);
+        background: rgba(26,23,21,0.65);
         border-radius: 2px;
         transition: all 0.2s;
       }
@@ -1338,7 +1349,7 @@
         display: block;
         position: fixed;
         inset: 0;
-        background: rgba(8,1,2,0.72);
+        background: rgba(26,23,21,0.72);
         z-index: 149;
         opacity: 0;
         pointer-events: none;
@@ -1357,7 +1368,7 @@
         transition: transform 0.26s var(--ease-out);
         overflow-y: auto;
         padding-top: 3.5rem;
-        background: rgba(14,2,4,0.97);
+        background: rgba(255,253,247,0.97);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
       }
@@ -1368,7 +1379,7 @@
         top: 0.8rem; right: 0.8rem;
         background: none;
         border: none;
-        color: rgba(250,250,248,0.45);
+        color: rgba(26,23,21,0.45);
         font-size: 1.4rem;
         cursor: pointer;
         line-height: 1;
@@ -1393,7 +1404,7 @@
         display: flex;
         position: fixed;
         bottom: 0; left: 0; right: 0;
-        background: rgba(12,2,4,0.97);
+        background: rgba(255,253,247,0.97);
         border-top: 1px solid rgba(192,24,43,0.18);
         z-index: 100;
         padding: 0 0 env(safe-area-inset-bottom, 0);
@@ -1409,7 +1420,7 @@
         padding: 8px 4px;
         background: none;
         border: none;
-        color: rgba(250,250,248,0.3);
+        color: rgba(26,23,21,0.3);
         font-size: 0.58rem;
         font-family: 'DM Sans', sans-serif;
         letter-spacing: 0.04em;
@@ -1425,8 +1436,99 @@
       .btn-red, .btn-ghost { padding: 0.52rem 0.95rem; font-size: 0.81rem; }
       #email-preview-frame { padding: 12px 8px; }
     }
+  
+    /* =====================================================================
+       LIGHT EDITORIAL RE-SKIN  (portal / post-login)  — appended overrides
+       ===================================================================== */
+    #portal-screen.active {
+      background:
+        radial-gradient(60% 50% at 100% 0%, rgba(163,22,33,0.06), transparent 60%),
+        radial-gradient(50% 40% at 0% 100%, rgba(163,22,33,0.04), transparent 65%),
+        var(--paper);
+    }
+    .portal-nav { background: rgba(255,253,247,0.85); border-bottom: 1px solid var(--rule-soft); }
+    .sidebar { background: rgba(255,253,247,0.6); border-right: 1px solid var(--rule); }
+    .sidebar-item.active { background: rgba(163,22,33,0.08); }
+    .page-header p { color: var(--ink-3); }
+
+    .card, .stat-card, .assignment-card, .resource-card, .progress-student-card, .note-item {
+      border-color: var(--rule); border-top-color: var(--rule-soft);
+    }
+
+    /* warm maroon feature blocks (kept dark, like the landing's accent panels) */
+    .welcome-banner { background: linear-gradient(125deg, var(--maroon) 0%, rgba(107,15,26,0.92) 60%, rgba(60,8,14,0.96) 100%); border: 1px solid rgba(192,24,43,0.30); }
+    .welcome-banner h3 { color: #FAFAF8; }
+    .welcome-banner p { color: rgba(250,250,248,0.72); }
+    .countdown-box { background: linear-gradient(130deg, rgba(107,15,26,0.92), rgba(40,6,10,0.96)); border: 1px solid rgba(192,24,43,0.32); }
+    .countdown-days { color: #FAFAF8; }
+    .countdown-days span { color: rgba(250,250,248,0.6); }
+    .countdown-info .ci-detail { color: #FAFAF8; }
+    .countdown-info .ci-sub { color: rgba(250,250,248,0.6); }
+
+    /* primary crimson buttons keep light text */
+    .btn-red { color: #FAFAF8; }
+
+    /* inputs / selects -> ivory on paper */
+    .input-field { background: #fffdf7; }
+    .input-field::placeholder { color: rgba(26,23,21,0.34); }
+    select.input-field option { background: #fffdf7; color: #1a1715; }
+
+    /* modal surfaces */
+    .modal-overlay { background: rgba(26,23,21,0.45); }
+    .modal { background: #fffdf7; }
+
+    /* status colors that must read on light */
+    .score-change-pos, .improvement-pos, .done-chip, .form-msg.success { color: #1f8a4d; }
+    .score-change-neg, .improvement-neg, .form-msg.error { color: #b3261e; }
+    .form-msg.success { background: rgba(46,204,113,0.12); border-color: rgba(31,138,77,0.30); }
+    .form-msg.error { background: rgba(192,24,43,0.08); border-color: rgba(179,38,30,0.30); }
+    .pending-chip { color: #9a7b1f; background: rgba(200,150,0,0.12); border-color: rgba(154,123,31,0.32); }
+    .submitted-chip { color: #4646c8; background: rgba(100,100,255,0.10); border-color: rgba(74,74,200,0.28); }
+    .improvement-neu { color: var(--ink-3); background: rgba(26,23,21,0.05); border-color: var(--rule); }
+    .badge-tutor { color: #a31621; }
+    .badge-admin { color: #8a6d2f; }
+    .role-pill { color: #a31621; }
+    .tutor-chip { color: #a31621; }
+    .score-pill { color: #8a6d2f; background: rgba(200,169,110,0.16); border-color: rgba(138,109,47,0.30); }
+
+    /* mobile chrome */
+    .mobile-nav-bar { background: rgba(255,253,247,0.97); border-top: 1px solid var(--rule); }
+    .hamburger-btn span { background: var(--ink-3); }
+
+    /* staggered entrance for dashboard content (cosmetic) */
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes psat-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      #main-content > .card,
+      #main-content > .welcome-banner,
+      #main-content > .stats-row > .stat-card,
+      #main-content > .grid-2 > .card,
+      #main-content > .grid-3 > .stat-card,
+      #main-content > div > #student-countdown .countdown-box {
+        animation: psat-rise 0.5s cubic-bezier(0.16,1,0.3,1) both;
+      }
+      #main-content > .welcome-banner { animation-delay: 0.02s; }
+      #main-content > .stats-row > .stat-card:nth-child(1) { animation-delay: 0.06s; }
+      #main-content > .stats-row > .stat-card:nth-child(2) { animation-delay: 0.12s; }
+      #main-content > .stats-row > .stat-card:nth-child(3) { animation-delay: 0.18s; }
+      #main-content > .stats-row > .stat-card:nth-child(4) { animation-delay: 0.24s; }
+      #main-content > .grid-3 > .stat-card:nth-child(2) { animation-delay: 0.08s; }
+      #main-content > .grid-3 > .stat-card:nth-child(3) { animation-delay: 0.16s; }
+      /* card-title crimson rail draws in on hover */
+      .card-title { position: relative; }
+      .card-title::after {
+        content: ''; position: absolute; left: -1.4rem; top: 0; bottom: 0.75rem;
+        width: 2px; background: var(--portal-red); transform: scaleY(0); transform-origin: top;
+        transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+      }
+      .card:hover > .card-title::after { transform: scaleY(1); }
+    }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- d3-geo + topojson — power the globe mark in the login loading screen -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+
 
   <!-- MathJax: renders both MathML and LaTeX math in practice problems -->
   <script>
@@ -1449,7 +1551,7 @@
     #prac-question-area mfrac > mn:first-child,
     #prac-question-area mfrac > mrow:first-child { border-bottom: 1px solid currentColor; }
     #prac-question-area p { margin: 0.4rem 0; line-height: 1.7; }
-    #prac-question-area svg { max-width: 100%; height: auto; filter: invert(1) hue-rotate(180deg); }
+    #prac-question-area svg { max-width: 100%; height: auto; filter: none; }
   </style>
 
 </head>
@@ -1466,10 +1568,7 @@
     <div class="loading-center">
       <div class="loading-eyebrow">&mdash; Signing you in</div>
       <div class="loading-spinner">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <circle class="spin-track" cx="50" cy="50" r="44" fill="none" stroke-width="2"></circle>
-          <circle class="spin-arc"   cx="50" cy="50" r="44" fill="none" stroke-width="2" stroke-dasharray="60 220"></circle>
-        </svg>
+        <canvas class="spin-globe" id="login-globe"></canvas>
         <div class="spin-seal">P</div>
       </div>
       <div class="loading-headline">One moment, <span class="ital">please.</span></div>
@@ -1611,7 +1710,7 @@
 <div class="modal-overlay" id="modal-delete">
   <div class="modal">
     <h3>Remove User</h3>
-    <p style="color:rgba(250,250,248,0.6);font-size:0.9rem">Are you sure you want to remove <strong id="delete-name"></strong>? This cannot be undone.</p>
+    <p style="color:rgba(26,23,21,0.6);font-size:0.9rem">Are you sure you want to remove <strong id="delete-name"></strong>? This cannot be undone.</p>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeModal('modal-delete')">Cancel</button>
       <button class="btn-red" id="confirm-delete-btn">Remove</button>
@@ -1623,7 +1722,7 @@
 <div class="modal-overlay" id="modal-score">
   <div class="modal">
     <h3>Log Practice Test Score</h3>
-    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="score-student-name"></strong></p>
+    <p style="color:rgba(26,23,21,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="score-student-name"></strong></p>
     <div class="form-row three">
       <div>
         <div class="field-label">Module</div>
@@ -1694,7 +1793,7 @@
 <div class="modal-overlay" id="modal-note">
   <div class="modal">
     <h3>Add Note</h3>
-    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="note-student-name"></strong></p>
+    <p style="color:rgba(26,23,21,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="note-student-name"></strong></p>
     <div class="form-row full">
       <div>
         <div class="field-label">Note</div>
@@ -1713,7 +1812,7 @@
 <div class="modal-overlay" id="modal-assign">
   <div class="modal">
     <h3>Assign Tutors</h3>
-    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="assign-student-name"></strong></p>
+    <p style="color:rgba(26,23,21,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="assign-student-name"></strong></p>
     <div class="form-row full">
       <div>
         <div class="field-label">Select tutors (check all that apply)</div>
@@ -1733,7 +1832,7 @@
 <div class="modal-overlay" id="modal-waitlist-add">
   <div class="modal" style="max-width:480px">
     <h3>Add to Waitlist</h3>
-    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">Manually add a student to the waitlist.</p>
+    <p style="color:rgba(26,23,21,0.5);font-size:0.85rem;margin-bottom:1.2rem">Manually add a student to the waitlist.</p>
     <div class="form-row">
       <div><div class="field-label">Full Name</div><input class="input-field" type="text" id="wl-name" placeholder="Full name" /></div>
       <div><div class="field-label">Email</div><input class="input-field" type="email" id="wl-email" placeholder="Email" /></div>
@@ -1778,7 +1877,7 @@
 <div class="modal-overlay" id="modal-dm">
   <div class="modal" style="max-width:480px">
     <h3>Message Admin</h3>
-    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">Send a private message to the program administrator.</p>
+    <p style="color:rgba(26,23,21,0.5);font-size:0.85rem;margin-bottom:1.2rem">Send a private message to the program administrator.</p>
     <div style="margin-bottom:0.8rem"><div class="field-label">Subject</div><input class="input-field" type="text" id="user-dm-subject" placeholder="e.g. Question about my session" /></div>
     <div style="margin-bottom:0.8rem"><div class="field-label">Message</div><textarea class="input-field" id="user-dm-body" placeholder="Write your message..." style="min-height:110px;resize:vertical"></textarea></div>
     <div class="modal-actions">
@@ -1793,7 +1892,7 @@
 <div class="modal-overlay" id="modal-assignment">
   <div class="modal" style="max-width:560px">
     <h3>New Assignment</h3>
-    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="assignment-student-name"></strong></p>
+    <p style="color:rgba(26,23,21,0.5);font-size:0.85rem;margin-bottom:1.2rem">for <strong id="assignment-student-name"></strong></p>
     <div class="form-row full" style="margin-bottom:0.8rem">
       <div><div class="field-label">Title</div><input class="input-field" type="text" id="assignment-title" placeholder="e.g. Practice Test 3 — Math Section" /></div>
     </div>
@@ -1827,7 +1926,7 @@
 <div class="modal-overlay" id="modal-doc">
   <div class="modal" style="max-width:500px">
     <h3>Share Document</h3>
-    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem">with <strong id="doc-student-name"></strong></p>
+    <p style="color:rgba(26,23,21,0.5);font-size:0.85rem;margin-bottom:1.2rem">with <strong id="doc-student-name"></strong></p>
     <div class="form-row full" style="margin-bottom:0.8rem">
       <div><div class="field-label">Label</div><input class="input-field" type="text" id="doc-label" placeholder="e.g. Week 3 Homework, Practice Test #2" /></div>
     </div>
@@ -1846,7 +1945,7 @@
 <div class="modal-overlay" id="modal-change-email">
   <div class="modal" style="max-width:440px">
     <h3>Change Email Address</h3>
-    <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;margin-bottom:1.2rem;line-height:1.6">Enter your new email address below. Firebase will send a verification link to the new address — it won't change until you click that link.</p>
+    <p style="color:rgba(26,23,21,0.5);font-size:0.85rem;margin-bottom:1.2rem;line-height:1.6">Enter your new email address below. Firebase will send a verification link to the new address — it won't change until you click that link.</p>
     <div class="form-row full" style="margin-bottom:1rem">
       <div>
         <div class="field-label">New Email Address</div>
@@ -2201,54 +2300,54 @@
           <!-- Nightly Reminder -->
           <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
             <div>
-              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8">Nightly Session Log Reminders</div>
-              <div style="font-size:0.8rem;color:rgba(250,250,248,0.45);margin-top:0.2rem">Tutors are emailed each night about unlogged past sessions</div>
+              <div style="font-size:0.9rem;font-weight:600;color:#1a1715">Nightly Session Log Reminders</div>
+              <div style="font-size:0.8rem;color:rgba(26,23,21,0.45);margin-top:0.2rem">Tutors are emailed each night about unlogged past sessions</div>
             </div>
             <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0;margin-left:1.5rem;cursor:pointer">
               <input type="checkbox" id="reminder-toggle" style="opacity:0;width:0;height:0;position:absolute" onchange="toggleReminders(this.checked)">
-              <span id="reminder-slider" style="position:absolute;inset:0;border-radius:26px;background:rgba(250,250,248,0.15);transition:background 0.2s;cursor:pointer">
+              <span id="reminder-slider" style="position:absolute;inset:0;border-radius:26px;background:rgba(26,23,21,0.15);transition:background 0.2s;cursor:pointer">
                 <span id="reminder-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.2s"></span>
               </span>
             </label>
           </div>
-          <div id="reminder-status-text" style="font-size:0.75rem;color:rgba(250,250,248,0.3);margin-top:0.3rem"></div>
+          <div id="reminder-status-text" style="font-size:0.75rem;color:rgba(26,23,21,0.3);margin-top:0.3rem"></div>
 
           <!-- Divider -->
-          <div style="border-top:1px solid rgba(250,250,248,0.06);margin:1rem 0"></div>
+          <div style="border-top:1px solid rgba(26,23,21,0.06);margin:1rem 0"></div>
 
           <!-- Announcement Popup -->
           <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
             <div>
-              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8">Announcement Popup</div>
-              <div style="font-size:0.8rem;color:rgba(250,250,248,0.45);margin-top:0.2rem">Shows a dismissible popup to all users when they log in</div>
+              <div style="font-size:0.9rem;font-weight:600;color:#1a1715">Announcement Popup</div>
+              <div style="font-size:0.8rem;color:rgba(26,23,21,0.45);margin-top:0.2rem">Shows a dismissible popup to all users when they log in</div>
             </div>
             <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0;margin-left:1.5rem;cursor:pointer">
               <input type="checkbox" id="popup-toggle" style="opacity:0;width:0;height:0;position:absolute" onchange="toggleAnnouncementPopup(this.checked)">
-              <span id="popup-slider" style="position:absolute;inset:0;border-radius:26px;background:rgba(250,250,248,0.15);transition:background 0.2s;cursor:pointer">
+              <span id="popup-slider" style="position:absolute;inset:0;border-radius:26px;background:rgba(26,23,21,0.15);transition:background 0.2s;cursor:pointer">
                 <span id="popup-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.2s"></span>
               </span>
             </label>
           </div>
-          <div id="popup-status-text" style="font-size:0.75rem;color:rgba(250,250,248,0.3);margin-top:0.3rem"></div>
+          <div id="popup-status-text" style="font-size:0.75rem;color:rgba(26,23,21,0.3);margin-top:0.3rem"></div>
 
           <!-- Popup editor (shown when enabled) -->
-          <div id="popup-editor" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(250,250,248,0.06)">
-            <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.8rem">Customize popup content</div>
+          <div id="popup-editor" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(26,23,21,0.06)">
+            <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(26,23,21,0.35);margin-bottom:0.8rem">Customize popup content</div>
             <div style="margin-bottom:0.7rem">
-              <div class="field-label">Headline <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(large text)</span></div>
+              <div class="field-label">Headline <span style="color:rgba(26,23,21,0.3);font-size:0.72rem">(large text)</span></div>
               <input class="input-field" type="text" id="popup-title" placeholder="e.g. Try our new feature!" oninput="savePopupDraft()" />
             </div>
             <div style="margin-bottom:0.7rem">
-              <div class="field-label">Body <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(shown below headline)</span></div>
+              <div class="field-label">Body <span style="color:rgba(26,23,21,0.3);font-size:0.72rem">(shown below headline)</span></div>
               <textarea class="input-field" id="popup-body" rows="3" placeholder="e.g. Practice Problems is now live. Find it in your sidebar." oninput="savePopupDraft()" style="resize:vertical;font-family:inherit;line-height:1.6"></textarea>
             </div>
             <div class="form-row" style="margin-bottom:0.7rem">
               <div>
-                <div class="field-label">Button label <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(optional)</span></div>
+                <div class="field-label">Button label <span style="color:rgba(26,23,21,0.3);font-size:0.72rem">(optional)</span></div>
                 <input class="input-field" type="text" id="popup-btn-label" placeholder="e.g. Try it now" oninput="savePopupDraft()" />
               </div>
               <div>
-                <div class="field-label">Button URL <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(optional)</span></div>
+                <div class="field-label">Button URL <span style="color:rgba(26,23,21,0.3);font-size:0.72rem">(optional)</span></div>
                 <input class="input-field" type="text" id="popup-btn-url" placeholder="e.g. https://packersat.org/portal" oninput="savePopupDraft()" />
               </div>
             </div>
@@ -2274,7 +2373,7 @@
           </div>
           <div class="card">
             <div class="card-title"> Tips</div>
-            <p style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.9">
+            <p style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.9">
               • Assign tutors to students from the students table below.<br>
               • Scores can be logged from the Scores page.<br>
               • Students and tutors each see their own tailored dashboard.
@@ -2444,7 +2543,7 @@
           <div id="dm-inbox-list"><div class="empty-state"><div class="icon"></div>No messages received yet.</div></div>
         </div>
         <div class="card" style="margin-top:1.5rem">
-          <div class="card-title">&#9993; Email Replies <span style="font-size:0.72rem;font-weight:400;color:rgba(250,250,248,0.35);margin-left:0.5rem">Replies sent to jack@packersat.org from your emails</span></div>
+          <div class="card-title">&#9993; Email Replies <span style="font-size:0.72rem;font-weight:400;color:rgba(26,23,21,0.35);margin-left:0.5rem">Replies sent to jack@packersat.org from your emails</span></div>
           <div id="dm-email-replies-list"><div class="empty-state"><div class="icon"></div>No email replies yet. When students reply to emails you send through the portal, they appear here.</div></div>
         </div>
       </div>
@@ -2454,9 +2553,9 @@
         <div class="page-header"><h2>Emails</h2><p>Send branded emails to students via Brevo.</p></div>
 
         <!-- Tab switcher -->
-        <div style="display:flex;gap:0.5rem;margin-bottom:1.2rem;border-bottom:1px solid rgba(250,250,248,0.08);padding-bottom:0">
-          <button id="email-tab-compose" onclick="switchEmailTab('compose')" style="background:none;border:none;border-bottom:2px solid #C0182B;color:#FAFAF8;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;padding:0.5rem 1rem;cursor:pointer;margin-bottom:-1px">Compose</button>
-          <button id="email-tab-schedule" onclick="switchEmailTab('schedule')" style="background:none;border:none;border-bottom:2px solid transparent;color:rgba(250,250,248,0.45);font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;padding:0.5rem 1rem;cursor:pointer;margin-bottom:-1px">Schedule Picker</button>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1.2rem;border-bottom:1px solid rgba(26,23,21,0.08);padding-bottom:0">
+          <button id="email-tab-compose" onclick="switchEmailTab('compose')" style="background:none;border:none;border-bottom:2px solid #C0182B;color:#a31621;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;padding:0.5rem 1rem;cursor:pointer;margin-bottom:-1px">Compose</button>
+          <button id="email-tab-schedule" onclick="switchEmailTab('schedule')" style="background:none;border:none;border-bottom:2px solid transparent;color:rgba(26,23,21,0.45);font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;padding:0.5rem 1rem;cursor:pointer;margin-bottom:-1px">Schedule Picker</button>
         </div>
 
         <!-- COMPOSE TAB -->
@@ -2471,7 +2570,7 @@
               <div style="margin-bottom:0.9rem">
                 <div class="field-label">Audience</div>
                 <div style="display:flex;gap:0.5rem">
-                  <button id="aud-students" class="action-btn" onclick="setAudience('students')" style="flex:1;font-size:0.8rem;background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Students</button>
+                  <button id="aud-students" class="action-btn" onclick="setAudience('students')" style="flex:1;font-size:0.8rem;background:#c0182b;border-color:#c0182b;color:#FAFAF8">Students</button>
                   <button id="aud-tutors" class="action-btn" onclick="setAudience('tutors')" style="flex:1;font-size:0.8rem">Tutors</button>
                   <button id="aud-everyone" class="action-btn" onclick="setAudience('everyone')" style="flex:1;font-size:0.8rem">Everyone</button>
                 </div>
@@ -2526,19 +2625,19 @@
 
               <div style="margin-bottom:0.9rem">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
-                  <div class="field-label" style="margin-bottom:0">Body <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">— use [Name] to personalize</span></div>
-                  <button id="newsletter-gen-btn" onclick="generateNewsletterWithAI()" style="display:none;background:linear-gradient(135deg,rgba(192,24,43,0.25),rgba(107,15,26,0.35));border:1px solid rgba(192,24,43,0.45);color:#FAFAF8;font-size:0.75rem;font-weight:600;padding:0.28rem 0.85rem;border-radius:4px;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.03em">✦ Regenerate</button>
+                  <div class="field-label" style="margin-bottom:0">Body <span style="color:rgba(26,23,21,0.35);font-size:0.75rem">— use [Name] to personalize</span></div>
+                  <button id="newsletter-gen-btn" onclick="generateNewsletterWithAI()" style="display:none;background:linear-gradient(135deg,#c0182b,#8b1520);border:1px solid #8b1520;color:#FAFAF8;font-size:0.75rem;font-weight:600;padding:0.28rem 0.85rem;border-radius:4px;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.03em">✦ Regenerate</button>
                 </div>
                 <textarea class="input-field" id="email-body" rows="8" placeholder="Write your message here..." oninput="updateEmailPreview()" style="resize:vertical;min-height:160px;font-family:inherit;line-height:1.6"></textarea>
               </div>
 
               <div style="margin-bottom:0.9rem">
-                <div class="field-label">Button label <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(optional)</span></div>
+                <div class="field-label">Button label <span style="color:rgba(26,23,21,0.35);font-size:0.75rem">(optional)</span></div>
                 <input class="input-field" type="text" id="email-btn-label" placeholder="e.g. View in Portal" oninput="updateEmailPreview()" />
               </div>
 
               <div style="margin-bottom:0.9rem">
-                <div class="field-label">Button URL <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(optional)</span></div>
+                <div class="field-label">Button URL <span style="color:rgba(26,23,21,0.35);font-size:0.75rem">(optional)</span></div>
                 <input class="input-field" type="text" id="email-btn-url" placeholder="https://www.packersat.org/portal" oninput="updateEmailPreview()" />
               </div>
 
@@ -2557,8 +2656,8 @@
 
           <!-- Preview panel -->
           <div class="card" style="padding:0;overflow:hidden">
-            <div class="card-title" style="padding:1rem 1.2rem;border-bottom:1px solid rgba(250,250,248,0.06)">Preview</div>
-            <div id="email-preview-frame" style="background:#1A0508;padding:24px 16px;min-height:500px;border-radius:0 0 10px 10px">
+            <div class="card-title" style="padding:1rem 1.2rem;border-bottom:1px solid rgba(26,23,21,0.06)">Preview</div>
+            <div id="email-preview-frame" style="background:#f4ecd9;padding:24px 16px;min-height:500px;border-radius:0 0 10px 10px">
               <div id="email-preview-inner" style="max-width:520px;margin:0 auto;font-family:'Helvetica Neue',Arial,sans-serif"></div>
             </div>
           </div>
@@ -2573,7 +2672,7 @@
             <!-- Left: builder -->
             <div class="card">
               <div class="card-title">Schedule Picker</div>
-              <p style="font-size:0.82rem;color:rgba(250,250,248,0.45);margin-bottom:1.2rem;line-height:1.6">Pick a student and add up to 4 available time slots. The student gets an email where they click their preferred time to confirm — it automatically creates the session and sends a calendar invite.</p>
+              <p style="font-size:0.82rem;color:rgba(26,23,21,0.45);margin-bottom:1.2rem;line-height:1.6">Pick a student and add up to 4 available time slots. The student gets an email where they click their preferred time to confirm — it automatically creates the session and sends a calendar invite.</p>
 
               <div style="margin-bottom:0.9rem">
                 <div class="field-label">Recipient</div>
@@ -2594,13 +2693,13 @@
               </div>
 
               <div style="margin-bottom:0.9rem">
-                <div class="field-label" style="margin-bottom:0.6rem">Available Time Slots <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(add up to 4)</span></div>
+                <div class="field-label" style="margin-bottom:0.6rem">Available Time Slots <span style="color:rgba(26,23,21,0.3);font-size:0.72rem">(add up to 4)</span></div>
                 <div id="sp-slots" style="display:flex;flex-direction:column;gap:0.5rem"></div>
                 <button class="btn-ghost" onclick="addScheduleSlot()" id="sp-add-btn" style="margin-top:0.6rem;font-size:0.8rem;padding:0.35rem 0.9rem">+ Add Time Slot</button>
               </div>
 
               <div style="margin-bottom:0.9rem">
-                <div class="field-label">Email intro <span style="color:rgba(250,250,248,0.3);font-size:0.72rem">(shown above the time slots)</span></div>
+                <div class="field-label">Email intro <span style="color:rgba(26,23,21,0.3);font-size:0.72rem">(shown above the time slots)</span></div>
                 <textarea class="input-field" id="sp-note" rows="3" placeholder="I'd like to schedule our next tutoring session. Please click on a time that works for you:" oninput="updateSchedulePreview()" style="resize:vertical;font-family:inherit;line-height:1.6"></textarea>
               </div>
 
@@ -2610,10 +2709,10 @@
 
             <!-- Right: preview -->
             <div class="card" style="padding:0;overflow:hidden">
-              <div class="card-title" style="padding:1rem 1.2rem;border-bottom:1px solid rgba(250,250,248,0.06)">Preview</div>
-              <div style="background:#1A0508;padding:24px 16px;min-height:400px;border-radius:0 0 10px 10px">
+              <div class="card-title" style="padding:1rem 1.2rem;border-bottom:1px solid rgba(26,23,21,0.06)">Preview</div>
+              <div style="background:#f4ecd9;padding:24px 16px;min-height:400px;border-radius:0 0 10px 10px">
                 <div id="sp-preview" style="max-width:520px;margin:0 auto;font-family:'Helvetica Neue',Arial,sans-serif">
-                  <div style="text-align:center;color:rgba(250,250,248,0.2);font-size:0.85rem;padding:3rem">Add a student and time slots to see a preview.</div>
+                  <div style="text-align:center;color:rgba(26,23,21,0.2);font-size:0.85rem;padding:3rem">Add a student and time slots to see a preview.</div>
                 </div>
               </div>
             </div>
@@ -2647,11 +2746,11 @@
           <div class="card-title">Add to Waitlist Manually
             <button class="btn-red" onclick="openModal('modal-waitlist-add')" style="font-size:0.75rem;padding:0.3rem 0.8rem;margin-left:0.5rem">+ Add</button>
           </div>
-          <p style="color:rgba(250,250,248,0.4);font-size:0.83rem">Students who fill out the homepage signup form are automatically added here. You can also add them manually.</p>
+          <p style="color:rgba(26,23,21,0.4);font-size:0.83rem">Students who fill out the homepage signup form are automatically added here. You can also add them manually.</p>
         </div>
         <div class="card">
           <div class="card-title">Pending Students
-            <span id="waitlist-count" style="font-size:0.75rem;color:rgba(250,250,248,0.4);margin-left:0.5rem"></span>
+            <span id="waitlist-count" style="font-size:0.75rem;color:rgba(26,23,21,0.4);margin-left:0.5rem"></span>
           </div>
           <div class="table-wrap">
             <table>
@@ -2926,7 +3025,7 @@
             <div>
               <div class="field-label" style="margin-bottom:0.4rem">Subject</div>
               <div style="display:flex;gap:0.4rem">
-                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Math</button>
+                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:#c0182b;border-color:#c0182b;color:#FAFAF8">Math</button>
                 <button id="prac-btn-rw" class="action-btn" onclick="setPracSubject('rw')">Reading &amp; Writing</button>
               </div>
             </div>
@@ -2934,7 +3033,7 @@
               <div class="field-label" style="margin-bottom:0.4rem">Difficulty</div>
               <div style="display:flex;gap:0.4rem">
                 <button id="prac-btn-easy" class="action-btn" onclick="setPracDiff('easy')">Easy</button>
-                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Medium</button>
+                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:#c0182b;border-color:#c0182b;color:#FAFAF8">Medium</button>
                 <button id="prac-btn-hard" class="action-btn" onclick="setPracDiff('hard')">Hard</button>
               </div>
             </div>
@@ -2950,16 +3049,16 @@
           <div class="card" style="margin-bottom:1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
               <div style="display:flex;gap:0.8rem;align-items:center">
-                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Question 1</span>
-                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(250,250,248,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
+                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(26,23,21,0.35)">Question 1</span>
+                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(26,23,21,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
               </div>
-              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(250,250,248,0.4)">
+              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(26,23,21,0.4)">
                 <span>&#10003; <span id="prac-correct-count" style="color:#7dffaa;font-weight:600">0</span></span>
                 <span>&#10007; <span id="prac-wrong-count" style="color:#ff8a8a;font-weight:600">0</span></span>
               </div>
             </div>
-            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#FAFAF8"></p>
-            <div id="prac-q-context" style="background:rgba(255,255,255,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(250,250,248,0.7);display:none;border-radius:0 4px 4px 0"></div>
+            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#1a1715"></p>
+            <div id="prac-q-context" style="background:rgba(26,23,21,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(26,23,21,0.7);display:none;border-radius:0 4px 4px 0"></div>
             <div id="prac-choices" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem"></div>
             <div id="prac-feedback" style="display:none;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6"></div>
             <div id="prac-hints" style="display:none">
@@ -2968,7 +3067,7 @@
                 <button class="btn-ghost" onclick="showHint(2)" id="hint-btn-2" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Hint 2</button>
                 <button class="btn-ghost" onclick="showHint(3)" id="hint-btn-3" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Show Solution</button>
               </div>
-              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:var(--cream);line-height:1.7;display:none"></div>
+              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:#4a423a;line-height:1.7;display:none"></div>
             </div>
             <div style="display:flex;justify-content:flex-end;margin-top:0.5rem">
               <button class="btn-red" onclick="nextPracQuestion()" id="prac-next-btn" style="display:none">Next Question</button>
@@ -2980,10 +3079,10 @@
         <div id="prac-idle" class="card" style="text-align:center;padding:3rem">
           <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
           <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
-          <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+          <div style="color:rgba(26,23,21,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
         </div>
         <div style="margin-top:2rem">
-          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(250,250,248,0.08)">Student Practice Reports</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(26,23,21,0.08)">Student Practice Reports</div>
           <div id="admin-practice-filter" style="margin-bottom:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
             <select class="input-field" id="admin-practice-student-filter" onchange="loadAdminPractice()" style="width:auto">
               <option value="">All students</option>
@@ -3071,11 +3170,11 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${u.name||'—'}</td>
-        <td style="color:rgba(250,250,248,0.5)">${u.email}</td>
+        <td style="color:rgba(26,23,21,0.5)">${u.email}</td>
         <td><span class="badge badge-${u.role}">${u.role}</span></td>
-        <td style="color:rgba(250,250,248,0.45);font-size:0.8rem">${lastLogin}</td>
+        <td style="color:rgba(26,23,21,0.45);font-size:0.8rem">${lastLogin}</td>
         <td>${u.role==='student' ? `<button class="action-btn" onclick="openAssignModal('${uid.trim()}','${(u.name||'').replace(/'/g,"\\'")}')"> ${assignedTutor}</button>` : '—'}</td>
-        <td>${(u.email||'').toLowerCase() === 'jackroseblue@gmail.com' ? '<span style="font-size:0.72rem;color:rgba(250,250,248,0.25);letter-spacing:0.05em">Master Account</span>' : `<button class="action-btn danger" onclick="promptDelete('${uid}','${(u.name||u.email).replace(/'/g,"\\'")}')">Remove</button>`}</td>`;
+        <td>${(u.email||'').toLowerCase() === 'jackroseblue@gmail.com' ? '<span style="font-size:0.72rem;color:rgba(26,23,21,0.25);letter-spacing:0.05em">Master Account</span>' : `<button class="action-btn danger" onclick="promptDelete('${uid}','${(u.name||u.email).replace(/'/g,"\\'")}')">Remove</button>`}</td>`;
       tbody.appendChild(tr);
     });
   }
@@ -3189,7 +3288,7 @@
         <td>${r.math||'—'}</td>
         <td>${r.rw||'—'}</td>
         <td><span class="score-pill">${r.total||'—'}</span></td>
-        <td style="color:rgba(250,250,248,0.45);font-size:0.82rem">${r.notes||'—'}</td>
+        <td style="color:rgba(26,23,21,0.45);font-size:0.82rem">${r.notes||'—'}</td>
         <td><button class="action-btn danger" onclick="adminDeleteScore('${r.id}','${r.studentId}')">Remove</button></td>
       </tr>`;
     }).join('');
@@ -3250,7 +3349,7 @@
               <td>${r.location||'—'}</td>
               <td style="display:flex;gap:0.4rem;flex-wrap:wrap">
                 ${r.logged
-                  ? '<span style="font-size:0.75rem;color:rgba(250,250,248,0.35)"> Logged</span>'
+                  ? '<span style="font-size:0.75rem;color:rgba(26,23,21,0.35)"> Logged</span>'
                   : `<button class="action-btn" onclick="openSessionLogModal('${r.id}')"> Log</button>`}
                 <button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button>
               </td>
@@ -3285,7 +3384,7 @@
     el.innerHTML = rows.slice(0,4).map(r=>`
       <div style="display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid rgba(192,24,43,0.1);font-size:0.85rem">
         <span>${allUsers[r.studentId]?.name||'?'} with ${allUsers[r.tutorId]?.name||'?'}</span>
-        <span style="color:rgba(250,250,248,0.4)">${formatDate(r.date)} ${r.time ? formatTime(r.time) : ''}</span>
+        <span style="color:rgba(26,23,21,0.4)">${formatDate(r.date)} ${r.time ? formatTime(r.time) : ''}</span>
       </div>`).join('');
   }
 
@@ -3387,13 +3486,13 @@
 
     checklist.innerHTML = tutors.length
       ? tutors.map(([tid, t]) => `
-          <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;padding:0.45rem 0.6rem;border:1px solid rgba(255,255,255,0.08);border-radius:4px;transition:background 0.15s;"
-                 onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;padding:0.45rem 0.6rem;border:1px solid rgba(26,23,21,0.08);border-radius:4px;transition:background 0.15s;"
+                 onmouseover="this.style.background='rgba(26,23,21,0.05)'" onmouseout="this.style.background='transparent'">
             <input type="checkbox" value="${tid}" ${currentIds.includes(tid) ? 'checked' : ''}
                    style="accent-color:var(--red);width:15px;height:15px;cursor:pointer;" />
-            <span style="font-size:0.9rem;color:rgba(250,250,248,0.9)">${t.name || t.email}</span>
+            <span style="font-size:0.9rem;color:rgba(26,23,21,0.9)">${t.name || t.email}</span>
           </label>`).join('')
-      : '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem">No tutors found. Create a tutor account first.</div>';
+      : '<div style="color:rgba(26,23,21,0.4);font-size:0.85rem">No tutors found. Create a tutor account first.</div>';
 
     openModal('modal-assign');
     document.getElementById('confirm-assign-btn').onclick = async function() {
@@ -3489,7 +3588,7 @@
       <div class="page" id="page-tutor-sessions">
         <div class="page-header"><h2>Sessions</h2><p>Your scheduled tutoring sessions.</p></div>
         <div class="card" id="tutor-requests-card" style="margin-bottom:1.2rem;display:none">
-          <div class="card-title">⏳ Session Requests <span id="tutor-req-count" style="font-size:0.8rem;font-weight:400;color:rgba(250,250,248,0.5)"></span></div>
+          <div class="card-title">⏳ Session Requests <span id="tutor-req-count" style="font-size:0.8rem;font-weight:400;color:rgba(26,23,21,0.5)"></span></div>
           <div id="tutor-requests-list"></div>
         </div>
         <div class="card" style="margin-bottom:1.2rem">
@@ -3546,17 +3645,17 @@
           <div>
             <div class="card">
               <div class="card-title">Your Role as a Tutor</div>
-              <p style="color:rgba(250,250,248,0.65);font-size:0.92rem;line-height:1.8;margin-bottom:1rem">You are responsible for running consistent, structured one-on-one sessions with your assigned students. Sessions should be 45 to 60 minutes, held one to two times per week. Your job is to identify weak areas, assign targeted practice, and track progress over time.</p>
-              <p style="color:rgba(250,250,248,0.65);font-size:0.92rem;line-height:1.8">Always come prepared. Review the student's most recent scores and assignment completion before each meeting.</p>
+              <p style="color:rgba(26,23,21,0.65);font-size:0.92rem;line-height:1.8;margin-bottom:1rem">You are responsible for running consistent, structured one-on-one sessions with your assigned students. Sessions should be 45 to 60 minutes, held one to two times per week. Your job is to identify weak areas, assign targeted practice, and track progress over time.</p>
+              <p style="color:rgba(26,23,21,0.65);font-size:0.92rem;line-height:1.8">Always come prepared. Review the student's most recent scores and assignment completion before each meeting.</p>
             </div>
             <div class="card">
               <div class="card-title">Session Best Practices</div>
               <div style="display:flex;flex-direction:column;gap:0.75rem">
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Start each session by reviewing last time's assignment. Hold students accountable.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Spend the first 10 minutes on a warm-up: 3 to 5 questions from a recent struggle area.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Focus on one or two topics per session rather than trying to cover everything at once.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">End every session with a specific assignment and a clear expectation for next time.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Log every session in the portal within 24 hours. Notes help track patterns over time.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">Start each session by reviewing last time's assignment. Hold students accountable.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">Spend the first 10 minutes on a warm-up: 3 to 5 questions from a recent struggle area.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">Focus on one or two topics per session rather than trying to cover everything at once.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">End every session with a specific assignment and a clear expectation for next time.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">Log every session in the portal within 24 hours. Notes help track patterns over time.</span></div>
               </div>
             </div>
           </div>
@@ -3564,20 +3663,20 @@
             <div class="card">
               <div class="card-title">Portal Pages at a Glance</div>
               <div style="display:flex;flex-direction:column;gap:0.9rem">
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">My Students</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">View assigned students, assign work, log scores, and write notes.</div></div>
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Sessions</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Schedule sessions and log past ones within 30 minutes after they start.</div></div>
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Assignment Templates</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Save reusable assignment types to apply in one click when assigning work.</div></div>
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Messages</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Direct line to the admin for questions, schedule changes, or anything else.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">My Students</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">View assigned students, assign work, log scores, and write notes.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Sessions</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">Schedule sessions and log past ones within 30 minutes after they start.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Assignment Templates</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">Save reusable assignment types to apply in one click when assigning work.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Messages</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">Direct line to the admin for questions, schedule changes, or anything else.</div></div>
               </div>
             </div>
             <div class="card">
               <div class="card-title">Expectations</div>
               <div style="display:flex;flex-direction:column;gap:0.6rem">
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">1</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">Respond to student messages within 48 hours.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">2</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">Log sessions within 24 hours of completion.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">3</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">If you need to cancel, notify the student and admin as early as possible.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">4</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">Students should always leave a session with a clear next step.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">5</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.65">Contact the admin if a student stops showing up or seems disengaged.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">1</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.65">Respond to student messages within 48 hours.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">2</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.65">Log sessions within 24 hours of completion.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">3</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.65">If you need to cancel, notify the student and admin as early as possible.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">4</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.65">Students should always leave a session with a clear next step.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px;flex-shrink:0;margin-top:0.15rem">5</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.65">Contact the admin if a student stops showing up or seems disengaged.</span></div>
               </div>
             </div>
           </div>
@@ -3848,7 +3947,7 @@
             <div>
               <div class="field-label" style="margin-bottom:0.4rem">Subject</div>
               <div style="display:flex;gap:0.4rem">
-                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Math</button>
+                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:#c0182b;border-color:#c0182b;color:#FAFAF8">Math</button>
                 <button id="prac-btn-rw" class="action-btn" onclick="setPracSubject('rw')">Reading &amp; Writing</button>
               </div>
             </div>
@@ -3856,7 +3955,7 @@
               <div class="field-label" style="margin-bottom:0.4rem">Difficulty</div>
               <div style="display:flex;gap:0.4rem">
                 <button id="prac-btn-easy" class="action-btn" onclick="setPracDiff('easy')">Easy</button>
-                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Medium</button>
+                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:#c0182b;border-color:#c0182b;color:#FAFAF8">Medium</button>
                 <button id="prac-btn-hard" class="action-btn" onclick="setPracDiff('hard')">Hard</button>
               </div>
             </div>
@@ -3872,16 +3971,16 @@
           <div class="card" style="margin-bottom:1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
               <div style="display:flex;gap:0.8rem;align-items:center">
-                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Question 1</span>
-                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(250,250,248,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
+                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(26,23,21,0.35)">Question 1</span>
+                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(26,23,21,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
               </div>
-              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(250,250,248,0.4)">
+              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(26,23,21,0.4)">
                 <span>&#10003; <span id="prac-correct-count" style="color:#7dffaa;font-weight:600">0</span></span>
                 <span>&#10007; <span id="prac-wrong-count" style="color:#ff8a8a;font-weight:600">0</span></span>
               </div>
             </div>
-            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#FAFAF8"></p>
-            <div id="prac-q-context" style="background:rgba(255,255,255,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(250,250,248,0.7);display:none;border-radius:0 4px 4px 0"></div>
+            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#1a1715"></p>
+            <div id="prac-q-context" style="background:rgba(26,23,21,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(26,23,21,0.7);display:none;border-radius:0 4px 4px 0"></div>
             <div id="prac-choices" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem"></div>
             <div id="prac-feedback" style="display:none;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6"></div>
             <div id="prac-hints" style="display:none">
@@ -3890,7 +3989,7 @@
                 <button class="btn-ghost" onclick="showHint(2)" id="hint-btn-2" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Hint 2</button>
                 <button class="btn-ghost" onclick="showHint(3)" id="hint-btn-3" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Show Solution</button>
               </div>
-              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:var(--cream);line-height:1.7;display:none"></div>
+              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:#4a423a;line-height:1.7;display:none"></div>
             </div>
             <div style="display:flex;justify-content:flex-end;margin-top:0.5rem">
               <button class="btn-red" onclick="nextPracQuestion()" id="prac-next-btn" style="display:none">Next Question</button>
@@ -3902,10 +4001,10 @@
         <div id="prac-idle" class="card" style="text-align:center;padding:3rem">
           <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
           <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
-          <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+          <div style="color:rgba(26,23,21,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
         </div>
         <div style="margin-top:2rem">
-          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(250,250,248,0.08)">Student Practice Reports</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(26,23,21,0.08)">Student Practice Reports</div>
           <div id="tutor-practice-list"><div class="empty-state"><div class="icon"></div>No practice sessions yet.</div></div>
         </div>
       </div>
@@ -3969,7 +4068,7 @@
     else preview.innerHTML = upcoming.slice(0,4).map(s=>`
       <div style="display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid rgba(192,24,43,0.1);font-size:0.85rem">
         <span>${allUsers[s.studentId]?.name||'?'}</span>
-        <span style="color:rgba(250,250,248,0.4)">${formatDate(s.date)} ${s.time ? formatTime(s.time) : ''}</span>
+        <span style="color:rgba(26,23,21,0.4)">${formatDate(s.date)} ${s.time ? formatTime(s.time) : ''}</span>
       </div>`).join('');
 
     // Announcements
@@ -4003,17 +4102,17 @@
         </div>
         <div class="grid-2">
           <div>
-            <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em">Practice Scores</div>
+            <div style="font-size:0.75rem;color:rgba(26,23,21,0.4);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em">Practice Scores</div>
             <div id="scores-${uid}"><div class="empty-state" style="padding:1rem 0"><div class="icon"></div>No scores yet.</div></div>
           </div>
           <div>
-            <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em">Notes</div>
+            <div style="font-size:0.75rem;color:rgba(26,23,21,0.4);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em">Notes</div>
             <div id="notes-${uid}"><div class="empty-state" style="padding:1rem 0"><div class="icon"></div>No notes yet.</div></div>
           </div>
         </div>
-        <div style="margin-top:1.2rem;border-top:1px solid rgba(250,250,248,0.06);padding-top:1rem">
+        <div style="margin-top:1.2rem;border-top:1px solid rgba(26,23,21,0.06);padding-top:1rem">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
-            <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em">Shared Documents</div>
+            <div style="font-size:0.75rem;color:rgba(26,23,21,0.4);text-transform:uppercase;letter-spacing:0.08em">Shared Documents</div>
             <button class="action-btn" onclick="openDocModal('${uid}')">+ Doc</button>
           </div>
           <div id="docs-${uid}"><div class="empty-state" style="padding:0.5rem 0"><div class="icon"></div>No documents yet.</div></div>
@@ -4085,7 +4184,7 @@
     let html = '';
 
     if (upcoming.length) {
-      html += `<tr><td colspan="5" style="padding:0.5rem 0.8rem;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);background:rgba(250,250,248,0.03)">Upcoming</td></tr>`;
+      html += `<tr><td colspan="5" style="padding:0.5rem 0.8rem;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(26,23,21,0.35);background:rgba(26,23,21,0.03)">Upcoming</td></tr>`;
       html += upcoming.map(s => {
         window._sessionLogCache[s.id] = s;
         return `<tr>
@@ -4099,7 +4198,7 @@
     }
 
     if (past.length) {
-      html += `<tr><td colspan="5" style="padding:0.5rem 0.8rem;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);background:rgba(250,250,248,0.03)">Past</td></tr>`;
+      html += `<tr><td colspan="5" style="padding:0.5rem 0.8rem;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(26,23,21,0.35);background:rgba(26,23,21,0.03)">Past</td></tr>`;
       html += past.map(s => {
         window._sessionLogCache[s.id] = s;
         return `<tr>
@@ -4247,10 +4346,10 @@
         </div>
         ${tutorLabel ? `<div class="card" style="margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
           <div>
-            <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem">Your Tutor${tutorNames.length > 1 ? 's' : ''}</div>
+            <div style="font-size:0.75rem;color:rgba(26,23,21,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem">Your Tutor${tutorNames.length > 1 ? 's' : ''}</div>
             <span class="tutor-chip"> ${tutorLabel}</span>
           </div>
-        </div>` : `<div class="card" style="margin-bottom:1.5rem"><p style="color:rgba(250,250,248,0.4);font-size:0.88rem">No tutor assigned yet. Contact your admin.</p></div>`}
+        </div>` : `<div class="card" style="margin-bottom:1.5rem"><p style="color:rgba(26,23,21,0.4);font-size:0.88rem">No tutor assigned yet. Contact your admin.</p></div>`}
         <div id="student-countdown"></div>
         <div class="grid-2" style="margin-bottom:1.5rem">
           <div class="card">
@@ -4581,16 +4680,16 @@
           <div>
             <div class="card">
               <div class="card-title">Welcome to Packer SAT Tutoring</div>
-              <p style="color:rgba(250,250,248,0.65);font-size:0.92rem;line-height:1.8;margin-bottom:1rem">You have been paired with a Packer upperclassman who has scored in the top percentile on the SAT. Sessions are one-on-one, free, and tailored entirely to you. There is no fixed curriculum — your tutor will work on whatever you need most.</p>
-              <p style="color:rgba(250,250,248,0.65);font-size:0.92rem;line-height:1.8">The more you put in, the more you will get out. Come to every session having done the assigned work and be honest about what you do and don't understand.</p>
+              <p style="color:rgba(26,23,21,0.65);font-size:0.92rem;line-height:1.8;margin-bottom:1rem">You have been paired with a Packer upperclassman who has scored in the top percentile on the SAT. Sessions are one-on-one, free, and tailored entirely to you. There is no fixed curriculum — your tutor will work on whatever you need most.</p>
+              <p style="color:rgba(26,23,21,0.65);font-size:0.92rem;line-height:1.8">The more you put in, the more you will get out. Come to every session having done the assigned work and be honest about what you do and don't understand.</p>
             </div>
             <div class="card">
               <div class="card-title">What Happens in a Session</div>
               <div style="display:flex;flex-direction:column;gap:0.75rem">
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">1</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Your tutor reviews what you worked on since last time.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">2</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">You work through problems together, focusing on areas you find difficult.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">3</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Your tutor assigns specific practice for you to complete before the next session.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">4</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">After the session, your tutor logs notes in the portal. You can read these under Tutor Notes.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">1</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">Your tutor reviews what you worked on since last time.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">2</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">You work through problems together, focusing on areas you find difficult.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">3</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">Your tutor assigns specific practice for you to complete before the next session.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="background:rgba(192,24,43,0.18);border:1px solid rgba(192,24,43,0.3);color:var(--red);font-size:0.7rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;flex-shrink:0;margin-top:0.1rem">4</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">After the session, your tutor logs notes in the portal. You can read these under Tutor Notes.</span></div>
               </div>
             </div>
           </div>
@@ -4598,22 +4697,22 @@
             <div class="card">
               <div class="card-title">Your Portal Pages</div>
               <div style="display:flex;flex-direction:column;gap:0.9rem">
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">My Scores</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">View all your logged SAT scores and track your improvement over time.</div></div>
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">My Sessions</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">See upcoming and past sessions. Request a new session from this page.</div></div>
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Assignments</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">All work assigned by your tutor. Mark complete when done and attach your submission.</div></div>
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Tutor Notes</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Session notes written by your tutor. Read these to review what was covered.</div></div>
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Achievements</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Badges earned for milestones like score improvements and sessions completed.</div></div>
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Prep Resources</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Khan Academy, Bluebook, and other free tools your tutor may recommend.</div></div>
-                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Messages</div><div style="color:rgba(250,250,248,0.5);font-size:0.85rem;line-height:1.65">Direct message the admin with any questions or concerns.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">My Scores</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">View all your logged SAT scores and track your improvement over time.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">My Sessions</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">See upcoming and past sessions. Request a new session from this page.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Assignments</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">All work assigned by your tutor. Mark complete when done and attach your submission.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Tutor Notes</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">Session notes written by your tutor. Read these to review what was covered.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Achievements</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">Badges earned for milestones like score improvements and sessions completed.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Prep Resources</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">Khan Academy, Bluebook, and other free tools your tutor may recommend.</div></div>
+                <div style="border-left:2px solid rgba(192,24,43,0.35);padding-left:0.9rem"><div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem">Messages</div><div style="color:rgba(26,23,21,0.5);font-size:0.85rem;line-height:1.65">Direct message the admin with any questions or concerns.</div></div>
               </div>
             </div>
             <div class="card">
               <div class="card-title">Tips for Success</div>
               <div style="display:flex;flex-direction:column;gap:0.65rem">
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Always complete your assignments before the next session, even if it takes extra time.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Be specific about what you don't understand. "I don't get math" is not helpful. "I keep getting the linear equations questions wrong" is.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">Take at least one timed full-length Bluebook practice test before your actual SAT.</span></div>
-                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(250,250,248,0.65);font-size:0.9rem;line-height:1.7">If you need to reschedule, message your tutor as early as possible.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">Always complete your assignments before the next session, even if it takes extra time.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">Be specific about what you don't understand. "I don't get math" is not helpful. "I keep getting the linear equations questions wrong" is.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">Take at least one timed full-length Bluebook practice test before your actual SAT.</span></div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="color:var(--red);font-weight:700;flex-shrink:0">&#8594;</span><span style="color:rgba(26,23,21,0.65);font-size:0.9rem;line-height:1.7">If you need to reschedule, message your tutor as early as possible.</span></div>
               </div>
             </div>
           </div>
@@ -4634,7 +4733,7 @@
             <div>
               <div class="field-label" style="margin-bottom:0.4rem">Subject</div>
               <div style="display:flex;gap:0.4rem">
-                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Math</button>
+                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:#c0182b;border-color:#c0182b;color:#FAFAF8">Math</button>
                 <button id="prac-btn-rw" class="action-btn" onclick="setPracSubject('rw')">Reading &amp; Writing</button>
               </div>
             </div>
@@ -4642,7 +4741,7 @@
               <div class="field-label" style="margin-bottom:0.4rem">Difficulty</div>
               <div style="display:flex;gap:0.4rem">
                 <button id="prac-btn-easy" class="action-btn" onclick="setPracDiff('easy')">Easy</button>
-                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Medium</button>
+                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:#c0182b;border-color:#c0182b;color:#FAFAF8">Medium</button>
                 <button id="prac-btn-hard" class="action-btn" onclick="setPracDiff('hard')">Hard</button>
               </div>
             </div>
@@ -4658,17 +4757,17 @@
           <div class="card" style="margin-bottom:1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
               <div style="display:flex;gap:0.8rem;align-items:center">
-                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Question 1</span>
-                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(250,250,248,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
+                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(26,23,21,0.35)">Question 1</span>
+                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(26,23,21,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
               </div>
-              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(250,250,248,0.4)">
+              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(26,23,21,0.4)">
                 <span>&#10003; <span id="prac-correct-count" style="color:#7dffaa;font-weight:600">0</span></span>
                 <span>&#10007; <span id="prac-wrong-count" style="color:#ff8a8a;font-weight:600">0</span></span>
               </div>
             </div>
 
-            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#FAFAF8"></p>
-            <div id="prac-q-context" style="background:rgba(255,255,255,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(250,250,248,0.7);display:none;border-radius:0 4px 4px 0"></div>
+            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#1a1715"></p>
+            <div id="prac-q-context" style="background:rgba(26,23,21,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(26,23,21,0.7);display:none;border-radius:0 4px 4px 0"></div>
 
             <div id="prac-choices" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem"></div>
 
@@ -4680,7 +4779,7 @@
                 <button class="btn-ghost" onclick="showHint(2)" id="hint-btn-2" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Hint 2</button>
                 <button class="btn-ghost" onclick="showHint(3)" id="hint-btn-3" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Show Solution</button>
               </div>
-              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:var(--cream);line-height:1.7;display:none"></div>
+              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:#4a423a;line-height:1.7;display:none"></div>
             </div>
 
             <div style="display:flex;justify-content:flex-end;margin-top:0.5rem">
@@ -4693,7 +4792,7 @@
         <div id="prac-idle" class="card" style="text-align:center;padding:3rem">
           <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
           <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
-          <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+          <div style="color:rgba(26,23,21,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
         </div>
       </div>
 
@@ -4716,7 +4815,7 @@
             <div>
               <div class="field-label" style="margin-bottom:0.4rem">Subject</div>
               <div style="display:flex;gap:0.4rem">
-                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Math</button>
+                <button id="prac-btn-math" class="action-btn" onclick="setPracSubject('math')" style="background:#c0182b;border-color:#c0182b;color:#FAFAF8">Math</button>
                 <button id="prac-btn-rw" class="action-btn" onclick="setPracSubject('rw')">Reading &amp; Writing</button>
               </div>
             </div>
@@ -4724,7 +4823,7 @@
               <div class="field-label" style="margin-bottom:0.4rem">Difficulty</div>
               <div style="display:flex;gap:0.4rem">
                 <button id="prac-btn-easy" class="action-btn" onclick="setPracDiff('easy')">Easy</button>
-                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:rgba(192,24,43,0.2);border-color:rgba(192,24,43,0.5);color:#FAFAF8">Medium</button>
+                <button id="prac-btn-medium" class="action-btn" onclick="setPracDiff('medium')" style="background:#c0182b;border-color:#c0182b;color:#FAFAF8">Medium</button>
                 <button id="prac-btn-hard" class="action-btn" onclick="setPracDiff('hard')">Hard</button>
               </div>
             </div>
@@ -4740,16 +4839,16 @@
           <div class="card" style="margin-bottom:1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
               <div style="display:flex;gap:0.8rem;align-items:center">
-                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Question 1</span>
-                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(250,250,248,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
+                <span id="prac-q-num" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(26,23,21,0.35)">Question 1</span>
+                <span id="prac-q-tag" style="font-size:0.68rem;background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:rgba(26,23,21,0.6);padding:0.15rem 0.6rem;border-radius:20px"></span>
               </div>
-              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(250,250,248,0.4)">
+              <div style="display:flex;gap:1rem;font-size:0.82rem;color:rgba(26,23,21,0.4)">
                 <span>&#10003; <span id="prac-correct-count" style="color:#7dffaa;font-weight:600">0</span></span>
                 <span>&#10007; <span id="prac-wrong-count" style="color:#ff8a8a;font-weight:600">0</span></span>
               </div>
             </div>
-            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#FAFAF8"></p>
-            <div id="prac-q-context" style="background:rgba(255,255,255,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(250,250,248,0.7);display:none;border-radius:0 4px 4px 0"></div>
+            <p id="prac-q-text" style="font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;color:#1a1715"></p>
+            <div id="prac-q-context" style="background:rgba(26,23,21,0.03);border-left:2px solid rgba(192,24,43,0.35);padding:0.8rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;line-height:1.7;color:rgba(26,23,21,0.7);display:none;border-radius:0 4px 4px 0"></div>
             <div id="prac-choices" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem"></div>
             <div id="prac-feedback" style="display:none;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6"></div>
             <div id="prac-hints" style="display:none">
@@ -4758,7 +4857,7 @@
                 <button class="btn-ghost" onclick="showHint(2)" id="hint-btn-2" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Hint 2</button>
                 <button class="btn-ghost" onclick="showHint(3)" id="hint-btn-3" style="font-size:0.8rem;padding:0.35rem 0.9rem;display:none">Show Solution</button>
               </div>
-              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:var(--cream);line-height:1.7;display:none"></div>
+              <div id="prac-hint-text" style="background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:6px;padding:0.8rem 1rem;font-size:0.88rem;color:#4a423a;line-height:1.7;display:none"></div>
             </div>
             <div style="display:flex;justify-content:flex-end;margin-top:0.5rem">
               <button class="btn-red" onclick="nextPracQuestion()" id="prac-next-btn" style="display:none">Next Question</button>
@@ -4770,10 +4869,10 @@
         <div id="prac-idle" class="card" style="text-align:center;padding:3rem">
           <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
           <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
-          <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+          <div style="color:rgba(26,23,21,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
         </div>
         <div style="margin-top:2rem">
-          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(250,250,248,0.08)">Student Practice Reports</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(26,23,21,0.08)">Student Practice Reports</div>
           <div id="admin-practice-filter" style="margin-bottom:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
             <select class="input-field" id="admin-practice-student-filter" onchange="loadAdminPractice()" style="width:auto">
               <option value="">All students</option>
@@ -4819,7 +4918,7 @@
         const moduleTag = s.module && s.module !== 'both'
           ? `<span style="font-size:0.68rem;font-weight:600;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.25);color:#C8A96E;padding:0.1rem 0.5rem;border-radius:20px;margin-left:0.3rem">${s.module === 'math' ? 'Math' : 'R&W'}</span>`
           : '';
-        return `<tr><td>${formatDate(s.date)}${moduleTag}</td><td>${s.math||'—'}</td><td>${s.rw||'—'}</td><td>${s.total ? `<span class="score-pill">${s.total}</span>` : '—'}</td><td>${changeHtml}</td><td style="font-size:0.82rem;color:rgba(250,250,248,0.45)">${s.notes||'—'}</td></tr>`;
+        return `<tr><td>${formatDate(s.date)}${moduleTag}</td><td>${s.math||'—'}</td><td>${s.rw||'—'}</td><td>${s.total ? `<span class="score-pill">${s.total}</span>` : '—'}</td><td>${changeHtml}</td><td style="font-size:0.82rem;color:rgba(26,23,21,0.45)">${s.notes||'—'}</td></tr>`;
       }).join('');
     }
 
@@ -4835,7 +4934,7 @@
     else sessPreview.innerHTML = upcoming.slice(0,4).map(s=>`
       <div style="display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid rgba(192,24,43,0.1);font-size:0.85rem">
         <span>${allUsers[s.tutorId]?.name||'Tutor'} — ${s.location||'TBD'}</span>
-        <span style="color:rgba(250,250,248,0.4)">${formatDate(s.date)} ${s.time ? formatTime(s.time) : ''}</span>
+        <span style="color:rgba(26,23,21,0.4)">${formatDate(s.date)} ${s.time ? formatTime(s.time) : ''}</span>
       </div>`).join('');
 
     const sessTbody = document.getElementById('student-sessions-tbody');
@@ -4871,6 +4970,7 @@
         const sorted = [...myScores].reverse();
         chartWrap.innerHTML = '<div class="chart-wrap"><canvas id="score-chart"></canvas></div>';
         const ctx = document.getElementById('score-chart').getContext('2d');
+        const _scTarget = CU.target_score ? parseInt(CU.target_score) : null;
         new Chart(ctx, {
           type: 'line',
           data: {
@@ -4878,15 +4978,18 @@
             datasets: [
               { label: 'Total', data: sorted.map(s=>s.total||null), borderColor: '#C0182B', backgroundColor: 'rgba(192,24,43,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#C0182B', pointRadius: 4, spanGaps: true },
               { label: 'Math', data: sorted.map(s=>s.math||null), borderColor: '#C8A96E', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, pointBackgroundColor: '#C8A96E', spanGaps: true },
-              { label: 'R&W', data: sorted.map(s=>s.rw||null), borderColor: 'rgba(250,250,248,0.4)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, pointBackgroundColor: 'rgba(250,250,248,0.4)', spanGaps: true }
+              { label: 'R&W', data: sorted.map(s=>s.rw||null), borderColor: 'rgba(26,23,21,0.4)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, pointBackgroundColor: 'rgba(26,23,21,0.4)', spanGaps: true }
             ]
           },
           options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: 'rgba(250,250,248,0.6)', font: { size: 11 }, boxWidth: 16 } } },
+            plugins: {
+              legend: { labels: { usePointStyle: true, pointStyle: 'line', color: 'rgba(26,23,21,0.6)', font: { size: 11 }, boxWidth: 22, padding: 16 } },
+              targetBand: _scTarget ? { value: _scTarget, label: 'TARGET ' + _scTarget } : false
+            },
             scales: {
-              x: { ticks: { color: 'rgba(250,250,248,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } },
-              y: { min: 200, max: 1600, ticks: { color: 'rgba(250,250,248,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } }
+              x: { ticks: { color: 'rgba(26,23,21,0.4)', font: { size: 10 } }, grid: { display: false } },
+              y: { min: 200, max: 1600, ticks: { color: 'rgba(26,23,21,0.4)', font: { size: 10 }, stepSize: 200 }, grid: { color: 'rgba(26,23,21,0.06)' } }
             }
           }
         });
@@ -4912,13 +5015,13 @@
             <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.5rem">
-            <span style="color:rgba(250,250,248,0.5)">Latest score</span><span class="score-pill">${latest.total}</span>
+            <span style="color:rgba(26,23,21,0.5)">Latest score</span><span class="score-pill">${latest.total}</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.5rem">
-            <span style="color:rgba(250,250,248,0.5)">First score</span><span>${first.total}</span>
+            <span style="color:rgba(26,23,21,0.5)">First score</span><span>${first.total}</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:0.85rem">
-            <span style="color:rgba(250,250,248,0.5)">Tests taken</span><span>${myScores.length}</span>
+            <span style="color:rgba(26,23,21,0.5)">Tests taken</span><span>${myScores.length}</span>
           </div>
           <div><span class="improvement-chip ${chipClass}">${improvement>=0?'↑':'↓'} ${chipText}</span></div>`;
       }
@@ -5008,7 +5111,7 @@
       if (!scores.length) return `
         <div class="progress-student-card">
           <div class="psn">${u.name||u.email}</div>
-          <div style="color:rgba(250,250,248,0.3);font-size:0.82rem">No scores yet</div>
+          <div style="color:rgba(26,23,21,0.3);font-size:0.82rem">No scores yet</div>
         </div>`;
       const first = scores[0]; const latest = scores[scores.length-1];
       const improvement = latest.total - first.total;
@@ -5022,7 +5125,7 @@
             <div class="progress-bar-label"><span>Latest: ${latest.total}</span><span>${pct}% to 1600</span></div>
             <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
           </div>
-          <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:rgba(250,250,248,0.45);margin-bottom:0.4rem">
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:rgba(26,23,21,0.45);margin-bottom:0.4rem">
             <span>First: ${first.total}</span><span>${scores.length} test${scores.length!==1?'s':''}</span>
           </div>
           <span class="improvement-chip ${chipClass}">${improvement>=0?'↑':'↓'} ${improvement>=0?'+':''}${improvement} pts</span>
@@ -5105,7 +5208,7 @@
             </tr>
             <tr>
               <td style="padding:12px 28px 24px;vertical-align:top">
-                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#C8A96E;margin-bottom:6px">Tutor</div>
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9a7b1f;margin-bottom:6px">Tutor</div>
                 <div style="font-size:16px;font-weight:600;color:#FAFAF8">${tutorName}</div>
               </td>
               <td style="padding:12px 28px 24px;vertical-align:top">
@@ -5192,7 +5295,7 @@
               <td>${formatDate(s.date)}</td>
               <td>${s.math}</td><td>${s.rw}</td>
               <td><span class="score-pill">${s.total}</span></td>
-              <td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${s.notes||'—'}</td>
+              <td style="font-size:0.78rem;color:rgba(26,23,21,0.4)">${s.notes||'—'}</td>
               <td><button class="action-btn danger" onclick="adminDeleteScore('${s.id}','${uid}')"></button></td>
             </tr>`).join('')}
           </tbody>
@@ -5239,7 +5342,7 @@
               ${improvementHtml}
             </div>
           </div>
-          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid rgba(250,250,248,0.06)">
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid rgba(26,23,21,0.06)">
             <button class="action-btn" onclick="openScoreModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Score</button>
             <button class="action-btn" onclick="openNoteModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Note</button>
             <button class="action-btn" onclick="openAssignmentModal('${uid}','${(u.name||'').replace(/'/g,"\\'")}')">+ Assign</button>
@@ -5249,21 +5352,21 @@
           </div>
           <div class="grid-2">
             <div>
-              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Scores (${scores.length})</div>
+              <div style="font-size:0.72rem;color:rgba(26,23,21,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Scores (${scores.length})</div>
               ${scoresHtml}
             </div>
             <div>
-              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Notes (${notes.length})</div>
+              <div style="font-size:0.72rem;color:rgba(26,23,21,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Notes (${notes.length})</div>
               ${notesHtml}
             </div>
           </div>
           <div style="margin-top:1rem">
-            <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Assignments (${assignments.length})</div>
+            <div style="font-size:0.72rem;color:rgba(26,23,21,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem"> Assignments (${assignments.length})</div>
             ${assignmentsHtml}
           </div>
-          <div style="margin-top:1rem;border-top:1px solid rgba(250,250,248,0.06);padding-top:1rem">
+          <div style="margin-top:1rem;border-top:1px solid rgba(26,23,21,0.06);padding-top:1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
-              <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em"> Shared Documents</div>
+              <div style="font-size:0.72rem;color:rgba(26,23,21,0.4);text-transform:uppercase;letter-spacing:0.08em"> Shared Documents</div>
               <button class="action-btn" onclick="openDocModal('${uid}')">+ Doc</button>
             </div>
             <div id="docs-${uid}"><div class="empty-state" style="padding:0.5rem 0"><div class="icon"></div>No documents yet.</div></div>
@@ -5352,8 +5455,8 @@
     }
     tbody.innerHTML = rows.map(r => {
       const sectionTag = (r.section && r.section !== 'all')
-        ? `<span style="font-size:0.68rem;font-weight:600;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.25);color:#C8A96E;padding:0.1rem 0.5rem;border-radius:20px;margin-left:0.4rem">${r.section.charAt(0).toUpperCase()+r.section.slice(1)} only</span>`
-        : `<span style="font-size:0.68rem;font-weight:600;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.25);color:#C8A96E;padding:0.1rem 0.5rem;border-radius:20px;margin-left:0.4rem">ACT</span>`;
+        ? `<span style="font-size:0.68rem;font-weight:600;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.25);color:#9a7b1f;padding:0.1rem 0.5rem;border-radius:20px;margin-left:0.4rem">${r.section.charAt(0).toUpperCase()+r.section.slice(1)} only</span>`
+        : `<span style="font-size:0.68rem;font-weight:600;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.25);color:#9a7b1f;padding:0.1rem 0.5rem;border-radius:20px;margin-left:0.4rem">ACT</span>`;
       return `<tr>
         <td>${allUsers[r.studentId]?.name||'Unknown'}${sectionTag}</td>
         <td>${formatDate(r.date)}</td>
@@ -5362,7 +5465,7 @@
         <td>${r.reading||'—'}</td>
         <td>${r.science||'—'}</td>
         <td>${r.composite ? `<span class="score-pill">${r.composite}</span>` : '—'}</td>
-        <td style="color:rgba(250,250,248,0.45);font-size:0.82rem">${r.notes||'—'}</td>
+        <td style="color:rgba(26,23,21,0.45);font-size:0.82rem">${r.notes||'—'}</td>
         <td><button class="action-btn danger" onclick="adminDeleteACTScore('${r.id}')">Remove</button></td>
       </tr>`;
     }).join('');
@@ -5403,7 +5506,7 @@
           <td>${s.reading||'—'}</td>
           <td>${s.science||'—'}</td>
           <td><span class="score-pill">${s.composite||'—'}</span></td>
-          <td style="font-size:0.82rem;color:rgba(250,250,248,0.45)">${s.notes||'—'}</td>
+          <td style="font-size:0.82rem;color:rgba(26,23,21,0.45)">${s.notes||'—'}</td>
         </tr>`;
       }).join('');
     }
@@ -5419,17 +5522,17 @@
           datasets: [
             { label: 'Composite', data: scores.map(s=>s.composite||null), borderColor: '#C8A96E', backgroundColor: 'rgba(200,169,110,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#C8A96E', pointRadius: 4, spanGaps: true },
             { label: 'English',   data: scores.map(s=>s.english||null),   borderColor: '#C0182B', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, spanGaps: true },
-            { label: 'Math',      data: scores.map(s=>s.math||null),      borderColor: 'rgba(250,250,248,0.5)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, spanGaps: true },
+            { label: 'Math',      data: scores.map(s=>s.math||null),      borderColor: 'rgba(26,23,21,0.5)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, spanGaps: true },
             { label: 'Reading',   data: scores.map(s=>s.reading||null),   borderColor: 'rgba(200,169,110,0.5)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, spanGaps: true },
             { label: 'Science',   data: scores.map(s=>s.science||null),   borderColor: 'rgba(192,24,43,0.4)',   backgroundColor: 'transparent', tension: 0.4, borderDash: [4,3], pointRadius: 3, spanGaps: true },
           ]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: 'rgba(250,250,248,0.6)', font: { size: 11 }, boxWidth: 16 } } },
+          plugins: { legend: { labels: { color: 'rgba(26,23,21,0.6)', font: { size: 11 }, boxWidth: 16 } } },
           scales: {
-            x: { ticks: { color: 'rgba(250,250,248,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } },
-            y: { min: 1, max: 36, ticks: { color: 'rgba(250,250,248,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } }
+            x: { ticks: { color: 'rgba(26,23,21,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } },
+            y: { min: 1, max: 36, ticks: { color: 'rgba(26,23,21,0.4)', font: { size: 10 } }, grid: { color: 'rgba(192,24,43,0.08)' } }
           }
         }
       });
@@ -5702,7 +5805,7 @@
     const containerId = viewerRole === 'student' ? 'student-docs-list' : `docs-${studentId}`;
     const el = document.getElementById(containerId);
     if (!el) return;
-    el.innerHTML = '<div style="font-size:0.8rem;color:rgba(250,250,248,0.3)">Loading…</div>';
+    el.innerHTML = '<div style="font-size:0.8rem;color:rgba(26,23,21,0.3)">Loading…</div>';
     const snap = await getDocs(collection(db,'studentDocs'));
     const docs = [];
     snap.forEach(d=>{ const data={id:d.id,...d.data()}; if(data.studentId===studentId) docs.push(data); });
@@ -5713,11 +5816,11 @@
     }
     const canDelete = viewerRole === 'admin' || viewerRole === 'tutor';
     el.innerHTML = docs.map(d=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;background:rgba(250,250,248,0.04);border-radius:8px;margin-bottom:0.45rem;gap:0.5rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;background:rgba(26,23,21,0.04);border-radius:8px;margin-bottom:0.45rem;gap:0.5rem">
         <a href="${d.url}" target="_blank" rel="noopener noreferrer"
            style="color:#e8b4b8;font-size:0.88rem;font-weight:500;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
            title="${d.label}">📄 ${d.label}</a>
-        <span style="font-size:0.72rem;color:rgba(250,250,248,0.3);white-space:nowrap">${d.addedByName||''}</span>
+        <span style="font-size:0.72rem;color:rgba(26,23,21,0.3);white-space:nowrap">${d.addedByName||''}</span>
         ${canDelete ? `<button class="action-btn danger" style="padding:0.2rem 0.55rem;font-size:0.72rem" onclick="deleteSharedDoc('${d.id}','${studentId}','${viewerRole}')">✕</button>` : ''}
       </div>`).join('');
   };
@@ -5900,8 +6003,8 @@ Good luck!`,
       const btn = document.getElementById('aud-' + a);
       if (!btn) return;
       if (a === audience) {
-        btn.style.background = 'rgba(192,24,43,0.2)';
-        btn.style.borderColor = 'rgba(192,24,43,0.5)';
+        btn.style.background = '#c0182b';
+        btn.style.borderColor = '#c0182b';
         btn.style.color = '#FAFAF8';
       } else {
         btn.style.background = '';
@@ -6129,16 +6232,16 @@ Good luck!`,
       compose.style.display  = '';
       schedule.style.display = 'none';
       tabC.style.borderBottomColor = '#C0182B';
-      tabC.style.color = '#FAFAF8';
+      tabC.style.color = '#a31621';
       tabS.style.borderBottomColor = 'transparent';
-      tabS.style.color = 'rgba(250,250,248,0.45)';
+      tabS.style.color = 'rgba(26,23,21,0.45)';
     } else {
       compose.style.display  = 'none';
       schedule.style.display = '';
       tabS.style.borderBottomColor = '#C0182B';
-      tabS.style.color = '#FAFAF8';
+      tabS.style.color = '#a31621';
       tabC.style.borderBottomColor = 'transparent';
-      tabC.style.color = 'rgba(250,250,248,0.45)';
+      tabC.style.color = 'rgba(26,23,21,0.45)';
       loadSchedulePickerStudents();
       updateSchedulePreview();
     }
@@ -6200,7 +6303,7 @@ Good luck!`,
           oninput="updateSlotDate(${i}, this.value)" />
         <input type="time" class="input-field" style="flex:1" value="${slot.time}"
           oninput="updateSlotTime(${i}, this.value)" />
-        <button onclick="removeScheduleSlot(${i})" style="background:none;border:none;color:rgba(250,250,248,0.3);font-size:1rem;cursor:pointer;padding:0.2rem 0.4rem;flex-shrink:0" title="Remove">✕</button>
+        <button onclick="removeScheduleSlot(${i})" style="background:none;border:none;color:rgba(26,23,21,0.3);font-size:1rem;cursor:pointer;padding:0.2rem 0.4rem;flex-shrink:0" title="Remove">✕</button>
       </div>`).join('');
     if (addBtn) addBtn.style.display = _spSlots.length >= 4 ? 'none' : 'inline-block';
   }
@@ -6245,8 +6348,8 @@ Good luck!`,
               <div style="border:1px solid rgba(192,24,43,0.4);border-radius:8px;padding:0.9rem 1.2rem;background:rgba(192,24,43,0.08);cursor:pointer;transition:all 0.15s">
                 <div style="display:flex;justify-content:space-between;align-items:center">
                   <div>
-                    <div style="font-size:0.88rem;font-weight:600;color:#FAFAF8">${label.split(' at ')[0]}</div>
-                    <div style="font-size:0.82rem;color:#C8A96E;margin-top:0.15rem">${label.includes(' at ') ? label.split(' at ').slice(1).join(' at ') : ''}</div>
+                    <div style="font-size:0.88rem;font-weight:600;color:#1a1715">${label.split(' at ')[0]}</div>
+                    <div style="font-size:0.82rem;color:#9a7b1f;margin-top:0.15rem">${label.includes(' at ') ? label.split(' at ').slice(1).join(' at ') : ''}</div>
                   </div>
                   <div style="background:#C0182B;color:#fff;font-size:0.72rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:20px;flex-shrink:0;margin-left:1rem">Select</div>
                 </div>
@@ -6505,7 +6608,7 @@ Good luck!`,
   async function loadStudentAchievements() {
     const el = document.getElementById('achievements-grid');
     if (!el) return;
-    el.innerHTML = '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem;padding:1rem">Loading...</div>';
+    el.innerHTML = '<div style="color:rgba(26,23,21,0.4);font-size:0.85rem;padding:1rem">Loading...</div>';
 
     const [sessSnap, assignSnap, scoreSnap] = await Promise.all([
       getDocs(collection(db,'sessions')),
@@ -6525,8 +6628,8 @@ Good luck!`,
 
     el.innerHTML =
       '<div style="grid-column:1/-1;margin-bottom:0.8rem">' +
-        '<span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">' + earned.length + ' of ' + BADGE_DEFS.length + ' earned</span>' +
-        '<div style="height:4px;background:rgba(250,250,248,0.06);border-radius:2px;margin-top:0.5rem;overflow:hidden">' +
+        '<span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(26,23,21,0.35)">' + earned.length + ' of ' + BADGE_DEFS.length + ' earned</span>' +
+        '<div style="height:4px;background:rgba(26,23,21,0.06);border-radius:2px;margin-top:0.5rem;overflow:hidden">' +
           '<div style="height:100%;width:' + Math.round(earned.length/BADGE_DEFS.length*100) + '%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:2px;transition:width 1.2s cubic-bezier(.22,1,.36,1)"></div>' +
         '</div>' +
       '</div>' +
@@ -6534,14 +6637,14 @@ Good luck!`,
         '<div style="background:linear-gradient(135deg,rgba(192,24,43,0.18),rgba(107,15,26,0.25));border:1px solid rgba(192,24,43,0.4);border-radius:8px;padding:1.2rem;text-align:center">' +
           '<div style="font-size:1.9rem;margin-bottom:0.5rem">' + b.icon + '</div>' +
           '<div style="font-weight:600;font-size:0.9rem;margin-bottom:0.3rem">' + b.title + '</div>' +
-          '<div style="font-size:0.78rem;color:rgba(250,250,248,0.5);line-height:1.5">' + b.desc + '</div>' +
+          '<div style="font-size:0.78rem;color:rgba(26,23,21,0.5);line-height:1.5">' + b.desc + '</div>' +
         '</div>'
       ).join('') +
       locked.map(b =>
-        '<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:1.2rem;text-align:center;opacity:0.38">' +
+        '<div style="background:rgba(26,23,21,0.02);border:1px solid rgba(26,23,21,0.06);border-radius:8px;padding:1.2rem;text-align:center;opacity:0.38">' +
           '<div style="font-size:1.9rem;margin-bottom:0.5rem;filter:grayscale(1) opacity(0.5)">' + b.icon + '</div>' +
           '<div style="font-weight:600;font-size:0.9rem;margin-bottom:0.3rem">' + b.title + '</div>' +
-          '<div style="font-size:0.78rem;color:rgba(250,250,248,0.35);line-height:1.5">' + b.desc + '</div>' +
+          '<div style="font-size:0.78rem;color:rgba(26,23,21,0.35);line-height:1.5">' + b.desc + '</div>' +
         '</div>'
       ).join('');
   }
@@ -6553,7 +6656,7 @@ Good luck!`,
   async function loadTutorTemplates() {
     const el = document.getElementById('tutor-templates-list');
     if (!el) return;
-    el.innerHTML = '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem;padding:1rem">Loading...</div>';
+    el.innerHTML = '<div style="color:rgba(26,23,21,0.4);font-size:0.85rem;padding:1rem">Loading...</div>';
     await cacheAllUsers();
 
     const snap = await getDocs(query(collection(db,'assignmentTemplates'), where('tutorId','==',CU.uid)));
@@ -6572,7 +6675,7 @@ Good luck!`,
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.6rem;margin-bottom:${t.desc?'0.7rem':'0'}">
           <div>
             <div style="font-weight:600;font-size:0.95rem;margin-bottom:0.2rem">${t.name}</div>
-            <div style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${typeLabel[t.type]||t.type}${t.dueDays ? ' &middot; Due in '+t.dueDays+' days' : ''}</div>
+            <div style="font-size:0.78rem;color:rgba(26,23,21,0.4)">${typeLabel[t.type]||t.type}${t.dueDays ? ' &middot; Due in '+t.dueDays+' days' : ''}</div>
           </div>
           <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
             <select class="input-field" id="tpl-assign-student-${t.id}" style="width:auto;font-size:0.8rem;padding:0.3rem 0.6rem">
@@ -6583,7 +6686,7 @@ Good luck!`,
             <button class="action-btn danger" onclick="deleteTemplate('${t.id}')">&#128465;</button>
           </div>
         </div>
-        ${t.desc ? '<div style="font-size:0.85rem;color:rgba(250,250,248,0.55);line-height:1.6">'+t.desc+'</div>' : ''}
+        ${t.desc ? '<div style="font-size:0.85rem;color:rgba(26,23,21,0.55);line-height:1.6">'+t.desc+'</div>' : ''}
         ${t.link ? '<a href="'+t.link+'" target="_blank" style="display:inline-block;margin-top:0.5rem;font-size:0.8rem;color:rgba(150,150,255,0.8)">'+t.link+'</a>' : ''}
       </div>`).join('');
   }
@@ -7373,8 +7476,8 @@ Good luck!`,
     ['math','rw'].forEach(s => {
       const btn = document.getElementById('prac-btn-' + s);
       if (!btn) return;
-      btn.style.background  = s === subj ? 'rgba(192,24,43,0.2)' : '';
-      btn.style.borderColor = s === subj ? 'rgba(192,24,43,0.5)' : '';
+      btn.style.background  = s === subj ? '#c0182b' : '';
+      btn.style.borderColor = s === subj ? '#c0182b' : '';
       btn.style.color       = s === subj ? '#FAFAF8' : '';
     });
   };
@@ -7385,8 +7488,8 @@ Good luck!`,
     ['easy','medium','hard'].forEach(d => {
       const btn = document.getElementById('prac-btn-' + d);
       if (!btn) return;
-      btn.style.background  = d === diff ? 'rgba(192,24,43,0.2)' : '';
-      btn.style.borderColor = d === diff ? 'rgba(192,24,43,0.5)' : '';
+      btn.style.background  = d === diff ? '#c0182b' : '';
+      btn.style.borderColor = d === diff ? '#c0182b' : '';
       btn.style.color       = d === diff ? '#FAFAF8' : '';
     });
   };
@@ -7471,7 +7574,7 @@ Good luck!`,
     choicesEl.innerHTML = (_pracQ.choices || []).map((c, i) => `
       <button onclick="selectPracAnswer(${i})"
         id="choice-btn-${i}"
-        style="text-align:left;width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(250,250,248,0.1);border-radius:6px;padding:0.8rem 1rem;color:rgba(250,250,248,0.85);font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;transition:all 0.15s;display:flex;gap:0.8rem;align-items:flex-start">
+        style="text-align:left;width:100%;background:rgba(26,23,21,0.03);border:1px solid rgba(26,23,21,0.1);border-radius:6px;padding:0.8rem 1rem;color:rgba(26,23,21,0.85);font-family:'DM Sans',sans-serif;font-size:0.92rem;cursor:pointer;transition:all 0.15s;display:flex;gap:0.8rem;align-items:flex-start">
         <span style="background:rgba(192,24,43,0.15);border:1px solid rgba(192,24,43,0.25);color:var(--red);font-size:0.72rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:4px;flex-shrink:0;margin-top:0.05rem">${'ABCD'[i]}</span>
         <span class="choice-text">${c}</span>
       </button>`).join('');
@@ -7505,21 +7608,21 @@ Good luck!`,
       if (i === _pracQ.answer) {
         btn.style.background  = 'rgba(46,204,113,0.15)';
         btn.style.borderColor = 'rgba(46,204,113,0.5)';
-        btn.style.color       = '#7dffaa';
+        btn.style.color       = '#1f8a4d';
       } else if (i === choiceIdx && !correct) {
         btn.style.background  = 'rgba(192,24,43,0.18)';
-        btn.style.borderColor = 'rgba(192,24,43,0.5)';
-        btn.style.color       = '#ff8a8a';
+        btn.style.borderColor = '#c0182b';
+        btn.style.color       = '#b3261e';
       }
     });
 
     if (correct) {
-      fb.style.cssText = 'display:block;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);color:#7dffaa';
+      fb.style.cssText = 'display:block;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);color:#1f8a4d';
       fb.innerHTML = '&#10003; Correct! Well done.';
       _pracCorrect.push({ q: _pracQ.q.slice(0,120), tag: _pracQ.tag, chosen: (_pracQ.choices||[])[choiceIdx] });
     } else {
-      fb.style.cssText = 'display:block;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6;background:rgba(192,24,43,0.12);border:1px solid rgba(192,24,43,0.3);color:#ff8a8a';
-      fb.innerHTML = `&#10007; Not quite. The correct answer is <strong style="color:#fafaf8">${(_pracQ.choices||[])[_pracQ.answer]}</strong>.`;
+      fb.style.cssText = 'display:block;padding:1rem 1.2rem;border-radius:6px;margin-bottom:1rem;font-size:0.92rem;line-height:1.6;background:rgba(192,24,43,0.12);border:1px solid rgba(192,24,43,0.3);color:#b3261e';
+      fb.innerHTML = `&#10007; Not quite. The correct answer is <strong style="color:#1a1715">${(_pracQ.choices||[])[_pracQ.answer]}</strong>.`;
       _pracWrong.push({ q: _pracQ.q.slice(0,120), tag: _pracQ.tag, chosen: (_pracQ.choices||[])[choiceIdx], correct: (_pracQ.choices||[])[_pracQ.answer] });
       prac('prac-hints').style.display = 'block';
     }
@@ -7586,11 +7689,11 @@ Good luck!`,
       <div style="text-align:center;padding:1.5rem 0 0.5rem">
         <div style="font-size:2.5rem;margin-bottom:0.8rem">${pct >= 80 ? '&#127881;' : pct >= 60 ? '&#128170;' : '&#128218;'}</div>
         <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:0.4rem">Session Complete</div>
-        <div style="color:rgba(250,250,248,0.5);font-size:0.9rem;margin-bottom:1.5rem">${_pracSubject === 'math' ? 'Math' : 'Reading &amp; Writing'} &middot; ${cap(_pracDiff)}</div>
+        <div style="color:rgba(26,23,21,0.5);font-size:0.9rem;margin-bottom:1.5rem">${_pracSubject === 'math' ? 'Math' : 'Reading &amp; Writing'} &middot; ${cap(_pracDiff)}</div>
         <div style="display:flex;gap:1.5rem;justify-content:center;margin-bottom:1.5rem">
-          <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#7dffaa">${_pracCorrect.length}</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Correct</div></div>
-          <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#ff8a8a">${_pracWrong.length}</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Wrong</div></div>
-          <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--gold)">${pct}%</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,248,0.35)">Score</div></div>
+          <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#1f8a4d">${_pracCorrect.length}</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(26,23,21,0.35)">Correct</div></div>
+          <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#b3261e">${_pracWrong.length}</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(26,23,21,0.35)">Wrong</div></div>
+          <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#a87f2a">${pct}%</div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(26,23,21,0.35)">Score</div></div>
         </div>
         <button class="btn-red" onclick="restartPrac()" style="margin-right:0.6rem">Practice Again</button>
       </div>`;
@@ -7605,7 +7708,7 @@ Good luck!`,
       <div style="text-align:center;padding:3rem">
         <div style="font-size:2.5rem;margin-bottom:1rem">&#128221;</div>
         <div style="font-weight:600;margin-bottom:0.5rem">Ready to practice?</div>
-        <div style="color:rgba(250,250,248,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
+        <div style="color:rgba(26,23,21,0.45);font-size:0.9rem">Choose a subject and difficulty above, then hit Start Session.</div>
       </div>`;
     prac('prac-start-btn').style.display = 'inline-block';
   };
@@ -7615,7 +7718,7 @@ Good luck!`,
     const listId = role === 'tutor' ? 'tutor-practice-list' : 'admin-practice-list';
     const el = document.getElementById(listId);
     if (!el) return;
-    el.innerHTML = '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem;padding:1rem">Loading...</div>';
+    el.innerHTML = '<div style="color:rgba(26,23,21,0.4);font-size:0.85rem;padding:1rem">Loading...</div>';
     await cacheAllUsers();
 
     let q = collection(db, 'practiceSessions');
@@ -7664,21 +7767,21 @@ Good luck!`,
       const mins = Math.floor((s.durationSeconds || 0) / 60);
       const secs = (s.durationSeconds || 0) % 60;
 
-      const correctRows = correct.map(q => `<tr><td style="color:#7dffaa">&#10003;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${q.tag}</td></tr>`).join('');
-      const wrongRows = wrong.map(q => `<tr><td style="color:#ff8a8a">&#10007;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${q.tag}</td><td style="font-size:0.78rem;color:rgba(250,250,248,0.4)">Chose: ${q.chosen?.slice(0, 30)}</td></tr>`).join('');
+      const correctRows = correct.map(q => `<tr><td style="color:#1f8a4d">&#10003;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(26,23,21,0.4)">${q.tag}</td></tr>`).join('');
+      const wrongRows = wrong.map(q => `<tr><td style="color:#b3261e">&#10007;</td><td style="font-size:0.82rem">${q.q.slice(0, 80)}${q.q.length > 80 ? '…' : ''}</td><td style="font-size:0.78rem;color:rgba(26,23,21,0.4)">${q.tag}</td><td style="font-size:0.78rem;color:rgba(26,23,21,0.4)">Chose: ${q.chosen?.slice(0, 30)}</td></tr>`).join('');
 
       return `<div class="card" style="margin-bottom:1rem">
         <div class="card-title" style="flex-wrap:wrap;gap:0.5rem">
           <span>${student?.name || s.studentName || 'Student'} · ${subjectLabel} · ${cap(s.difficulty)}</span>
           <div style="display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap">
-            <span style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${new Date(s.createdAt).toLocaleDateString()}</span>
-            <span style="font-size:0.78rem;color:rgba(250,250,248,0.4)">${mins}m ${secs}s</span>
-            <span style="background:${pct>=80?'rgba(46,204,113,0.15)':pct>=60?'rgba(200,169,110,0.15)':'rgba(192,24,43,0.15)'};border:1px solid ${pct>=80?'rgba(46,204,113,0.35)':pct>=60?'rgba(200,169,110,0.35)':'rgba(192,24,43,0.35)'};color:${pct>=80?'#7dffaa':pct>=60?'var(--gold)':'#ff8a8a'};font-size:0.72rem;font-weight:700;padding:0.15rem 0.7rem;border-radius:20px">${pct}% · ${correct.length}/${total}</span>
+            <span style="font-size:0.78rem;color:rgba(26,23,21,0.4)">${new Date(s.createdAt).toLocaleDateString()}</span>
+            <span style="font-size:0.78rem;color:rgba(26,23,21,0.4)">${mins}m ${secs}s</span>
+            <span style="background:${pct>=80?'rgba(46,204,113,0.15)':pct>=60?'rgba(200,169,110,0.15)':'rgba(192,24,43,0.15)'};border:1px solid ${pct>=80?'rgba(46,204,113,0.35)':pct>=60?'rgba(200,169,110,0.35)':'rgba(192,24,43,0.35)'};color:${pct>=80?'#1f8a4d':pct>=60?'var(--gold)':'#b3261e'};font-size:0.72rem;font-weight:700;padding:0.15rem 0.7rem;border-radius:20px">${pct}% · ${correct.length}/${total}</span>
             <button class="action-btn" onclick="printPracticeReport('${s.id}')" style="font-size:0.75rem">&#128438; Report</button>
           </div>
         </div>
-        ${correct.length ? `<div style="margin-bottom:0.8rem"><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.4rem">Correct (${correct.length})</div><table style="width:100%"><tbody>${correctRows}</tbody></table></div>` : ''}
-        ${wrong.length ? `<div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(250,250,248,0.35);margin-bottom:0.4rem">Incorrect (${wrong.length})</div><table style="width:100%"><tbody>${wrongRows}</tbody></table></div>` : ''}
+        ${correct.length ? `<div style="margin-bottom:0.8rem"><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(26,23,21,0.35);margin-bottom:0.4rem">Correct (${correct.length})</div><table style="width:100%"><tbody>${correctRows}</tbody></table></div>` : ''}
+        ${wrong.length ? `<div><div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(26,23,21,0.35);margin-bottom:0.4rem">Incorrect (${wrong.length})</div><table style="width:100%"><tbody>${wrongRows}</tbody></table></div>` : ''}
       </div>`;
     }).join('');
   }
@@ -7774,7 +7877,7 @@ Good luck!`,
   }
 
   function applyPopupToggleUI(enabled, slider, knob, status, editor) {
-    if (slider) slider.style.background = enabled ? '#C0182B' : 'rgba(250,250,248,0.15)';
+    if (slider) slider.style.background = enabled ? '#C0182B' : 'rgba(26,23,21,0.15)';
     if (knob)   knob.style.transform    = enabled ? 'translateX(22px)' : 'translateX(0)';
     if (status) status.textContent      = enabled
       ? 'Popup is on — users will see it on their next login.'
@@ -7884,7 +7987,7 @@ Good luck!`,
 
   function applyReminderUI(enabled, toggle, slider, knob, status) {
     toggle.checked = enabled;
-    slider.style.background = enabled ? '#C0182B' : 'rgba(250,250,248,0.15)';
+    slider.style.background = enabled ? '#C0182B' : 'rgba(26,23,21,0.15)';
     knob.style.transform     = enabled ? 'translateX(22px)' : 'translateX(0)';
     if (status) status.textContent = enabled ? 'Reminders are on — tutors will be emailed nightly.' : 'Reminders are off — no emails will be sent.';
   }
@@ -8101,7 +8204,7 @@ Good luck!`,
           const sName = allUsers[s.studentId]?.name || allUsers[s.studentId]?.email || '—';
           const isLogged = loggedSessionIds.has(s.id);
           const logBtn = isLogged
-            ? '<span style="color:rgba(250,250,248,0.3);font-size:0.78rem">Logged</span>'
+            ? '<span style="color:rgba(26,23,21,0.3);font-size:0.78rem">Logged</span>'
             : `<button class="action-btn" style="font-size:0.75rem;padding:0.25rem 0.7rem" onclick="openSessionLogModal('${s.id}')">Log</button>`;
           return `<tr>
             <td>${formatDate(s.date)}</td>
@@ -8121,10 +8224,10 @@ Good luck!`,
         pastList.innerHTML = unlogged.map(s => {
           const sName = allUsers[s.studentId]?.name || allUsers[s.studentId]?.email || 'Student';
           return `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.08);border-radius:10px;margin-bottom:0.6rem;flex-wrap:wrap;gap:0.6rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem;background:rgba(26,23,21,0.03);border:1px solid rgba(26,23,21,0.08);border-radius:10px;margin-bottom:0.6rem;flex-wrap:wrap;gap:0.6rem">
             <div>
-              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8;margin-bottom:0.2rem">${sName}</div>
-              <div style="font-size:0.8rem;color:rgba(250,250,248,0.5)">${formatDate(s.date)} ${s.time ? '· ' + formatTime(s.time) : ''} ${s.location ? '· ' + s.location : ''}</div>
+              <div style="font-size:0.9rem;font-weight:600;color:#1a1715;margin-bottom:0.2rem">${sName}</div>
+              <div style="font-size:0.8rem;color:rgba(26,23,21,0.5)">${formatDate(s.date)} ${s.time ? '· ' + formatTime(s.time) : ''} ${s.location ? '· ' + s.location : ''}</div>
             </div>
             <button class="btn-red" style="font-size:0.78rem;padding:0.4rem 1rem;white-space:nowrap" onclick="openSessionLogModal('${s.id}')">Log Session</button>
           </div>`;
@@ -8139,19 +8242,19 @@ Good luck!`,
         completedList.innerHTML = logs.map(l => {
           const sName = allUsers[l.studentId]?.name || allUsers[l.studentId]?.email || 'Student';
           return `
-          <div style="padding:1rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.07);border-radius:10px;margin-bottom:0.8rem">
+          <div style="padding:1rem;background:rgba(26,23,21,0.03);border:1px solid rgba(26,23,21,0.07);border-radius:10px;margin-bottom:0.8rem">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.7rem">
               <div>
-                <div style="font-size:0.92rem;font-weight:700;color:#FAFAF8">${sName} — ${formatDate(l.date)}</div>
-                <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.15rem">${l.time ? formatTime(l.time) + ' · ' : ''}${l.location || ''}</div>
+                <div style="font-size:0.92rem;font-weight:700;color:#1a1715">${sName} — ${formatDate(l.date)}</div>
+                <div style="font-size:0.78rem;color:rgba(26,23,21,0.4);margin-top:0.15rem">${l.time ? formatTime(l.time) + ' · ' : ''}${l.location || ''}</div>
               </div>
-              <div style="font-size:0.72rem;color:rgba(250,250,248,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}${l.manual ? '<span style="background:rgba(200,169,110,0.15);color:#C8A96E;font-size:0.65rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:20px;margin-left:0.4rem;letter-spacing:0.05em">MANUAL</span>' : ''}</div>
+              <div style="font-size:0.72rem;color:rgba(26,23,21,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}${l.manual ? '<span style="background:rgba(200,169,110,0.15);color:#9a7b1f;font-size:0.65rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:20px;margin-left:0.4rem;letter-spacing:0.05em">MANUAL</span>' : ''}</div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem 1.2rem;font-size:0.82rem">
-              <div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Subjects</div><div style="color:rgba(250,250,248,0.8)">${(l.subjects||[]).join(', ') || '—'}</div></div>
-              ${l.struggles ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Struggles</div><div style="color:rgba(250,250,248,0.8)">${l.struggles}</div></div>` : ''}
-              ${l.goals ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Goals for Next</div><div style="color:rgba(250,250,248,0.8)">${l.goals}</div></div>` : ''}
-              ${l.notes ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Notes</div><div style="color:rgba(250,250,248,0.8)">${l.notes}</div></div>` : ''}
+              <div><div style="color:#9a7b1f;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Subjects</div><div style="color:rgba(26,23,21,0.8)">${(l.subjects||[]).join(', ') || '—'}</div></div>
+              ${l.struggles ? `<div><div style="color:#9a7b1f;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Struggles</div><div style="color:rgba(26,23,21,0.8)">${l.struggles}</div></div>` : ''}
+              ${l.goals ? `<div><div style="color:#9a7b1f;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Goals for Next</div><div style="color:rgba(26,23,21,0.8)">${l.goals}</div></div>` : ''}
+              ${l.notes ? `<div><div style="color:#9a7b1f;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Notes</div><div style="color:rgba(26,23,21,0.8)">${l.notes}</div></div>` : ''}
             </div>
           </div>`;
         }).join('');
@@ -8437,9 +8540,9 @@ Good luck!`,
         subjectEl.innerHTML = sorted.map(([s, n]) => `
           <div style="margin-bottom:0.6rem">
             <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:0.25rem">
-              <span style="color:#FAFAF8">${s}</span><span style="color:rgba(250,250,248,0.4)">${n} session${n > 1 ? 's' : ''}</span>
+              <span style="color:#1a1715">${s}</span><span style="color:rgba(26,23,21,0.4)">${n} session${n > 1 ? 's' : ''}</span>
             </div>
-            <div style="height:6px;background:rgba(250,250,248,0.07);border-radius:3px">
+            <div style="height:6px;background:rgba(26,23,21,0.07);border-radius:3px">
               <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#C0182B,#C8A96E);width:${Math.round(n / max * 100)}%"></div>
             </div>
           </div>`).join('');
@@ -8482,11 +8585,11 @@ Good luck!`,
             const u = allUsers[sid];
             const tutorName = allUsers[u?.tutorId]?.name || '—';
             return `
-            <div style="padding:0.8rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.07);border-radius:10px">
-              <div style="font-size:0.9rem;font-weight:600;color:#FAFAF8;margin-bottom:0.2rem">${u?.name || u?.email || 'Unknown'}</div>
-              <div style="font-size:0.75rem;color:rgba(250,250,248,0.4);margin-bottom:0.5rem">Tutor: ${tutorName}</div>
-              <div style="font-size:1.4rem;font-weight:700;color:#C8A96E">${n}</div>
-              <div style="font-size:0.72rem;color:rgba(250,250,248,0.35)">session${n > 1 ? 's' : ''} logged · last ${formatDate(studentLastLog[sid])}</div>
+            <div style="padding:0.8rem;background:rgba(26,23,21,0.03);border:1px solid rgba(26,23,21,0.07);border-radius:10px">
+              <div style="font-size:0.9rem;font-weight:600;color:#1a1715;margin-bottom:0.2rem">${u?.name || u?.email || 'Unknown'}</div>
+              <div style="font-size:0.75rem;color:rgba(26,23,21,0.4);margin-bottom:0.5rem">Tutor: ${tutorName}</div>
+              <div style="font-size:1.4rem;font-weight:700;color:#9a7b1f">${n}</div>
+              <div style="font-size:0.72rem;color:rgba(26,23,21,0.35)">session${n > 1 ? 's' : ''} logged · last ${formatDate(studentLastLog[sid])}</div>
             </div>`;
           }).join('') + '</div>';
       }
@@ -8512,19 +8615,19 @@ Good luck!`,
       const sName = allUsers[l.studentId]?.name || allUsers[l.studentId]?.email || 'Student';
       const tName = allUsers[l.tutorId]?.name  || allUsers[l.tutorId]?.email  || 'Tutor';
       return `
-      <div style="padding:1rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.07);border-radius:10px;margin-bottom:0.8rem">
+      <div style="padding:1rem;background:rgba(26,23,21,0.03);border:1px solid rgba(26,23,21,0.07);border-radius:10px;margin-bottom:0.8rem">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.7rem">
           <div>
-            <div style="font-size:0.92rem;font-weight:700;color:#FAFAF8">👤 ${sName} <span style="color:rgba(250,250,248,0.35);font-weight:400;font-size:0.8rem">with ${tName}</span></div>
-            <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.15rem">${formatDate(l.date)}${l.time ? ' · ' + formatTime(l.time) : ''}${l.location ? ' · 📍 ' + l.location : ''}</div>
+            <div style="font-size:0.92rem;font-weight:700;color:#1a1715">👤 ${sName} <span style="color:rgba(26,23,21,0.35);font-weight:400;font-size:0.8rem">with ${tName}</span></div>
+            <div style="font-size:0.78rem;color:rgba(26,23,21,0.4);margin-top:0.15rem">${formatDate(l.date)}${l.time ? ' · ' + formatTime(l.time) : ''}${l.location ? ' · 📍 ' + l.location : ''}</div>
           </div>
-          <div style="font-size:0.72rem;color:rgba(250,250,248,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}${l.manual ? '<span style="background:rgba(200,169,110,0.15);color:#C8A96E;font-size:0.65rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:20px;margin-left:0.4rem;letter-spacing:0.05em">MANUAL</span>' : ''}</div>
+          <div style="font-size:0.72rem;color:rgba(26,23,21,0.3)">Logged ${new Date(l.loggedAt).toLocaleDateString()}${l.manual ? '<span style="background:rgba(200,169,110,0.15);color:#9a7b1f;font-size:0.65rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:20px;margin-left:0.4rem;letter-spacing:0.05em">MANUAL</span>' : ''}</div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem 1.2rem;font-size:0.82rem">
-          <div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Subjects</div><div style="color:rgba(250,250,248,0.8)">${(l.subjects||[]).join(', ') || '—'}</div></div>
-          ${l.struggles ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Struggles</div><div style="color:rgba(250,250,248,0.8)">${l.struggles}</div></div>` : ''}
-          ${l.goals ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Goals for Next</div><div style="color:rgba(250,250,248,0.8)">${l.goals}</div></div>` : ''}
-          ${l.notes ? `<div><div style="color:#C8A96E;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Notes</div><div style="color:rgba(250,250,248,0.8)">${l.notes}</div></div>` : ''}
+          <div><div style="color:#9a7b1f;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Subjects</div><div style="color:rgba(26,23,21,0.8)">${(l.subjects||[]).join(', ') || '—'}</div></div>
+          ${l.struggles ? `<div><div style="color:#9a7b1f;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Struggles</div><div style="color:rgba(26,23,21,0.8)">${l.struggles}</div></div>` : ''}
+          ${l.goals ? `<div><div style="color:#9a7b1f;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Goals for Next</div><div style="color:rgba(26,23,21,0.8)">${l.goals}</div></div>` : ''}
+          ${l.notes ? `<div><div style="color:#9a7b1f;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem">Notes</div><div style="color:rgba(26,23,21,0.8)">${l.notes}</div></div>` : ''}
         </div>
       </div>`;
     }).join('');
@@ -8631,16 +8734,16 @@ Good luck!`,
     // Populate student checkboxes
     const sList = document.getElementById('gs-students-list');
     sList.innerHTML = students.length ? students.map(([uid,u])=>`
-      <label style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;font-size:0.88rem;color:rgba(250,250,248,0.85);cursor:pointer">
+      <label style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;font-size:0.88rem;color:rgba(26,23,21,0.85);cursor:pointer">
         <input type="checkbox" value="${uid}" style="accent-color:#C0182B"> ${u.name||u.email}
-      </label>`).join('') : '<span style="color:rgba(250,250,248,0.4);font-size:0.85rem">No students yet.</span>';
+      </label>`).join('') : '<span style="color:rgba(26,23,21,0.4);font-size:0.85rem">No students yet.</span>';
 
     // Populate tutor checkboxes — pre-check current user if tutor
     const tList = document.getElementById('gs-tutors-list');
     tList.innerHTML = tutors.length ? tutors.map(([uid,u])=>`
-      <label style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;font-size:0.88rem;color:rgba(250,250,248,0.85);cursor:pointer">
+      <label style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;font-size:0.88rem;color:rgba(26,23,21,0.85);cursor:pointer">
         <input type="checkbox" value="${uid}" ${CU.role==='tutor'&&CU.uid===uid?'checked':''} style="accent-color:#C0182B"> ${u.name||u.email}
-      </label>`).join('') : '<span style="color:rgba(250,250,248,0.4);font-size:0.85rem">No tutors yet.</span>';
+      </label>`).join('') : '<span style="color:rgba(26,23,21,0.4);font-size:0.85rem">No tutors yet.</span>';
 
     document.getElementById('gs-date').value = '';
     document.getElementById('gs-time').value = '';
@@ -8791,14 +8894,14 @@ Good luck!`,
       const studentNames = (g.studentIds||[]).map(id=>allUsers[id]?.name||'Student').join(', ');
       const canDelete    = role === 'admin' || role === 'tutor';
       return `
-      <div style="padding:0.9rem;background:rgba(250,250,248,0.03);border:1px solid rgba(250,250,248,0.07);border-radius:10px;margin-bottom:0.7rem">
+      <div style="padding:0.9rem;background:rgba(26,23,21,0.03);border:1px solid rgba(26,23,21,0.07);border-radius:10px;margin-bottom:0.7rem">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
           <div style="flex:1">
-            <div style="font-size:0.9rem;font-weight:700;color:#FAFAF8;margin-bottom:0.3rem">👥 Group Session — ${formatDate(g.date)} at ${formatTime(g.time)}</div>
-            <div style="font-size:0.82rem;color:rgba(250,250,248,0.6);margin-bottom:0.2rem">📍 ${g.location||'No location'}</div>
-            ${g.topic ? `<div style="font-size:0.82rem;color:rgba(250,250,248,0.6);margin-bottom:0.2rem">📝 ${g.topic}</div>` : ''}
-            <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.4rem">Tutors: ${tutorNames}</div>
-            <div style="font-size:0.78rem;color:rgba(250,250,248,0.4)">Students: ${studentNames}</div>
+            <div style="font-size:0.9rem;font-weight:700;color:#1a1715;margin-bottom:0.3rem">👥 Group Session — ${formatDate(g.date)} at ${formatTime(g.time)}</div>
+            <div style="font-size:0.82rem;color:rgba(26,23,21,0.6);margin-bottom:0.2rem">📍 ${g.location||'No location'}</div>
+            ${g.topic ? `<div style="font-size:0.82rem;color:rgba(26,23,21,0.6);margin-bottom:0.2rem">📝 ${g.topic}</div>` : ''}
+            <div style="font-size:0.78rem;color:rgba(26,23,21,0.4);margin-top:0.4rem">Tutors: ${tutorNames}</div>
+            <div style="font-size:0.78rem;color:rgba(26,23,21,0.4)">Students: ${studentNames}</div>
           </div>
           ${canDelete ? `<button class="action-btn danger" onclick="deleteGroupSession('${g.id}')">Remove</button>` : ''}
         </div>
@@ -8893,11 +8996,11 @@ Good luck!`,
     if (!reqs.length) { card.style.display = 'none'; return; }
     card.style.display = '';
     list.innerHTML = reqs.map(r => `
-      <div style="padding:0.7rem 0;border-bottom:1px solid rgba(250,250,248,0.06)">
+      <div style="padding:0.7rem 0;border-bottom:1px solid rgba(26,23,21,0.06)">
         <div style="font-size:0.9rem;font-weight:600;margin-bottom:0.3rem">${formatDate(r.date)} at ${formatTime(r.time)}</div>
-        <div style="font-size:0.82rem;color:rgba(250,250,248,0.55);margin-bottom:0.2rem">📍 ${r.location||'No location specified'}</div>
-        <div style="font-size:0.82rem;color:rgba(250,250,248,0.55)">📝 ${r.topic}</div>
-        <div style="font-size:0.75rem;color:rgba(250,250,248,0.3);margin-top:0.4rem">Awaiting tutor confirmation</div>
+        <div style="font-size:0.82rem;color:rgba(26,23,21,0.55);margin-bottom:0.2rem">📍 ${r.location||'No location specified'}</div>
+        <div style="font-size:0.82rem;color:rgba(26,23,21,0.55)">📝 ${r.topic}</div>
+        <div style="font-size:0.75rem;color:rgba(26,23,21,0.3);margin-top:0.4rem">Awaiting tutor confirmation</div>
       </div>`).join('');
   }
 
@@ -8920,15 +9023,15 @@ Good luck!`,
     list.innerHTML = reqs.map(r => {
       const sName = allUsers[r.studentId]?.name || allUsers[r.studentId]?.email || 'Student';
       const groupBadge = r.isGroup ? `<span style="background:rgba(192,24,43,0.25);color:#e8b4b8;font-size:0.7rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:20px;margin-left:0.4rem;letter-spacing:0.05em">GROUP</span>` : '';
-      const suggestedHtml = r.isGroup && r.suggestedStudents ? `<div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-top:0.2rem">👥 Suggested: ${r.suggestedStudents}</div>` : '';
+      const suggestedHtml = r.isGroup && r.suggestedStudents ? `<div style="font-size:0.78rem;color:rgba(26,23,21,0.4);margin-top:0.2rem">👥 Suggested: ${r.suggestedStudents}</div>` : '';
       return `
-      <div style="padding:0.8rem;background:rgba(250,250,248,0.03);border-radius:10px;margin-bottom:0.7rem;border:1px solid rgba(250,250,248,0.07)">
+      <div style="padding:0.8rem;background:rgba(26,23,21,0.03);border-radius:10px;margin-bottom:0.7rem;border:1px solid rgba(26,23,21,0.07)">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
           <div>
             <div style="font-size:0.92rem;font-weight:600;margin-bottom:0.25rem">👤 ${sName}${groupBadge}</div>
-            <div style="font-size:0.85rem;color:rgba(250,250,248,0.7);margin-bottom:0.2rem">📅 ${formatDate(r.date)} at ${formatTime(r.time)}</div>
-            <div style="font-size:0.82rem;color:rgba(250,250,248,0.55);margin-bottom:0.2rem">📍 ${r.location||'No location specified'}</div>
-            <div style="font-size:0.82rem;color:rgba(250,250,248,0.55)">📝 ${r.topic}</div>
+            <div style="font-size:0.85rem;color:rgba(26,23,21,0.7);margin-bottom:0.2rem">📅 ${formatDate(r.date)} at ${formatTime(r.time)}</div>
+            <div style="font-size:0.82rem;color:rgba(26,23,21,0.55);margin-bottom:0.2rem">📍 ${r.location||'No location specified'}</div>
+            <div style="font-size:0.82rem;color:rgba(26,23,21,0.55)">📝 ${r.topic}</div>
             ${suggestedHtml}
           </div>
           <div style="display:flex;gap:0.5rem;flex-shrink:0">
@@ -9035,11 +9138,11 @@ Good luck!`,
     el.innerHTML = sent.map(m => `
       <div style="padding:0.9rem;border-bottom:1px solid rgba(192,24,43,0.15)">
         <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
-          <span style="font-size:0.85rem;font-weight:600;color:#fafaf8">To: ${m.toName}</span>
-          <span style="font-size:0.72rem;color:rgba(250,250,248,0.3)">${new Date(m.createdAt).toLocaleDateString()}</span>
+          <span style="font-size:0.85rem;font-weight:600;color:#1a1715">To: ${m.toName}</span>
+          <span style="font-size:0.72rem;color:rgba(26,23,21,0.3)">${new Date(m.createdAt).toLocaleDateString()}</span>
         </div>
-        <div style="font-size:0.8rem;color:rgba(250,250,248,0.5);margin-bottom:0.3rem">${m.subject}</div>
-        <div style="font-size:0.83rem;color:rgba(250,250,248,0.6);line-height:1.5">${m.body}</div>
+        <div style="font-size:0.8rem;color:rgba(26,23,21,0.5);margin-bottom:0.3rem">${m.subject}</div>
+        <div style="font-size:0.83rem;color:rgba(26,23,21,0.6);line-height:1.5">${m.body}</div>
       </div>`).join('');
   }
 
@@ -9060,11 +9163,11 @@ Good luck!`,
     el.innerHTML = inbox.map(m => `
       <div style="padding:0.9rem;border-bottom:1px solid rgba(192,24,43,0.15);background:${m.read?'transparent':'rgba(192,24,43,0.06)'}">
         <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
-          <span style="font-size:0.85rem;font-weight:600;color:#fafaf8">From: ${m.fromName} <span style="font-size:0.7rem;color:rgba(250,250,248,0.3)">(${m.fromRole})</span>${!m.read?'<span style="margin-left:0.5rem;font-size:0.65rem;background:#c0182b;color:#fff;padding:0.1rem 0.4rem;border-radius:10px">NEW</span>':''}</span>
-          <span style="font-size:0.72rem;color:rgba(250,250,248,0.3)">${new Date(m.createdAt).toLocaleDateString()}</span>
+          <span style="font-size:0.85rem;font-weight:600;color:#1a1715">From: ${m.fromName} <span style="font-size:0.7rem;color:rgba(26,23,21,0.3)">(${m.fromRole})</span>${!m.read?'<span style="margin-left:0.5rem;font-size:0.65rem;background:#c0182b;color:#fff;padding:0.1rem 0.4rem;border-radius:10px">NEW</span>':''}</span>
+          <span style="font-size:0.72rem;color:rgba(26,23,21,0.3)">${new Date(m.createdAt).toLocaleDateString()}</span>
         </div>
-        <div style="font-size:0.8rem;color:rgba(250,250,248,0.5);margin-bottom:0.3rem">${m.subject}</div>
-        <div style="font-size:0.83rem;color:rgba(250,250,248,0.6);line-height:1.5">${m.body}</div>
+        <div style="font-size:0.8rem;color:rgba(26,23,21,0.5);margin-bottom:0.3rem">${m.subject}</div>
+        <div style="font-size:0.83rem;color:rgba(26,23,21,0.6);line-height:1.5">${m.body}</div>
       </div>`).join('');
 
     // Mark all as read
@@ -9077,7 +9180,7 @@ Good luck!`,
   async function loadEmailReplies() {
     const el = document.getElementById('dm-email-replies-list');
     if (!el) return;
-    el.innerHTML = '<div style="color:rgba(250,250,248,0.4);font-size:0.85rem;padding:0.5rem">Loading...</div>';
+    el.innerHTML = '<div style="color:rgba(26,23,21,0.4);font-size:0.85rem;padding:0.5rem">Loading...</div>';
 
     const snap = await getDocs(collection(db, 'messages'));
     const replies = [];
@@ -9096,14 +9199,14 @@ Good luck!`,
       <div style="padding:1rem;border-bottom:1px solid rgba(192,24,43,0.12);background:${m.read?'transparent':'rgba(192,24,43,0.06)'}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.4rem;flex-wrap:wrap;gap:0.3rem">
           <div>
-            <span style="font-size:0.88rem;font-weight:600;color:#fafaf8">${m.fromName}</span>
-            <span style="font-size:0.72rem;color:rgba(250,250,248,0.35);margin-left:0.4rem">${m.fromEmail || ''}</span>
+            <span style="font-size:0.88rem;font-weight:600;color:#1a1715">${m.fromName}</span>
+            <span style="font-size:0.72rem;color:rgba(26,23,21,0.35);margin-left:0.4rem">${m.fromEmail || ''}</span>
             ${!m.read ? '<span style="margin-left:0.5rem;font-size:0.65rem;background:#c0182b;color:#fff;padding:0.1rem 0.4rem;border-radius:10px">NEW</span>' : ''}
           </div>
-          <span style="font-size:0.72rem;color:rgba(250,250,248,0.3)">${new Date(m.createdAt).toLocaleString()}</span>
+          <span style="font-size:0.72rem;color:rgba(26,23,21,0.3)">${new Date(m.createdAt).toLocaleString()}</span>
         </div>
-        <div style="font-size:0.78rem;color:rgba(250,250,248,0.4);margin-bottom:0.5rem">Re: ${m.subject}</div>
-        <div style="font-size:0.85rem;color:rgba(250,250,248,0.7);line-height:1.65;white-space:pre-wrap">${m.body}</div>
+        <div style="font-size:0.78rem;color:rgba(26,23,21,0.4);margin-bottom:0.5rem">Re: ${m.subject}</div>
+        <div style="font-size:0.85rem;color:rgba(26,23,21,0.7);line-height:1.65;white-space:pre-wrap">${m.body}</div>
       </div>`).join('');
 
     // Mark as read
@@ -9163,16 +9266,16 @@ Good luck!`,
         datasets: [
           { label: 'Avg Total', data: avgTotals, borderColor: '#c0182b', backgroundColor: 'rgba(192,24,43,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#c0182b', spanGaps: true },
           { label: 'Avg Math', data: avgMaths, borderColor: '#C8A96E', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointBackgroundColor: '#C8A96E', spanGaps: true },
-          { label: 'Avg R&W', data: avgRws, borderColor: 'rgba(250,250,248,0.4)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointBackgroundColor: 'rgba(250,250,248,0.4)', spanGaps: true }
+          { label: 'Avg R&W', data: avgRws, borderColor: 'rgba(26,23,21,0.4)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointBackgroundColor: 'rgba(26,23,21,0.4)', spanGaps: true }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
         scales: {
-          y: { min: 200, max: 1600, ticks: { color: 'rgba(250,250,248,0.4)', font:{size:11} }, grid: { color: 'rgba(255,255,255,0.05)' } },
-          x: { ticks: { color: 'rgba(250,250,248,0.4)', font:{size:11} }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          y: { min: 200, max: 1600, ticks: { color: 'rgba(26,23,21,0.4)', font:{size:11} }, grid: { color: 'rgba(26,23,21,0.05)' } },
+          x: { ticks: { color: 'rgba(26,23,21,0.4)', font:{size:11} }, grid: { color: 'rgba(26,23,21,0.05)' } }
         },
-        plugins: { legend: { labels: { color: 'rgba(250,250,248,0.6)', font:{size:12} } } }
+        plugins: { legend: { labels: { color: 'rgba(26,23,21,0.6)', font:{size:12} } } }
       }
     });
 
@@ -9194,11 +9297,11 @@ Good luck!`,
         <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid rgba(192,24,43,0.12)">
           <div style="display:flex;align-items:center;gap:0.8rem">
             <span style="font-size:1.1rem">${['','','','4️⃣','5️⃣'][i]}</span>
-            <span style="font-size:0.9rem;color:#fafaf8">${s.name}</span>
+            <span style="font-size:0.9rem;color:#1a1715">${s.name}</span>
           </div>
           <div style="text-align:right">
             <span class="improvement-chip ${s.improvement>=0?'improvement-pos':'improvement-neg'}">${s.improvement>=0?'↑ +':'↓ '}${s.improvement} pts</span>
-            <div style="font-size:0.72rem;color:rgba(250,250,248,0.3);margin-top:0.2rem">Latest: ${s.latest}</div>
+            <div style="font-size:0.72rem;color:rgba(26,23,21,0.3);margin-top:0.2rem">Latest: ${s.latest}</div>
           </div>
         </div>`).join('');
     }
@@ -9217,15 +9320,15 @@ Good luck!`,
       avgEl.innerHTML = `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
           <div style="text-align:center;padding:1rem;background:rgba(192,24,43,0.1);border-radius:6px;border:1px solid rgba(192,24,43,0.2)">
-            <div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;color:#fafaf8">${overallAvgTotal}</div>
-            <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em">Avg Total</div>
+            <div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;color:#1a1715">${overallAvgTotal}</div>
+            <div style="font-size:0.72rem;color:rgba(26,23,21,0.4);text-transform:uppercase;letter-spacing:0.08em">Avg Total</div>
           </div>
           <div style="text-align:center;padding:1rem;background:rgba(192,24,43,0.1);border-radius:6px;border:1px solid rgba(192,24,43,0.2)">
-            <div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;color:#C8A96E">${students}</div>
-            <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em">Students Tracked</div>
+            <div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;color:#9a7b1f">${students}</div>
+            <div style="font-size:0.72rem;color:rgba(26,23,21,0.4);text-transform:uppercase;letter-spacing:0.08em">Students Tracked</div>
           </div>
         </div>
-        <div style="font-size:0.82rem;color:rgba(250,250,248,0.5)">Avg Math: <strong style="color:#fafaf8">${overallAvgMath}</strong> &nbsp;·&nbsp; Avg R&W: <strong style="color:#fafaf8">${overallAvgRw}</strong> &nbsp;·&nbsp; Total scores logged: <strong style="color:#fafaf8">${allScores.length}</strong></div>`;
+        <div style="font-size:0.82rem;color:rgba(26,23,21,0.5)">Avg Math: <strong style="color:#1a1715">${overallAvgMath}</strong> &nbsp;·&nbsp; Avg R&W: <strong style="color:#1a1715">${overallAvgRw}</strong> &nbsp;·&nbsp; Total scores logged: <strong style="color:#1a1715">${allScores.length}</strong></div>`;
     }
   }
 
@@ -9329,10 +9432,10 @@ Good luck!`,
     el.innerHTML = thread.map(m=>{
       const isMe = m.fromId===CU.uid;
       return '<div style="margin-bottom:0.8rem;display:flex;flex-direction:column;align-items:'+(isMe?'flex-end':'flex-start')+'">'
-        +'<div style="max-width:85%;background:'+(isMe?'rgba(192,24,43,0.2)':'rgba(255,255,255,0.06)')+';border:1px solid '+(isMe?'rgba(192,24,43,0.35)':'rgba(255,255,255,0.1)')+';border-radius:8px;padding:0.75rem 1rem">'
-        +'<div style="font-size:0.72rem;color:rgba(250,250,248,0.4);margin-bottom:0.3rem">'+(isMe?'You':'Admin')+' &middot; '+new Date(m.createdAt).toLocaleDateString()+'</div>'
-        +(m.subject&&m.subject!=='(No subject)'?'<div style="font-size:0.78rem;font-weight:600;color:rgba(250,250,248,0.6);margin-bottom:0.3rem">'+m.subject+'</div>':'')
-        +'<div style="font-size:0.88rem;color:#fafaf8;line-height:1.5">'+m.body+'</div>'
+        +'<div style="max-width:85%;background:'+(isMe?'rgba(192,24,43,0.2)':'rgba(26,23,21,0.06)')+';border:1px solid '+(isMe?'rgba(192,24,43,0.35)':'rgba(26,23,21,0.1)')+';border-radius:8px;padding:0.75rem 1rem">'
+        +'<div style="font-size:0.72rem;color:rgba(26,23,21,0.4);margin-bottom:0.3rem">'+(isMe?'You':'Admin')+' &middot; '+new Date(m.createdAt).toLocaleDateString()+'</div>'
+        +(m.subject&&m.subject!=='(No subject)'?'<div style="font-size:0.78rem;font-weight:600;color:rgba(26,23,21,0.6);margin-bottom:0.3rem">'+m.subject+'</div>':'')
+        +'<div style="font-size:0.88rem;color:#1a1715;line-height:1.5">'+m.body+'</div>'
         +'</div></div>';
     }).join('');
     el.scrollTop = el.scrollHeight;
@@ -9844,7 +9947,7 @@ Good luck!`,
       <div><div class="field-label">Location</div><input class="input-field" type="text" id="mlog-location" placeholder="e.g. Library, Zoom" /></div>
     </div>
     <div style="margin-bottom:0.9rem">
-      <div class="field-label">Subjects Studied <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(comma separated)</span></div>
+      <div class="field-label">Subjects Studied <span style="color:rgba(26,23,21,0.35);font-size:0.75rem">(comma separated)</span></div>
       <input class="input-field" type="text" id="mlog-subjects" placeholder="e.g. Algebra, Quadratics, Evidence-based Reading" />
     </div>
     <div style="margin-bottom:0.9rem">
@@ -9856,7 +9959,7 @@ Good luck!`,
       <textarea class="input-field" id="mlog-goals" placeholder="What should the student work on before the next session?" style="min-height:75px;resize:vertical"></textarea>
     </div>
     <div style="margin-bottom:0.9rem">
-      <div class="field-label">General Notes <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(optional)</span></div>
+      <div class="field-label">General Notes <span style="color:rgba(26,23,21,0.35);font-size:0.75rem">(optional)</span></div>
       <textarea class="input-field" id="mlog-notes" placeholder="Any other observations, mood, effort level, wins..." style="min-height:65px;resize:vertical"></textarea>
     </div>
     <div class="modal-actions">
@@ -9880,7 +9983,7 @@ Good luck!`,
       </div>
     </div>
     <div style="margin-bottom:0.9rem">
-      <div class="field-label">Subjects Studied <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(comma separated, e.g. Math, Reading)</span></div>
+      <div class="field-label">Subjects Studied <span style="color:rgba(26,23,21,0.35);font-size:0.75rem">(comma separated, e.g. Math, Reading)</span></div>
       <input class="input-field" type="text" id="slog-subjects" placeholder="e.g. Algebra, Quadratics, Evidence-based Reading" />
     </div>
     <div style="margin-bottom:0.9rem">
@@ -9892,7 +9995,7 @@ Good luck!`,
       <textarea class="input-field" id="slog-goals" placeholder="What should the student work on before the next session?" style="min-height:80px;resize:vertical"></textarea>
     </div>
     <div style="margin-bottom:0.9rem">
-      <div class="field-label">General Notes <span style="color:rgba(250,250,248,0.35);font-size:0.75rem">(optional)</span></div>
+      <div class="field-label">General Notes <span style="color:rgba(26,23,21,0.35);font-size:0.75rem">(optional)</span></div>
       <textarea class="input-field" id="slog-notes" placeholder="Any other observations, mood, effort level, wins..." style="min-height:70px;resize:vertical"></textarea>
     </div>
     <div class="modal-actions">
@@ -9919,14 +10022,14 @@ Good luck!`,
     </div>
     <div class="form-row full" style="margin-bottom:0.8rem">
       <div>
-        <div class="field-label">Students <span style="color:rgba(250,250,248,0.4);font-size:0.75rem">(select one or more)</span></div>
-        <div id="gs-students-list" style="background:rgba(250,250,248,0.04);border:1px solid rgba(250,250,248,0.1);border-radius:6px;padding:0.6rem;max-height:160px;overflow-y:auto"></div>
+        <div class="field-label">Students <span style="color:rgba(26,23,21,0.4);font-size:0.75rem">(select one or more)</span></div>
+        <div id="gs-students-list" style="background:rgba(26,23,21,0.04);border:1px solid rgba(26,23,21,0.1);border-radius:6px;padding:0.6rem;max-height:160px;overflow-y:auto"></div>
       </div>
     </div>
     <div class="form-row full" style="margin-bottom:0.8rem">
       <div>
-        <div class="field-label">Tutors <span style="color:rgba(250,250,248,0.4);font-size:0.75rem">(select one or more)</span></div>
-        <div id="gs-tutors-list" style="background:rgba(250,250,248,0.04);border:1px solid rgba(250,250,248,0.1);border-radius:6px;padding:0.6rem;max-height:120px;overflow-y:auto"></div>
+        <div class="field-label">Tutors <span style="color:rgba(26,23,21,0.4);font-size:0.75rem">(select one or more)</span></div>
+        <div id="gs-tutors-list" style="background:rgba(26,23,21,0.04);border:1px solid rgba(26,23,21,0.1);border-radius:6px;padding:0.6rem;max-height:120px;overflow-y:auto"></div>
       </div>
     </div>
     <div class="modal-actions">
@@ -9953,7 +10056,7 @@ Good luck!`,
       <div><div class="field-label">Topic / what you need help with</div><textarea class="input-field" id="gr-topic" placeholder="e.g. Math — quadratics..." style="min-height:70px;resize:vertical"></textarea></div>
     </div>
     <div class="form-row full" style="margin-bottom:0.8rem">
-      <div><div class="field-label">Suggested students to invite <span style="color:rgba(250,250,248,0.4);font-size:0.75rem">(optional — names or emails)</span></div>
+      <div><div class="field-label">Suggested students to invite <span style="color:rgba(26,23,21,0.4);font-size:0.75rem">(optional — names or emails)</span></div>
       <textarea class="input-field" id="gr-others" placeholder="e.g. Sarah Kim, Marcus Chen..." style="min-height:60px;resize:vertical"></textarea></div>
     </div>
     <div class="modal-actions">
@@ -10033,6 +10136,221 @@ Good luck!`,
     </div>
   </div>
 </div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     COSMETIC ENHANCEMENTS (no business logic) — branded charts +
+     stat count-up. Runs before the deferred module script, so
+     Chart.defaults are set before any chart is created.
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  /* ---------- Branded Chart.js ---------- */
+  if (typeof Chart !== 'undefined') {
+    var INK = '#1a1715', INK2 = 'rgba(26,23,21,0.55)',
+        CRIMSON = '#a31621', GOLD = '#c8a96e', IVORY = '#fffdf7';
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    Chart.defaults.font.family = "'DM Sans', system-ui, sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.color = INK2;
+    Chart.defaults.borderColor = 'rgba(26,23,21,0.06)';
+    if (Chart.defaults.plugins && Chart.defaults.plugins.legend) {
+      Chart.defaults.plugins.legend.labels.usePointStyle = true;
+      Chart.defaults.plugins.legend.labels.boxWidth = 22;
+      Chart.defaults.plugins.legend.labels.padding = 16;
+    }
+    if (Chart.defaults.plugins && Chart.defaults.plugins.tooltip) {
+      var tt = Chart.defaults.plugins.tooltip;
+      tt.backgroundColor = IVORY; tt.titleColor = INK;
+      tt.bodyColor = 'rgba(26,23,21,0.7)'; tt.borderColor = 'rgba(163,22,43,0.35)';
+      tt.borderWidth = 1; tt.padding = 12; tt.cornerRadius = 6;
+      tt.usePointStyle = true; tt.boxPadding = 5; tt.caretSize = 5;
+      tt.titleFont = { family: "'Playfair Display', serif", weight: '700', size: 13 };
+      tt.bodyFont = { family: "'DM Sans', sans-serif", size: 12 };
+    }
+
+    /* gold target reference line + chip */
+    Chart.register({
+      id: 'targetBand',
+      afterDatasetsDraw: function (chart) {
+        var o = chart.options.plugins && chart.options.plugins.targetBand;
+        if (!o || !o.value) return;
+        var y = chart.scales.y; if (!y) return;
+        var yp = y.getPixelForValue(o.value);
+        var a = chart.chartArea;
+        if (yp < a.top || yp > a.bottom) return;
+        var ctx = chart.ctx;
+        ctx.save();
+        ctx.strokeStyle = GOLD; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+        ctx.beginPath(); ctx.moveTo(a.left, yp); ctx.lineTo(a.right, yp); ctx.stroke();
+        ctx.setLineDash([]);
+        if (o.label) {
+          ctx.font = "600 10px 'JetBrains Mono', monospace";
+          var tw = ctx.measureText(o.label).width;
+          var px = a.right - tw - 12, py = yp - 8;
+          ctx.fillStyle = GOLD; ctx.fillRect(px - 7, py - 1, tw + 14, 16);
+          ctx.fillStyle = '#1a1715'; ctx.textBaseline = 'middle';
+          ctx.fillText(o.label, px, py + 7);
+        }
+        ctx.restore();
+      }
+    });
+
+    /* halo on the most recent point of the primary series */
+    Chart.register({
+      id: 'latestHalo',
+      afterDatasetsDraw: function (chart) {
+        if (chart.config.type !== 'line') return;
+        var meta = chart.getDatasetMeta(0);
+        if (!meta || !meta.data || !meta.data.length) return;
+        var ds = chart.data.datasets[0].data, idx = -1;
+        for (var i = meta.data.length - 1; i >= 0; i--) { if (ds[i] != null) { idx = i; break; } }
+        if (idx < 0) return;
+        var p = meta.data[idx], ctx = chart.ctx;
+        ctx.save();
+        ctx.beginPath(); ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(163,22,33,0.16)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = CRIMSON; ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = IVORY; ctx.stroke();
+        ctx.restore();
+      }
+    });
+
+    /* left-to-right reveal of the plotted geometry */
+    if (!reduce) {
+      Chart.register({
+        id: 'progressiveDraw',
+        beforeDatasetsDraw: function (chart) {
+          if (chart.config.type !== 'line') return;
+          if (chart.options.plugins && chart.options.plugins.progressiveDraw === false) return;
+          var s = chart.$pd || (chart.$pd = { start: null, done: false });
+          if (s.done) return;
+          if (s.start == null) s.start = performance.now();
+          var t = Math.min(1, (performance.now() - s.start) / 850);
+          var e = 1 - Math.pow(1 - t, 3);
+          var a = chart.chartArea, ctx = chart.ctx;
+          ctx.save(); ctx.beginPath();
+          ctx.rect(a.left, a.top - 24, (a.right - a.left) * e, (a.bottom - a.top) + 48);
+          ctx.clip(); chart.$pdClip = true;
+          if (t < 1) requestAnimationFrame(function () { try { chart.draw(); } catch (err) {} });
+          else s.done = true;
+        },
+        afterDatasetsDraw: function (chart) {
+          if (chart.$pdClip) { chart.ctx.restore(); chart.$pdClip = false; }
+        }
+      });
+      Chart.defaults.animation = { duration: 0 };
+    }
+  }
+
+  /* ---------- Count-up on stat tiles ---------- */
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function maybe(el) {
+      if (el.$cuAnimating) return;
+      var raw = (el.textContent || '').trim();
+      var m = raw.match(/^([+]?)(\d{1,5})$/);   /* skip "Free", "—", "1480 pts", etc. */
+      if (!m) return;
+      if (el.$cuDone === raw) return;
+      el.$cuDone = raw;
+      if (reduce) return;
+      el.$cuAnimating = true;
+      var prefix = m[1], to = parseInt(m[2], 10), dur = 750, st = performance.now();
+      el.textContent = prefix + '0';
+      (function tick(now) {
+        var t = Math.min(1, (now - st) / dur), e = 1 - Math.pow(1 - t, 3);
+        el.textContent = prefix + Math.round(to * e);
+        if (t < 1) requestAnimationFrame(tick);
+        else { el.textContent = prefix + to; el.$cuDone = prefix + to; el.$cuAnimating = false; }
+      })(st);
+    }
+    function scan(root) {
+      (root || document).querySelectorAll('.stat-num').forEach(maybe);
+    }
+    function boot() {
+      new MutationObserver(function (muts) {
+        muts.forEach(function (m) {
+          var el = m.target && m.target.nodeType === 3 ? m.target.parentElement : m.target;
+          if (el && el.classList && el.classList.contains('stat-num')) maybe(el);
+          (m.addedNodes || []).forEach(function (n) { if (n.querySelectorAll) scan(n); });
+        });
+      }).observe(document.body, { childList: true, subtree: true, characterData: true });
+      scan();
+    }
+    if (document.readyState !== 'loading') boot();
+    else document.addEventListener('DOMContentLoaded', boot);
+  })();
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     LOGIN-LOADER GLOBE (Orbit seal) — spinning monochrome globe with
+     real country outlines + crimson sweep arc, behind the centred P.
+     Animates only while #login-loading is active.
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  var canvas = document.getElementById('login-globe');
+  if (!canvas) return;
+  var loader = document.getElementById('login-loading');
+  var ctx = canvas.getContext('2d');
+  var INK = '26,23,21', CRIM = '163,22,33';
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var S = 132, DPR = Math.min(2, window.devicePixelRatio || 1);
+  canvas.width = S * DPR; canvas.height = S * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  var c = S / 2, R = Math.round(S * 0.27), arcR = Math.round(S * 0.345), discR = Math.round(S * 0.135);
+
+  var proj = null, path = null, grat = null;
+  if (typeof d3 !== 'undefined') {
+    proj = d3.geoOrthographic().clipAngle(90);
+    path = d3.geoPath(proj, ctx);
+    grat = d3.geoGraticule10();
+  }
+  var LAND = null, BORD = null;
+  if (typeof fetch !== 'undefined') {
+    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+      .then(function (r) { return r.json(); })
+      .then(function (w) {
+        if (typeof topojson === 'undefined') return;
+        LAND = topojson.feature(w, w.objects.countries);
+        BORD = topojson.mesh(w, w.objects.countries, function (a, b) { return a !== b; });
+      }).catch(function () {});
+  }
+
+  function globe(lam) {
+    if (!proj) return;
+    proj.scale(R).translate([c, c]).rotate([lam, -12, 0]);
+    ctx.beginPath(); path({ type: 'Sphere' }); ctx.fillStyle = 'rgba(' + INK + ',0.04)'; ctx.fill();
+    ctx.beginPath(); path(grat); ctx.strokeStyle = 'rgba(' + INK + ',0.12)'; ctx.lineWidth = 0.5; ctx.stroke();
+    if (LAND) { ctx.beginPath(); path(LAND); ctx.fillStyle = 'rgba(' + INK + ',0.11)'; ctx.fill(); }
+    if (BORD) { ctx.beginPath(); path(BORD); ctx.strokeStyle = 'rgba(' + INK + ',0.6)'; ctx.lineWidth = 0.6; ctx.stroke(); }
+    ctx.beginPath(); path({ type: 'Sphere' }); ctx.strokeStyle = 'rgba(' + INK + ',0.92)'; ctx.lineWidth = 1.1; ctx.stroke();
+  }
+  function draw(now) {
+    ctx.clearRect(0, 0, S, S);
+    var lam = now * 0.020, orbit = now * 0.0017;
+    globe(lam);
+    ctx.save(); ctx.translate(c, c); ctx.rotate(orbit);
+    ctx.strokeStyle = 'rgba(' + CRIM + ',0.85)'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(0, 0, arcR, -0.2, Math.PI * 1.4); ctx.stroke(); ctx.restore();
+    var a = orbit * 1.3;
+    ctx.beginPath(); ctx.arc(c + Math.cos(a) * arcR, c + Math.sin(a) * arcR, 2.2, 0, 2 * Math.PI);
+    ctx.fillStyle = 'rgba(' + INK + ',0.9)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(c, c, discR, 0, 2 * Math.PI);
+    ctx.fillStyle = '#fffdf7'; ctx.fill();
+    ctx.strokeStyle = 'rgba(' + INK + ',0.35)'; ctx.lineWidth = 1; ctx.stroke();
+  }
+
+  draw(performance.now());   /* one frame up front */
+  function loop(now) {
+    if (loader && loader.classList.contains('active')) draw(now);
+    requestAnimationFrame(loop);
+  }
+  if (reduce) { draw(performance.now()); } else { requestAnimationFrame(loop); }
+})();
+</script>
 
 </body>
 </html>
