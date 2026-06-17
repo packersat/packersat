@@ -10352,5 +10352,175 @@ Good luck!`,
 })();
 </script>
 
+<!-- ════════════════════════════════════════════════════════════════
+     DESKTOP NAV FLYOUT (cosmetic / additive) — turns the left sidebar
+     into a summonable floating dock that DROPS IN from the top bar when
+     the Menu button is pressed, with a gliding crimson marker on the
+     active item and auto-close on navigation. Desktop only (≥769px);
+     the mobile drawer + bottom bar are left entirely untouched.
+     ════════════════════════════════════════════════════════════════ -->
+<style>
+  @media (min-width: 769px) {
+    .portal-body { position: relative; }
+
+    /* Menu button in the top nav */
+    .pmenu-btn { width: 34px; height: 34px; border: 1px solid var(--rule); background: var(--ivory); border-radius: 9px; cursor: pointer; display: grid; place-items: center; padding: 0; margin-right: 0.55rem; transition: border-color 0.18s, background 0.18s; }
+    .pmenu-btn:hover { border-color: rgba(26,23,21,0.30); }
+    .pmenu-btn .bars { position: relative; width: 16px; height: 12px; }
+    .pmenu-btn .bars i { position: absolute; left: 0; right: 0; height: 2px; border-radius: 2px; background: var(--ink); transition: transform 0.32s var(--ease-out), opacity 0.2s, background 0.18s; }
+    .pmenu-btn .bars i:nth-child(1) { top: 0; }
+    .pmenu-btn .bars i:nth-child(2) { top: 5px; }
+    .pmenu-btn .bars i:nth-child(3) { top: 10px; }
+    .pmenu-btn.open { background: rgba(192,24,43,0.10); border-color: rgba(192,24,43,0.35); }
+    .pmenu-btn.open .bars i { background: var(--red); }
+    .pmenu-btn.open .bars i:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+    .pmenu-btn.open .bars i:nth-child(2) { opacity: 0; }
+    .pmenu-btn.open .bars i:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+    /* scrim under the open flyout */
+    .pdock-scrim { position: absolute; inset: 0; background: rgba(26,23,21,0.05); opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease-out); z-index: 90; }
+    .pdock-scrim.show { opacity: 1; pointer-events: auto; }
+
+    /* the sidebar, now a floating drop-in flyout (gated on pdock-ready so
+       it falls back to the normal column if the script doesn't run) */
+    body.pdock-ready .sidebar {
+      position: absolute; left: 14px; top: 14px; z-index: 95;
+      width: 232px; flex: none;
+      max-height: calc(100dvh - 56px - 28px);
+      background: var(--ivory);
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      box-shadow: 0 18px 44px rgba(26,23,21,0.18);
+      padding: 0.8rem 0;
+      opacity: 0; pointer-events: none;
+      transform: translateY(-130%);
+      transition: transform 0.46s cubic-bezier(0.34,1.4,0.5,1), opacity 0.22s var(--ease-out);
+    }
+    body.pdock-ready .sidebar.pdock-open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    body.pdock-ready .sidebar-close-btn { display: none; }
+
+    /* gliding marker + neutralized static wash (keep the crimson rail) */
+    body.pdock-ready .sidebar-item { z-index: 1; }
+    body.pdock-ready .sidebar-item.active { background: transparent; }
+    .pdock-marker {
+      position: absolute; left: 6px; right: 6px; top: 0; height: 34px;
+      background: rgba(192,24,43,0.10);
+      border-radius: 9px; z-index: 0;
+      pointer-events: none; opacity: 0;
+      will-change: transform, height;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar { transition: opacity 0.001s !important; }
+    .pdock-marker { transition: none !important; }
+  }
+</style>
+<script>
+(function () {
+  var mq = window.matchMedia('(min-width: 769px)');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sidebar = document.getElementById('sidebar');
+  var body = document.querySelector('.portal-body');
+  if (!sidebar || !body) return;
+
+  /* ── inject menu button into the nav ── */
+  var navLead = document.querySelector('.portal-nav > div');
+  var menuBtn = document.createElement('button');
+  menuBtn.className = 'pmenu-btn'; menuBtn.id = 'portal-menu-btn';
+  menuBtn.setAttribute('aria-label', 'Toggle navigation'); menuBtn.setAttribute('aria-expanded', 'false');
+  menuBtn.innerHTML = '<span class="bars"><i></i><i></i><i></i></span>';
+  menuBtn.style.display = 'none';
+  if (navLead) navLead.insertBefore(menuBtn, navLead.firstChild);
+  document.body.classList.add('pdock-ready');
+
+  /* ── scrim ── */
+  var scrim = document.createElement('div');
+  scrim.className = 'pdock-scrim';
+  body.insertBefore(scrim, body.firstChild);
+
+  /* ── gliding marker (re-inserted if the sidebar is rebuilt per role) ── */
+  var marker;
+  function ensureMarker() {
+    marker = sidebar.querySelector('.pdock-marker');
+    if (!marker) {
+      marker = document.createElement('div');
+      marker.className = 'pdock-marker';
+      sidebar.insertBefore(marker, sidebar.firstChild);
+    }
+    return marker;
+  }
+  ensureMarker();
+
+  /* desktop-only summon state */
+  var open = false, closeT = null;
+  function isDesktop() { return mq.matches; }
+  function openDock() {
+    if (!isDesktop()) return;
+    clearTimeout(closeT); open = true;
+    sidebar.classList.add('pdock-open'); scrim.classList.add('show'); menuBtn.classList.add('open');
+    menuBtn.setAttribute('aria-expanded', 'true');
+    seat(true);
+  }
+  function closeDock() {
+    open = false;
+    sidebar.classList.remove('pdock-open'); scrim.classList.remove('show'); menuBtn.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', 'false');
+  }
+  function toggleDock() { open ? closeDock() : openDock(); }
+  menuBtn.addEventListener('click', toggleDock);
+  scrim.addEventListener('click', closeDock);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) closeDock(); });
+
+  /* ── marker follow (lerp + safety snap) ── */
+  var gp = { y: 0, h: 34, started: false }, raf = null, deadline = 0, snapT = null;
+  function target() {
+    var a = sidebar.querySelector('.sidebar-item.active');
+    if (!a) return null;
+    return { y: a.offsetTop, h: a.offsetHeight };
+  }
+  function place(y, h) { marker.style.transform = 'translateY(' + y + 'px)'; marker.style.height = h + 'px'; marker.style.opacity = '1'; }
+  function snap() { var t = target(); if (!t) { marker.style.opacity = '0'; return; } gp.y = t.y; gp.h = t.h; gp.started = true; place(t.y, t.h); }
+  function follow(now) {
+    var t = target(); if (!t) { marker.style.opacity = '0'; return; }
+    if (!gp.started) { gp.y = t.y; gp.h = t.h; gp.started = true; }
+    gp.y += (t.y - gp.y) * 0.14; gp.h += (t.h - gp.h) * 0.14;
+    place(gp.y, gp.h);
+    var settled = Math.abs(t.y - gp.y) < 0.4 && Math.abs(t.h - gp.h) < 0.4;
+    if (!settled || now < deadline) { raf = requestAnimationFrame(follow); } else { snap(); }
+  }
+  function seat(animate) {
+    ensureMarker();
+    clearTimeout(snapT); snapT = setTimeout(snap, 560);
+    if (reduce || !animate) { snap(); return; }
+    deadline = performance.now() + 380;
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(follow);
+  }
+
+  /* ── auto-close + marker reseat on navigation (event delegation) ── */
+  sidebar.addEventListener('click', function (e) {
+    var item = e.target.closest && e.target.closest('.sidebar-item');
+    if (!item) return;
+    seat(true);
+    if (isDesktop()) { clearTimeout(closeT); closeT = setTimeout(closeDock, 600); }
+  });
+
+  /* ── re-seat when the sidebar is rebuilt or active changes ── */
+  new MutationObserver(function () { ensureMarker(); seat(false); })
+    .observe(sidebar, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+
+  /* keep things sane across breakpoint + resize */
+  window.addEventListener('resize', function () { if (!isDesktop()) closeDock(); seat(false); });
+  mq.addEventListener && mq.addEventListener('change', function () { closeDock(); seat(false); });
+
+  /* show the button only on desktop */
+  function syncBtn() { menuBtn.style.display = isDesktop() ? 'grid' : 'none'; }
+  syncBtn();
+  mq.addEventListener && mq.addEventListener('change', syncBtn);
+
+  /* initial seat once the portal is up */
+  setTimeout(function () { seat(false); }, 400);
+})();
+</script>
+
 </body>
 </html>
