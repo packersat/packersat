@@ -6539,8 +6539,8 @@ Good luck!`,
         linkOnly:     true,   // flag so we know this was shared as a link
       });
 
-      // Build the shareable URL — /schedule?p=<pickerId>
-      const url = `https://www.packersat.org/schedule?p=${pickerRef.id}`;
+      // Build the shareable URL — point directly to confirm.html
+      const url = `https://www.packersat.org/confirm.html?p=${pickerRef.id}`;
 
       // Copy to clipboard
       await navigator.clipboard.writeText(url);
