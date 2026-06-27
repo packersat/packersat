@@ -2722,7 +2722,10 @@
                 <textarea class="input-field" id="sp-note" rows="3" placeholder="I'd like to schedule our next tutoring session. Please click on a time that works for you:" oninput="updateSchedulePreview()" style="resize:vertical;font-family:inherit;line-height:1.6"></textarea>
               </div>
 
-              <button class="btn-red" onclick="sendSchedulePicker()" id="sp-send-btn">Send Schedule Picker</button>
+              <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
+                <button class="btn-red" onclick="sendSchedulePicker()" id="sp-send-btn">Send Schedule Picker</button>
+                <button class="btn-ghost" onclick="copyScheduleLink()" id="sp-link-btn" style="font-size:0.85rem">🔗 Copy Schedule Link</button>
+              </div>
               <div class="form-msg" id="sp-msg" style="margin-top:0.6rem"></div>
             </div>
 
@@ -6492,6 +6495,66 @@ Good luck!`,
     btn.textContent = 'Send Schedule Picker';
   };
 
+  // ── Copy sharable schedule link (no email needed) ─────────────────
+  window.copyScheduleLink = async function() {
+    const btn = document.getElementById('sp-link-btn');
+    const msg = document.getElementById('sp-msg');
+
+    const validSlots = _spSlots.filter(s => s.date && s.time);
+    if (!validSlots.length) { showMsg(msg, 'Please add at least one time slot first.', 'error'); return; }
+
+    // Resolve recipient info (optional for link — can be used without a specific student)
+    const uid      = document.getElementById('sp-student')?.value;
+    const location = document.getElementById('sp-location')?.value?.trim() || 'Packer Collegiate Institute';
+    const note     = document.getElementById('sp-note')?.value?.trim() || '';
+    let toName  = '';
+    let toEmail = '';
+    let toId    = null;
+
+    if (uid === '__custom__') {
+      toEmail = document.getElementById('sp-custom-email')?.value.trim() || '';
+      toName  = document.getElementById('sp-custom-name')?.value.trim() || toEmail;
+    } else if (uid) {
+      const student = allUsers[uid];
+      toEmail = student?.email || '';
+      toName  = student?.name || student?.email || '';
+      toId    = uid;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Generating…';
+
+    try {
+      // Create a picker doc in Firestore — same as email flow
+      const pickerRef = await addDoc(collection(db, 'schedulePickers'), {
+        studentId:    toId,
+        studentName:  toName,
+        studentEmail: toEmail,
+        adminId:      CU.uid,
+        slots:        validSlots,
+        location,
+        note,
+        createdAt:    new Date().toISOString(),
+        used:         false,
+        linkOnly:     true,   // flag so we know this was shared as a link
+      });
+
+      // Build the shareable URL — /schedule?p=<pickerId>
+      const url = `https://www.packersat.org/schedule?p=${pickerRef.id}`;
+
+      // Copy to clipboard
+      await navigator.clipboard.writeText(url);
+      showMsg(msg, '✓ Link copied! Share it with your student — they can pick a slot directly.', 'success');
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = '🔗 Copy Schedule Link'; btn.disabled = false; }, 2500);
+    } catch(e) {
+      console.error('copyScheduleLink error:', e);
+      showMsg(msg, 'Failed to generate link: ' + (e?.message || String(e)), 'error');
+      btn.textContent = '🔗 Copy Schedule Link';
+      btn.disabled = false;
+    }
+  };
+
   function buildSchedulePickerEmailHTMLWithTokens(studentName, slotsWithTokens, note) {
     const baseUrl = 'https://www.packersat.org';
     const slotButtons = slotsWithTokens.map(s => {
@@ -6825,15 +6888,17 @@ Good luck!`,
     const student = allUsers[studentId];
     if (!student) return;
 
-    const [scoreSnap, sessSnap, assignSnap, logSnap, pracSnap] = await Promise.all([
+    const [scoreSnap, sessSnap, assignSnap, logSnap, pracSnap, actSnap] = await Promise.all([
       getDocs(query(collection(db,'scores'), where('studentId','==',studentId))),
       getDocs(collection(db,'sessions')),
       getDocs(query(collection(db,'assignments'), where('studentId','==',studentId))),
       getDocs(query(collection(db,'sessionLogs'), where('studentId','==',studentId))),
       getDocs(query(collection(db,'practiceSessions'), where('studentId','==',studentId))),
+      getDocs(query(collection(db,'actScores'), where('studentId','==',studentId))),
     ]);
 
     const scores   = scoreSnap.docs.map(d=>d.data()).sort((a,b)=>a.date.localeCompare(b.date));
+    const actScores = actSnap.docs.map(d=>d.data()).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
     const sessions = sessSnap.docs.map(d=>({id:d.id,...d.data()})).filter(d=>d.studentId===studentId||((d.studentIds||[]).includes(studentId)));
     const assigns  = assignSnap.docs.map(d=>d.data());
     const logs     = logSnap.docs.map(d=>d.data()).sort((a,b)=>b.date.localeCompare(a.date));
@@ -7035,8 +7100,8 @@ Good luck!`,
     if (sessCount === 0) {
       sessionsNarrative = 'No sessions have been scheduled yet.';
     } else {
-      sessionsNarrative = student.name + ' has attended ' + sessCount + ' tutoring session' + (sessCount>1?'s':'') + ' in total';
-      if (loggedCount > 0) sessionsNarrative += ', with ' + loggedCount + ' session' + (loggedCount>1?'s':'') + ' fully logged by the tutor';
+      sessionsNarrative = student.name + ' has ' + loggedCount + ' logged tutoring session' + (loggedCount===1?'':'s') + ' on record';
+      if (sessCount > loggedCount) sessionsNarrative += ' (' + sessCount + ' scheduled in total)';
       sessionsNarrative += '. ';
       if (consistencyRating) {
         const ratingColor = consistencyRating==='Excellent'?'#1a6e3a':consistencyRating==='Good'?'#2a5a2a':consistencyRating==='Fair'?'#b87a00':'#b81c2a';
@@ -7126,6 +7191,42 @@ Good luck!`,
     const firstNameCap = firstName.charAt(0).toUpperCase()+firstName.slice(1);
     const totalsArr = scores.map(function(s){ return (s.math||0)+(s.rw||0); });
     const EDCSS = ":root{--ink:#1a1715;--ink-2:#4a423a;--ink-3:#6b6258;--ink-4:#8a8278;--crimson:#a31621;--gold:#c8a96e;--paper:#f4ecd9;--paper-2:#efe6d0;--paper-3:#e8dfc7;--ivory:#fffdf7;--rule:rgba(26,23,21,0.14);--rule-soft:rgba(26,23,21,0.08);--rule-dotted:rgba(26,23,21,0.20);--ease-out:cubic-bezier(0.16,1,0.3,1);--font-display:'Fraunces',Georgia,serif;--font-serif:'Newsreader',Georgia,serif;--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;}\n  :root {\n    --pos: #1a6e3a; --pos-bg: #eef7ee; --pos-bd: #b6d6b6;\n    --warn: #9a6700; --warn-bg: #fbf3e2; --warn-bd: #e6cd96;\n    --neg: #b3151f; --neg-bg: #fbeeef; --neg-bd: #e6b3b6;\n  }\n  * { box-sizing: border-box; }\n  html, body { margin: 0; }\n  body {\n    background: #d9d2c4;\n    font-family: var(--font-serif);\n    color: var(--ink);\n    padding: 28px 0;\n    -webkit-font-smoothing: antialiased;\n  }\n\n  /* ── paged sheets ── */\n  .sheet {\n    width: 8.5in; min-height: 11in;\n    margin: 0 auto 26px;\n    background:\n      linear-gradient(180deg, rgba(163,22,33,0.018), transparent 22%),\n      #fffdf7;\n    padding: 0.62in 0.66in 0.5in;\n    box-shadow: 0 2px 4px rgba(26,23,21,0.10), 0 18px 50px rgba(26,23,21,0.18);\n    position: relative;\n    display: flex; flex-direction: column;\n  }\n\n  /* ── shared type ── */\n  .eyebrow { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--crimson); }\n  .label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-4); }\n  h2.sec {\n    font-family: var(--font-display); font-weight: 380; font-variation-settings: \"SOFT\" 40;\n    font-size: 23px; letter-spacing: -0.02em; color: var(--ink);\n    margin: 26px 0 13px; padding-bottom: 8px; line-height: 1.05;\n    display: flex; align-items: baseline; gap: 12px;\n    border-bottom: 1px solid var(--ink);\n  }\n  h2.sec .n { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; color: var(--crimson); font-weight: 500; }\n  h2.sec:first-of-type { margin-top: 0; }\n  p { font-size: 12.5px; line-height: 1.62; color: var(--ink-2); margin: 0 0 10px; }\n  p strong { color: var(--ink); font-weight: 600; }\n  .prose-first::first-letter { } /* reserved */\n\n  /* ── masthead ── */\n  .masthead { border-bottom: 2.5px solid var(--ink); padding-bottom: 16px; }\n  .masthead-top { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 18px; }\n  .masthead-top .dot { display: inline-flex; align-items: center; gap: 8px; }\n  .masthead-top .dot::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--crimson); }\n  .wordmark { display: flex; align-items: center; gap: 14px; }\n  .wordmark .seal { width: 46px; height: 46px; border: 1.5px solid var(--ink); border-radius: 50%; display: grid; place-items: center; font-family: var(--font-display); font-style: italic; font-size: 24px; color: var(--crimson); flex-shrink: 0; }\n  .wordmark h1 { font-family: var(--font-display); font-weight: 400; font-size: 34px; letter-spacing: -0.02em; margin: 0; line-height: 1; }\n  .wordmark h1 .x { color: var(--crimson); font-style: italic; }\n  .wordmark .tagline { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); margin-top: 5px; }\n  .doc-title { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 16px; }\n  .doc-title .lead .eyebrow { display: block; margin-bottom: 7px; }\n  .doc-title .lead .big { font-family: var(--font-display); font-weight: 360; font-variation-settings: \"SOFT\" 30; font-size: 30px; letter-spacing: -0.025em; line-height: 1; }\n  .doc-title .lead .big em { font-style: italic; color: var(--crimson); font-weight: 320; }\n\n  /* identity card */\n  .identity { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 18px; }\n  .identity .cell { background: #fffdf7; padding: 11px 13px; }\n  .identity .cell .label { display: block; margin-bottom: 4px; }\n  .identity .cell .v { font-family: var(--font-sans); font-size: 13px; color: var(--ink); font-weight: 500; }\n\n  /* stat strip */\n  .stats { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--ink); margin: 20px 0 4px; }\n  .stats .s { padding: 14px 8px 12px; text-align: center; border-right: 1px solid var(--rule); }\n  .stats .s:last-child { border-right: none; }\n  .stats .s .n { font-family: var(--font-display); font-weight: 400; font-size: 30px; letter-spacing: -0.02em; line-height: 1; color: var(--ink); }\n  .stats .s .n.pos { color: var(--pos); } .stats .s .n.neg { color: var(--crimson); }\n  .stats .s .l { font-family: var(--font-mono); font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-top: 7px; line-height: 1.3; }\n\n  /* highlight / pull quote */\n  .pull { border-left: 3px solid var(--crimson); background: rgba(163,22,33,0.045); padding: 13px 16px; margin: 0 0 16px; }\n  .pull p { margin: 0; font-size: 12.5px; color: var(--ink); line-height: 1.6; }\n  .note-box { border: 1px solid var(--rule); background: var(--paper-2); border-radius: 0; padding: 13px 16px; margin-bottom: 16px; }\n  .note-box .label { display: block; margin-bottom: 6px; }\n\n  /* trajectory band */\n  .traj { display: flex; align-items: center; gap: 16px; border: 1px solid var(--pos-bd); background: var(--pos-bg); padding: 13px 16px; margin-bottom: 16px; }\n  .traj .big { font-family: var(--font-display); font-size: 34px; font-weight: 400; color: var(--pos); line-height: 1; letter-spacing: -0.02em; flex-shrink: 0; }\n  .traj .txt { font-size: 11.5px; line-height: 1.55; color: #234a2a; }\n  .traj .txt strong { color: var(--pos); }\n\n  /* chart */\n  .chart-card { border: 1px solid var(--rule); padding: 16px 18px 12px; margin-bottom: 14px; }\n  .chart-card .ct { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }\n  .chart-card .ct .label { color: var(--ink-3); }\n  .legend { display: flex; gap: 16px; }\n  .legend span { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); display: inline-flex; align-items: center; gap: 5px; }\n  .legend span::before { content: ''; width: 14px; height: 2px; }\n  .legend .l-total::before { background: var(--crimson); }\n  .legend .l-target::before { background: var(--gold); border-top: 1px dashed var(--gold); height: 0; }\n\n  /* tables */\n  table { width: 100%; border-collapse: collapse; font-family: var(--font-sans); font-size: 11px; margin-bottom: 6px; }\n  th { text-align: left; font-family: var(--font-mono); font-size: 8px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); padding: 8px 9px; border-bottom: 1.5px solid var(--ink); }\n  td { padding: 8px 9px; border-bottom: 1px dotted var(--rule-dotted); color: var(--ink-2); vertical-align: top; line-height: 1.45; }\n  tr:last-child td { border-bottom: none; }\n  td .pos { color: var(--pos); font-weight: 600; } td .neg { color: var(--crimson); font-weight: 600; }\n  .tc { text-align: center; } .tnum { font-variant-numeric: tabular-nums; }\n\n  /* two-col blocks */\n  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }\n  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }\n  .card { border: 1px solid var(--rule); padding: 14px 15px; }\n  .card h3 { font-family: var(--font-mono); font-size: 8.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; display: flex; align-items: center; gap: 7px; }\n  .card h3 .pip { width: 6px; height: 6px; border-radius: 50%; }\n\n  .tag { display: inline-block; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.04em; padding: 3px 8px; margin: 0 3px 5px 0; border: 1px solid; }\n  .tag.g { color: var(--pos); border-color: var(--pos-bd); background: var(--pos-bg); }\n  .tag.r { color: var(--neg); border-color: var(--neg-bd); background: var(--neg-bg); }\n\n  /* domain bars */\n  .bar-row { margin-bottom: 9px; }\n  .bar-row .bl { display: flex; justify-content: space-between; font-family: var(--font-sans); font-size: 11px; margin-bottom: 4px; }\n  .bar-row .bl .nm { font-weight: 500; color: var(--ink); white-space: nowrap; }\n  .bar-row .bl .ct { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); white-space: nowrap; }\n  .bar-bg { height: 6px; background: var(--paper-3); }\n  .bar-fill { height: 6px; }\n\n  /* consistency stats */\n  .consist { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }\n  .consist .c { border: 1px solid var(--rule); padding: 11px 6px; text-align: center; }\n  .consist .c .cn { font-family: var(--font-display); font-size: 21px; font-weight: 400; line-height: 1; }\n  .consist .c .cl { font-family: var(--font-mono); font-size: 7px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-top: 6px; line-height: 1.3; }\n\n  /* rate bar */\n  .rate { margin: 4px 0 14px; }\n  .rate .rl { display: flex; justify-content: space-between; font-family: var(--font-sans); font-size: 11px; margin-bottom: 5px; }\n  .rate .rbg { height: 9px; background: var(--paper-3); }\n  .rate .rf { height: 9px; }\n\n  /* big accuracy figure */\n  .acc { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1; letter-spacing: -0.02em; margin-bottom: 3px; }\n  .acc-sub { font-family: var(--font-mono); font-size: 8.5px; color: var(--ink-3); letter-spacing: 0.04em; margin-bottom: 8px; }\n\n  /* checklist (new) */\n  .checklist { border: 1px solid var(--ink); }\n  .checklist .ci { display: flex; gap: 12px; padding: 11px 15px; border-bottom: 1px dotted var(--rule-dotted); }\n  .checklist .ci:last-child { border-bottom: none; }\n  .checklist .box { width: 15px; height: 15px; border: 1.5px solid var(--ink); flex-shrink: 0; margin-top: 1px; }\n  .checklist .ct2 { font-family: var(--font-sans); font-size: 12px; color: var(--ink); line-height: 1.4; }\n  .checklist .ct2 .sub { display: block; font-size: 10.5px; color: var(--ink-3); margin-top: 2px; font-family: var(--font-serif); }\n\n  /* sign-off (new) */\n  .signoff { border: 1px solid var(--rule); background: var(--paper-2); padding: 18px 20px; margin-bottom: 14px; }\n  .signoff .quote { font-family: var(--font-serif); font-style: italic; font-size: 13.5px; line-height: 1.65; color: var(--ink); margin-bottom: 16px; }\n  .signoff .sig { display: flex; justify-content: space-between; align-items: flex-end; }\n  .signoff .sig .who { }\n  .signoff .sig .name { font-family: var(--font-display); font-size: 18px; color: var(--ink); }\n  .signoff .sig .role { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-top: 3px; }\n  .signoff .sig .line { text-align: right; }\n  .signoff .sig .line .l { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); }\n  .signoff .sig .line .u { width: 170px; border-bottom: 1px solid var(--ink); margin-top: 18px; }\n\n  /* footer */\n  .foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 7.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); }\n  .pageno { position: absolute; bottom: 0.42in; right: 0.66in; font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.14em; color: var(--ink-4); }\n\n  /* print controls (screen only) */\n  .toolbar { position: fixed; top: 16px; right: 16px; z-index: 100; display: flex; gap: 8px; }\n  .toolbar button { font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 9px 15px; border: 1px solid var(--ink); background: var(--ink); color: var(--ivory); cursor: pointer; }\n  .toolbar button:hover { background: var(--crimson); border-color: var(--crimson); }\n\n  @media print {\n    body { background: #fff; padding: 0; }\n    .sheet { box-shadow: none; margin: 0; width: auto; min-height: auto; page-break-after: always; padding: 0.5in 0.55in; }\n    .sheet:last-child { page-break-after: auto; }\n    .toolbar { display: none; }\n  }\n  @page { size: letter; margin: 0; }\n";
+    // ── ACT analysis (data-bound, optional) ──
+    const actWith = actScores.filter(function(s){ return s.composite!=null; });
+    const actFirst = actWith.length ? actWith[0] : null;
+    const actLast  = actWith.length ? actWith[actWith.length-1] : null;
+    const actImprove = (actFirst && actLast && actWith.length>1) ? (actLast.composite-actFirst.composite) : null;
+    const actBest = actWith.length ? Math.max.apply(null, actWith.map(function(s){return s.composite;})) : null;
+    const hasACT = actScores.length>0;
+    const TOTAL_PAGES = hasACT ? 4 : 3;
+    let actNarrative='';
+    if(actWith.length<=1){ actNarrative = firstNameCap+' has '+actScores.length+' ACT record'+(actScores.length===1?'':'s')+' on file'+(actLast?', most recently a composite of <strong>'+actLast.composite+'</strong> of 36':'')+'. As more full ACT tests are logged, the trend will appear here.'; }
+    else { var atrend = actImprove>0?'an upward trajectory':actImprove<0?'a slight decline':'a stable level'; actNarrative = firstNameCap+' has '+actWith.length+' scored ACT tests, showing '+atrend+'. From a composite of <strong>'+actFirst.composite+'</strong> on '+formatDate(actFirst.date)+' to <strong>'+actLast.composite+'</strong> on '+formatDate(actLast.date)+(actImprove!=null?' (a change of '+(actImprove>0?'+':'')+actImprove+' points)':'')+'. The best composite on record is <strong>'+actBest+'</strong>.'; }
+    function buildACTTrend(){
+      if(!actWith.length) return '<p style="font-family:var(--font-serif);color:var(--ink-3);font-style:italic;margin:0">No full ACT composites logged yet.</p>';
+      var W=760,H=200,padL=30,padR=26,padT=18,padB=26;
+      var comps=actWith.map(function(s){return s.composite;});
+      var lo=Math.min.apply(null,comps), hi=Math.max.apply(null,comps);
+      var yMin=Math.max(1,Math.floor(lo-2)), yMax=Math.min(36,Math.ceil(hi+2));
+      if(yMax-yMin<6){ yMin=Math.max(1,yMax-6); if(yMax-yMin<6) yMax=Math.min(36,yMin+6); }
+      var single=actWith.length===1;
+      var xf=function(k){ return single? W/2 : padL+k*(W-padL-padR)/(actWith.length-1); };
+      var yf=function(v){ return padT+(1-(v-yMin)/(yMax-yMin))*(H-padT-padB); };
+      var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="178" preserveAspectRatio="none">';
+      var g,v,yy;
+      for(g=0;g<4;g++){ v=(yMax-(g*(yMax-yMin)/3)); v=Math.round(v); yy=yf(v); s+='<line x1="'+padL+'" y1="'+yy+'" x2="'+(W-padR)+'" y2="'+yy+'" stroke="rgba(26,23,21,0.08)" stroke-width="1"/>'; s+='<text x="2" y="'+(yy-3)+'" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(26,23,21,0.35)">'+v+'</text>'; }
+      if(!single){ var dp=actWith.map(function(sc,k){ return (k?'L':'M')+xf(k)+' '+yf(sc.composite); }).join(' '); var ar=dp+' L'+xf(actWith.length-1)+' '+yf(yMin)+' L'+xf(0)+' '+yf(yMin)+' Z'; s+='<path d="'+ar+'" fill="rgba(200,169,110,0.13)"/>'; s+='<path d="'+dp+'" fill="none" stroke="#c8a96e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'; }
+      actWith.forEach(function(sc,k){ var last=k===actWith.length-1; s+='<circle cx="'+xf(k)+'" cy="'+yf(sc.composite)+'" r="'+(last?5:3.5)+'" fill="'+(last?'#c8a96e':'#fffdf7')+'" stroke="#c8a96e" stroke-width="2"/>'; var dt=new Date(sc.date); var lab=isNaN(dt.getTime())?'':dt.toLocaleDateString('en-US',{month:'short'}); s+='<text x="'+xf(k)+'" y="'+(H-8)+'" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(26,23,21,0.45)">'+lab+'</text>'; s+='<text x="'+xf(k)+'" y="'+(yf(sc.composite)-9)+'" text-anchor="middle" font-family="Fraunces, serif" font-size="12" fill="#1a1715" font-weight="600">'+sc.composite+'</text>'; });
+      s+='</svg>'; return s;
+    }
+    function buildACTRows(){
+      return actScores.map(function(s,i){
+        var prev = i>0 ? actScores[i-1] : null;
+        var ch = (prev && s.composite!=null && prev.composite!=null) ? s.composite-prev.composite : null;
+        var chStr = ch!=null ? (ch>0?'<span style="color:#1a6e3a;font-weight:600">+'+ch+'</span>':ch<0?'<span style="color:#b3151f;font-weight:600">'+ch+'</span>':'—') : '—';
+        return '<tr><td>'+formatDate(s.date)+'</td><td class="tc tnum">'+(s.english||'—')+'</td><td class="tc tnum">'+(s.math||'—')+'</td><td class="tc tnum">'+(s.reading||'—')+'</td><td class="tc tnum">'+(s.science||'—')+'</td><td class="tc tnum"><strong>'+(s.composite||'—')+'</strong></td><td class="tc">'+chStr+'</td><td style="color:var(--ink-3);font-size:11px">'+(s.notes||'—')+'</td></tr>';
+      }).join('');
+    }
     function buildTrend(){
       if(!scores.length) return '<p style="font-family:var(--font-serif);color:var(--ink-3);font-style:italic;margin:0">No scores logged yet — the trend chart appears here once scores are recorded.</p>';
       var W=760,H=200,padL=36,padR=26,padT=18,padB=26;
@@ -7158,7 +7259,7 @@ Good luck!`,
       return items.slice(0,5).map(function(it){ return '<div class="ci"><div class="box"></div><div class="ct2">'+it[0]+'<span class="sub">'+it[1]+'</span></div></div>'; }).join('');
     }
     var parentSummary='';
-    parentSummary += (sessCount>0 ? firstNameCap+' has completed <strong>'+sessCount+' tutoring session'+(sessCount>1?'s':'')+'</strong> with <strong>'+tutorName+'</strong>. ' : '');
+    parentSummary += (loggedCount>0 ? firstNameCap+' has completed <strong>'+loggedCount+' tutoring session'+(loggedCount>1?'s':'')+'</strong> with <strong>'+tutorName+'</strong>. ' : '');
     parentSummary += (consistencyRating ? 'Attendance has been rated <strong>'+consistencyRating+'</strong>. ' : '');
     parentSummary += (lastTotal ? 'The most recent score on record is <strong>'+lastTotal+' / 1600</strong> (Math '+(lastScore.math||'—')+', R&amp;W '+(lastScore.rw||'—')+'). ' : '');
     parentSummary += (improvement>0 ? 'That is an improvement of <strong>+'+improvement+' points</strong> since the baseline. ' : (improvement<0 ? 'Scores have dipped '+Math.abs(improvement)+' points since the baseline, which the tutor is addressing. ' : ''));
@@ -7168,6 +7269,38 @@ Good luck!`,
     var consColor = consistencyRating==='Excellent'?'#1a6e3a':consistencyRating==='Good'?'#2a7a2a':consistencyRating==='Fair'?'#9a6700':'#b3151f';
     var ftr = '<div class="foot"><span>Packer SAT Tutoring · The Packer Collegiate Institute · Brooklyn, NY</span><span>'+(student.name||student.email||'')+' · '+today+'</span></div>';
 
+    const hasSAT = scores.length>0;
+    var statStrip;
+    if (hasSAT) {
+      statStrip = '<div class="stats">' +
+        '<div class="s"><div class="n">'+(lastScore?(lastScore.math||'—'):'—')+'</div><div class="l">Latest Math</div></div>' +
+        '<div class="s"><div class="n">'+(lastScore?(lastScore.rw||'—'):'—')+'</div><div class="l">Latest R&amp;W</div></div>' +
+        '<div class="s"><div class="n">'+(lastTotal||'—')+'</div><div class="l">Latest Total</div></div>' +
+        '<div class="s"><div class="n '+(improvement>0?'pos':improvement<0?'neg':'')+'">'+(improvement!=null?(improvement>0?'+':'')+improvement:'—')+'</div><div class="l">Total Change</div></div>' +
+        '<div class="s"><div class="n">'+loggedCount+'</div><div class="l">Sessions</div></div>' +
+        '<div class="s"><div class="n">'+(completionRate!=null?completionRate+'%':'—')+'</div><div class="l">Assign. Done</div></div>' +
+      '</div>';
+    } else if (hasACT) {
+      statStrip = '<div class="stats" style="grid-template-columns:repeat(4,1fr)">' +
+        '<div class="s"><div class="n">'+((actLast&&actLast.composite)||'—')+'</div><div class="l">Latest Composite</div></div>' +
+        '<div class="s"><div class="n">'+(actBest||'—')+'</div><div class="l">Best Composite</div></div>' +
+        '<div class="s"><div class="n">'+loggedCount+'</div><div class="l">Sessions</div></div>' +
+        '<div class="s"><div class="n">'+(completionRate!=null?completionRate+'%':'—')+'</div><div class="l">Assign. Done</div></div>' +
+      '</div>';
+    } else {
+      statStrip = '<div class="stats" style="grid-template-columns:repeat(3,1fr)">' +
+        '<div class="s"><div class="n">'+loggedCount+'</div><div class="l">Sessions</div></div>' +
+        '<div class="s"><div class="n">'+(completionRate!=null?completionRate+'%':'—')+'</div><div class="l">Assign. Done</div></div>' +
+        '<div class="s"><div class="n">'+totalAssigns+'</div><div class="l">Assignments</div></div>' +
+      '</div>';
+    }
+    var satSection = hasSAT ? (
+      '<h2 class="sec"><span class="n">01</span> Score Progress &amp; Analysis</h2>' +
+      '<div class="pull"><p>'+progressNarrative+'</p></div>' +
+      (trajectoryStr && predictedScore ? '<div class="traj"><div class="big">'+predictedScore+'</div><div class="txt">'+trajectoryStr+'</div></div>' : '') +
+      '<div class="chart-card"><div class="ct"><span class="label">Total Score Over Time · '+ (goal?('200–1600 · goal '+goal):'200–1600 scale') +'</span><span class="legend"><span class="l-total">Total</span>'+(goal?'<span class="l-target">Target</span>':'')+'</span></div>'+buildTrend()+'</div>' +
+      '<table><thead><tr><th>Date</th><th class="tc">Math</th><th class="tc">R&amp;W</th><th class="tc">Total</th><th class="tc">Change</th><th>Notes</th></tr></thead><tbody>'+scoresRows+'</tbody></table>'
+    ) : '';
     const reportHTML =
       '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
       '<title>Progress Report — '+(student.name||student.email)+'</title>' +
@@ -7189,21 +7322,25 @@ Good luck!`,
           '<div class="cell"><span class="label">Parent / Guardian</span><span class="v">'+(student.parentName||'—')+(student.parentEmail?'<br><span style="font-family:var(--font-mono);font-size:10px;font-weight:400;color:var(--ink-3)">'+student.parentEmail+'</span>':'')+'</span></div>' +
           '<div class="cell"><span class="label">Report Date</span><span class="v">'+today+'</span></div>' +
         '</div>' +
-        '<div class="stats">' +
-          '<div class="s"><div class="n">'+(lastScore?(lastScore.math||'—'):'—')+'</div><div class="l">Latest Math</div></div>' +
-          '<div class="s"><div class="n">'+(lastScore?(lastScore.rw||'—'):'—')+'</div><div class="l">Latest R&amp;W</div></div>' +
-          '<div class="s"><div class="n">'+(lastTotal||'—')+'</div><div class="l">Latest Total</div></div>' +
-          '<div class="s"><div class="n '+(improvement>0?'pos':improvement<0?'neg':'')+'">'+(improvement!=null?(improvement>0?'+':'')+improvement:'—')+'</div><div class="l">Total Change</div></div>' +
-          '<div class="s"><div class="n">'+sessCount+'</div><div class="l">Sessions</div></div>' +
-          '<div class="s"><div class="n">'+(completionRate!=null?completionRate+'%':'—')+'</div><div class="l">Assign. Done</div></div>' +
-        '</div>' +
-        '<h2 class="sec"><span class="n">01</span> Score Progress &amp; Analysis</h2>' +
-        '<div class="pull"><p>'+progressNarrative+'</p></div>' +
-        (trajectoryStr && predictedScore ? '<div class="traj"><div class="big">'+predictedScore+'</div><div class="txt">'+trajectoryStr+'</div></div>' : '') +
-        '<div class="chart-card"><div class="ct"><span class="label">Total Score Over Time · '+ (goal?('200–1600 · goal '+goal):'200–1600 scale') +'</span><span class="legend"><span class="l-total">Total</span>'+(goal?'<span class="l-target">Target</span>':'')+'</span></div>'+buildTrend()+'</div>' +
-        (scores.length ? '<table><thead><tr><th>Date</th><th class="tc">Math</th><th class="tc">R&amp;W</th><th class="tc">Total</th><th class="tc">Change</th><th>Notes</th></tr></thead><tbody>'+scoresRows+'</tbody></table>' : '<p style="font-family:var(--font-serif);color:var(--ink-4);font-style:italic">No scores have been logged yet.</p>') +
-        ftr + '<div class="pageno">Page 1 of 3</div>' +
+        statStrip + satSection +
+        ftr + '<div class="pageno">Page 1 of '+TOTAL_PAGES+'</div>' +
       '</section>' +
+      (hasACT ?
+      '<section class="sheet">' +
+        '<h2 class="sec"><span class="n">ACT</span> ACT Progress &amp; Analysis</h2>' +
+        '<div class="stats" style="grid-template-columns:repeat(4,1fr)">' +
+          '<div class="s"><div class="n">'+((actLast&&actLast.composite)||'—')+'</div><div class="l">Latest Composite</div></div>' +
+          '<div class="s"><div class="n">'+(actBest||'—')+'</div><div class="l">Best Composite</div></div>' +
+          '<div class="s"><div class="n '+(actImprove>0?'pos':actImprove<0?'neg':'')+'">'+(actImprove!=null?(actImprove>0?'+':'')+actImprove:'—')+'</div><div class="l">Change</div></div>' +
+          '<div class="s"><div class="n">'+actScores.length+'</div><div class="l">ACT Records</div></div>' +
+        '</div>' +
+        '<div class="pull"><p>'+actNarrative+'</p></div>' +
+        '<div class="chart-card"><div class="ct"><span class="label">ACT Composite Over Time · 1–36 scale</span><span class="legend"><span class="l-target">Composite</span></span></div>'+buildACTTrend()+'</div>' +
+        '<table><thead><tr><th>Date</th><th class="tc">Eng</th><th class="tc">Math</th><th class="tc">Read</th><th class="tc">Sci</th><th class="tc">Comp</th><th class="tc">Change</th><th>Notes</th></tr></thead><tbody>'+buildACTRows()+'</tbody></table>' +
+        '<p style="font-size:11.5px;color:var(--ink-3)">ACT composite is the average of the four section scores (English, Math, Reading, Science), each out of 36.</p>' +
+        ftr + '<div class="pageno">Page 2 of '+TOTAL_PAGES+'</div>' +
+      '</section>'
+      : '') +
 
       // ─── PAGE 2 ───
       '<section class="sheet">' +
@@ -7219,14 +7356,14 @@ Good luck!`,
         (topDomainStruggles.length ? '<div class="card" style="margin-bottom:14px"><h3>Challenge Areas by SAT Domain</h3>'+topDomainStruggles.map(function(e){ var mx=topDomainStruggles[0][1]; var pc=Math.round(e[1]/mx*100); return '<div class="bar-row"><div class="bl"><span class="nm">'+e[0]+'</span><span class="ct">'+e[1]+' occurrence'+(e[1]>1?'s':'')+'</span></div><div class="bar-bg"><div class="bar-fill" style="width:'+pc+'%;background:var(--crimson)"></div></div></div>'; }).join('')+'</div>' : '') +
         '<p>'+strugglesNarrative+'</p>' +
         '<h2 class="sec"><span class="n">03</span> Session History &amp; Attendance</h2>' +
-        (pastSessions.length>=2 ? '<div class="consist"><div class="c"><div class="cn">'+sessCount+'</div><div class="cl">Total Sessions</div></div><div class="c"><div class="cn">'+avgGapDays+'</div><div class="cl">Avg Days Between</div></div><div class="c"><div class="cn">'+maxGapDays+'</div><div class="cl">Longest Gap (Days)</div></div><div class="c"><div class="cn" style="color:'+consColor+'">'+consistencyRating+'</div><div class="cl">Consistency</div></div></div>' : '') +
+        (pastSessions.length>=2 ? '<div class="consist"><div class="c"><div class="cn">'+loggedCount+'</div><div class="cl">Total Sessions</div></div><div class="c"><div class="cn">'+avgGapDays+'</div><div class="cl">Avg Days Between</div></div><div class="c"><div class="cn">'+maxGapDays+'</div><div class="cl">Longest Gap (Days)</div></div><div class="c"><div class="cn" style="color:'+consColor+'">'+consistencyRating+'</div><div class="cl">Consistency</div></div></div>' : '') +
         '<p>'+sessionsNarrative+'</p>' +
         (logs.length ? '<table><thead><tr><th>Date</th><th>Topics Covered</th><th>Struggles Noted</th><th>Goals Set</th></tr></thead><tbody>'+logsRows+'</tbody></table>' : '<p style="font-family:var(--font-serif);color:var(--ink-4);font-style:italic">No sessions logged yet.</p>') +
         '<h2 class="sec"><span class="n">04</span> Assignment Completion</h2>' +
         (totalAssigns>0 ? '<div class="rate"><div class="rl"><span>Completion Rate</span><span style="font-weight:600;color:'+crColor+'">'+crPct+'% ('+doneAssigns+' / '+totalAssigns+')</span></div><div class="rbg"><div class="rf" style="width:'+crPct+'%;background:'+crColor+'"></div></div></div>' : '') +
         '<p>'+assignNarrative+'</p>' +
         (totalAssigns ? '<table><thead><tr><th>Assignment</th><th>Type</th><th>Due</th><th class="tc">Status</th></tr></thead><tbody>'+assignRows+'</tbody></table>' : '<p style="font-family:var(--font-serif);color:var(--ink-4);font-style:italic">No assignments created yet.</p>') +
-        ftr + '<div class="pageno">Page 2 of 3</div>' +
+        ftr + '<div class="pageno">Page '+(hasACT?3:2)+' of '+TOTAL_PAGES+'</div>' +
       '</section>' +
 
       // ─── PAGE 3 ───
@@ -7247,7 +7384,7 @@ Good luck!`,
         '<h2 class="sec"><span class="n">07</span> A Note for '+firstNameCap+'’s Family</h2>' +
         '<div class="signoff">' + (student.parentName?'<div class="label" style="margin-bottom:10px">Prepared for '+student.parentName+(student.parentEmail?' · '+student.parentEmail:'')+'</div>':'') + '<p class="quote" style="font-style:normal">'+parentSummary+'</p><div class="sig"><div class="who"><div class="name">'+tutorName+'</div><div class="role">Tutor · Packer SAT Prep</div></div><div class="line"><div class="u"></div><div class="l">Program Admin Review</div></div></div></div>' +
         '<p style="font-size:11.5px;color:var(--ink-3)">This report summarizes '+firstNameCap+'’s participation and progress in the Packer SAT Tutoring Program as of '+today+'. The program provides free, one-on-one SAT preparation led by high-scoring Packer upperclassmen. Questions can be directed through the portal or to the program admin.</p>' +
-        ftr + '<div class="pageno">Page 3 of 3</div>' +
+        ftr + '<div class="pageno">Page '+(hasACT?4:3)+' of '+TOTAL_PAGES+'</div>' +
       '</section>' +
       '</body></html>';
 
@@ -9864,6 +10001,7 @@ Good luck!`,
   function updateSlotTime(i,v)         { window.updateSlotTime && window.updateSlotTime(i,v); }
   function updateSchedulePreview()     { window.updateSchedulePreview && window.updateSchedulePreview(); }
   function sendSchedulePicker()        { window.sendSchedulePicker && window.sendSchedulePicker(); }
+  function copyScheduleLink()          { window.copyScheduleLink  && window.copyScheduleLink();  }
   function onSpRecipientChange()       { window.onSpRecipientChange && window.onSpRecipientChange(); }
   function toggleReminders(v)          { window.toggleReminders && window.toggleReminders(v); }
   function toggleAnnouncementPopup(v)  { window.toggleAnnouncementPopup && window.toggleAnnouncementPopup(v); }
