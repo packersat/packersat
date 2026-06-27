@@ -3,15 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirm Session — Packer SAT Prep</title>
+  <title>Schedule a Session — Packer SAT Prep</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,400;9..144,1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --paper:   #f4ecd9;
+      --ivory:   #fffdf7;
+      --ink:     #1a1715;
+      --ink-2:   #4a423a;
+      --ink-3:   #6b6258;
+      --rule:    rgba(26,23,21,0.12);
+      --crimson: #a31621;
+      --gold:    #c8a96e;
+    }
+
     body {
-      background: #1A0508;
-      color: #FAFAF8;
-      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -19,94 +31,204 @@
       justify-content: center;
       padding: 2rem 1.2rem;
     }
-    .card {
-      background: #2A0A10;
-      border: 1px solid rgba(192,24,43,0.2);
-      border-radius: 12px;
-      max-width: 480px;
-      width: 100%;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
-    }
-    .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #FAFAF8;
+
+    /* ── Brand bar ── */
+    .brand-bar {
       text-align: center;
       margin-bottom: 2rem;
     }
-    .logo span { color: #C8A96E; }
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      line-height: 1.3;
+    .seal {
+      width: 40px; height: 40px;
+      border: 1.5px solid var(--ink);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: var(--crimson);
+      margin-bottom: 10px;
     }
+    .wordmark {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      color: var(--ink);
+      display: block;
+      letter-spacing: -0.01em;
+    }
+    .wordmark .dot { color: var(--crimson); }
+
+    /* ── Card ── */
+    .card {
+      background: var(--ivory);
+      border: 1px solid var(--rule);
+      max-width: 520px;
+      width: 100%;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 8px 40px rgba(26,23,21,0.08);
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-bottom: 0.6rem;
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.75rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+    }
+    h1 em { font-style: italic; color: var(--crimson); }
+
     .sub {
-      color: rgba(250,250,248,0.5);
+      color: var(--ink-3);
       font-size: 0.88rem;
       line-height: 1.65;
       margin-bottom: 1.8rem;
+      font-family: 'Inter', sans-serif;
     }
-    .slot-card {
-      border: 1px solid rgba(192,24,43,0.4);
-      border-radius: 8px;
-      padding: 1.2rem 1.4rem;
-      background: rgba(192,24,43,0.08);
-      margin-bottom: 1.5rem;
+
+    /* ── Slot picker ── */
+    .slots-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 0.75rem;
+      display: block;
     }
-    .slot-day {
-      font-size: 1.05rem;
+
+    .slot-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .slot-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.2rem;
+      background: var(--ivory);
+      border: 1.5px solid var(--rule);
+      cursor: pointer;
+      text-align: left;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+    }
+    .slot-btn:hover {
+      border-color: var(--crimson);
+      background: rgba(163,22,33,0.04);
+    }
+    .slot-btn.selected {
+      border-color: var(--crimson);
+      background: rgba(163,22,33,0.07);
+    }
+    .slot-btn .slot-day {
+      font-size: 0.95rem;
       font-weight: 600;
-      color: #FAFAF8;
-      margin-bottom: 0.25rem;
+      color: var(--ink);
+      display: block;
+      margin-bottom: 0.2rem;
     }
-    .slot-time {
-      font-size: 1rem;
-      color: #C8A96E;
+    .slot-btn .slot-time {
+      font-size: 0.88rem;
+      color: var(--crimson);
       font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
     }
-    .slot-location {
-      font-size: 0.8rem;
-      color: rgba(250,250,248,0.4);
-      margin-top: 0.4rem;
+    .slot-btn .slot-loc {
+      font-size: 0.78rem;
+      color: var(--ink-3);
+      margin-top: 0.2rem;
     }
+    .slot-btn .check {
+      width: 22px; height: 22px;
+      border: 1.5px solid var(--rule);
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .slot-btn.selected .check {
+      background: var(--crimson);
+      border-color: var(--crimson);
+    }
+    .slot-btn .check svg { display: none; }
+    .slot-btn.selected .check svg { display: block; }
+
+    /* ── Buttons ── */
     .btn-confirm {
       width: 100%;
-      background: #C0182B;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
+      background: var(--ink);
+      color: var(--ivory);
+      border: 1.5px solid var(--ink);
       padding: 0.9rem 1.5rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.15s, border-color 0.15s;
       margin-bottom: 0.8rem;
+      letter-spacing: 0.01em;
     }
-    .btn-confirm:hover { background: #a01224; }
-    .btn-confirm:disabled { background: rgba(192,24,43,0.35); cursor: default; }
-    .status {
+    .btn-confirm:hover:not(:disabled) { background: var(--crimson); border-color: var(--crimson); }
+    .btn-confirm:disabled { opacity: 0.4; cursor: default; }
+
+    .btn-ghost {
+      width: 100%;
+      background: transparent;
+      color: var(--ink-2);
+      border: 1px solid var(--rule);
+      padding: 0.75rem 1.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
       text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+    .btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+
+    /* ── Status / note ── */
+    .note-box {
+      background: rgba(163,22,33,0.05);
+      border-left: 3px solid var(--crimson);
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
       font-size: 0.85rem;
       line-height: 1.6;
-      min-height: 1.4rem;
-      color: rgba(250,250,248,0.5);
+      color: var(--ink-2);
     }
-    .status.error { color: #ff8a8a; }
-    .status.success { color: #7dffaa; }
-    .success-wrap {
-      text-align: center;
-      padding: 1rem 0;
-    }
+
+    .status { font-size: 0.85rem; line-height: 1.6; min-height: 1.4rem; color: var(--ink-3); text-align: center; }
+    .status.error   { color: var(--crimson); }
+    .status.success { color: #1a6e3a; }
+
+    /* ── Success ── */
+    .success-wrap { text-align: center; padding: 0.5rem 0; }
     .success-icon {
-      width: 52px;
-      height: 52px;
-      background: rgba(192,24,43,0.15);
-      border: 1px solid rgba(192,24,43,0.35);
+      width: 52px; height: 52px;
+      background: rgba(163,22,33,0.08);
+      border: 1.5px solid var(--rule);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -115,69 +237,114 @@
     }
     .cal-link {
       display: inline-block;
-      margin-top: 1rem;
+      margin-top: 1.2rem;
       background: rgba(200,169,110,0.1);
-      border: 1px solid rgba(200,169,110,0.3);
-      color: #C8A96E;
-      border-radius: 6px;
-      padding: 0.5rem 1.2rem;
-      font-size: 0.85rem;
+      border: 1px solid rgba(200,169,110,0.35);
+      color: #9a7b1f;
+      border-radius: 0;
+      padding: 0.55rem 1.4rem;
+      font-size: 0.82rem;
       font-weight: 600;
       text-decoration: none;
       transition: background 0.15s;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 10px;
     }
     .cal-link:hover { background: rgba(200,169,110,0.18); }
-    .loading { text-align: center; color: rgba(250,250,248,0.4); font-size: 0.9rem; padding: 2rem; }
+
+    /* ── Single slot view ── */
+    .slot-card {
+      border: 1px solid var(--rule);
+      padding: 1.2rem 1.4rem;
+      background: var(--paper);
+      margin-bottom: 1.5rem;
+    }
+    .slot-card .slot-day  { font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.3rem; }
+    .slot-card .slot-time { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: var(--crimson); text-transform: uppercase; }
+    .slot-card .slot-loc  { font-size: 0.78rem; color: var(--ink-3); margin-top: 0.35rem; }
+
+    /* ── Request time form ── */
+    .field-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+    .field-wrap { margin-bottom: 1rem; }
+    input[type="date"], input[type="time"] {
+      width: 100%;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      padding: 0.7rem 1rem;
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="date"]:focus, input[type="time"]:focus {
+      border-color: var(--crimson);
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--ink-3);
+      font-size: 0.9rem;
+      padding: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.4rem; }
+      h1 { font-size: 1.5rem; }
+    }
   </style>
 </head>
 <body>
 
+<div class="brand-bar">
+  <div class="seal">P</div>
+  <span class="wordmark">Packer<span class="dot">·</span>SAT</span>
+</div>
+
 <div class="card">
-  <div class="logo">Packer <span>SAT</span> Prep</div>
   <div id="main-content">
-    <div class="loading">Loading your session details...</div>
+    <div class="loading">Loading session details…</div>
   </div>
 </div>
 
-<!-- Firebase -->
 <script type="module">
-  import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+  import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getFirestore, doc, getDoc, updateDoc, addDoc, collection }
-    from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const app = initializeApp({
     apiKey:            "AIzaSyAgl3-vGO-FAHSodXvTFtWv7V5_48qW22w",
     authDomain:        "packer-sat.firebaseapp.com",
     projectId:         "packer-sat",
-    storageBucket:     "packer-sat.appspot.com",
-    messagingSenderId: "783676228684",
-    appId:             "1:783676228684:web:97e9e5b5e5e9e5e9e5e9e5",
+    storageBucket:     "packer-sat.firebasestorage.app",
+    messagingSenderId: "442480334688",
+    appId:             "1:442480334688:web:9c22966209985694bb7005",
   });
   const db = getFirestore(app);
-
   const content = document.getElementById('main-content');
 
-  // ── Parse token from URL ────────────────────────────────────────
-  function getToken() {
-    const params = new URLSearchParams(window.location.search);
-    const t = params.get('t');
-    console.log('Raw t param:', t);
-    if (!t) { console.log('No t param found'); return null; }
-    try {
-      // Reverse URL-safe base64: -→+, _→/, restore = padding
-      const b64    = t.replace(/-/g, '+').replace(/_/g, '/');
-      const padded = b64 + '=='.slice(0, (4 - b64.length % 4) % 4);
-      console.log('b64:', b64.slice(0, 40) + '...');
-      const parsed = JSON.parse(atob(padded));
-      console.log('Parsed token:', parsed);
-      return parsed;
-    } catch(e) {
-      console.error('Token decode failed:', e);
-      return null;
-    }
-  }
-
-  // ── Format helpers ──────────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────────────
   function formatDay(date) {
     return new Date(date + 'T12:00:00').toLocaleDateString('en-US',
       { weekday:'long', month:'long', day:'numeric', year:'numeric' });
@@ -191,70 +358,59 @@
   function buildCalLink(date, time, studentName, location) {
     const [yr, mo, dy] = date.split('-').map(Number);
     const [h, m]       = time.split(':').map(Number);
-    const d = new Date(yr, mo - 1, dy);
+    const d   = new Date(yr, mo - 1, dy);
     const jan = new Date(yr, 0, 1), jul = new Date(yr, 6, 1);
-    const isDST = d.getTimezoneOffset() < Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+    const isDST  = d.getTimezoneOffset() < Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
     const offset = isDST ? 4 : 5;
     const startUTC = new Date(Date.UTC(yr, mo - 1, dy, h + offset, m, 0));
     const endUTC   = new Date(startUTC.getTime() + 3600000);
     const fmt = dt => dt.toISOString().replace(/[-:]/g,'').replace('.000','');
-    const title   = encodeURIComponent(`Jack / ${studentName} — SAT Tutoring`);
+    const title   = encodeURIComponent(`Jack / ${studentName || 'Student'} — SAT Tutoring`);
     const details = encodeURIComponent('SAT tutoring session at Packer Collegiate Institute.');
     const loc     = encodeURIComponent(location || 'Packer Collegiate Institute, Brooklyn, NY');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${fmt(startUTC)}/${fmt(endUTC)}&details=${details}&location=${loc}`;
   }
 
-  // ── Send confirmation email via Brevo ───────────────────────────
-  async function sendConfirmationEmail(studentEmail, studentName, date, time, location, calLink) {
+  // ── Email senders ─────────────────────────────────────────────────
+  async function sendConfirmationEmail(toEmail, toName, date, time, location, calLink) {
+    if (!toEmail) return;
     const dayStr  = formatDay(date);
     const timeStr = formatTime(time);
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#1A0508;font-family:'Helvetica Neue',Arial,sans-serif">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">
-  <tr><td align="center">
-    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
-      <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:32px 40px;border-radius:8px 8px 0 0;text-align:center">
-        <div style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</div>
-        <div style="font-size:11px;color:rgba(250,250,248,0.7);letter-spacing:0.12em;text-transform:uppercase;margin-top:8px">Session Confirmed</div>
-      </td></tr>
-      <tr><td style="background:#2A0A10;padding:36px 40px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
-        <p style="margin:0 0 14px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi <strong>${studentName}</strong>,</p>
-        <p style="margin:0 0 24px;color:rgba(250,250,248,0.75);font-size:14px;line-height:1.75">Your tutoring session is confirmed. Here are the details:</p>
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px">
-          <tr><td style="padding:12px 16px;background:rgba(192,24,43,0.08);border-radius:6px 6px 0 0;border-bottom:1px solid rgba(192,24,43,0.15)">
-            <div style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Date</div>
-            <div style="font-size:15px;color:#FAFAF8;font-weight:600">${dayStr}</div>
-          </td></tr>
-          <tr><td style="padding:12px 16px;background:rgba(192,24,43,0.06);border-bottom:1px solid rgba(192,24,43,0.15)">
-            <div style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Time</div>
-            <div style="font-size:15px;color:#FAFAF8;font-weight:600">${timeStr} Eastern</div>
-          </td></tr>
-          <tr><td style="padding:12px 16px;background:rgba(192,24,43,0.08);border-radius:0 0 6px 6px">
-            <div style="font-size:11px;color:rgba(250,250,248,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Location</div>
-            <div style="font-size:15px;color:#FAFAF8;font-weight:600">${location || 'Packer Collegiate Institute'}</div>
-          </td></tr>
-        </table>
-        <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
-          <a href="${calLink}" style="display:inline-block;background:rgba(200,169,110,0.12);border:1px solid rgba(200,169,110,0.35);color:#C8A96E;text-decoration:none;padding:10px 24px;border-radius:6px;font-size:13px;font-weight:600;font-family:'Helvetica Neue',Arial,sans-serif">
-            &#128197; Add to Google Calendar
-          </a>
-        </td></tr></table>
-      </td></tr>
-      <tr><td style="background:#1A0508;padding:20px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
-        <p style="margin:0 0 4px;color:rgba(250,250,248,0.3);font-size:12px">Questions? Reply to this email.</p>
-        <p style="margin:0;color:rgba(250,250,248,0.2);font-size:11px">Packer SAT Tutoring &middot; packersat.org</p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>
-</body></html>`;
+    const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
+      + '<body style="margin:0;padding:0;background:#f4ecd9;font-family:\'Inter\',Arial,sans-serif">'
+      + '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4ecd9;padding:40px 20px">'
+      + '<tr><td align="center"><table width="560" style="max-width:560px;width:100%">'
+      + '<tr><td style="background:#1a1715;padding:28px 36px;text-align:center">'
+      + '<div style="font-family:Georgia,serif;font-size:22px;color:#fffdf7;font-style:italic">Packer<span style="color:#a31621">·</span>SAT</div>'
+      + '<div style="font-size:10px;color:rgba(255,253,247,0.5);letter-spacing:0.18em;text-transform:uppercase;margin-top:6px">Session Confirmed</div>'
+      + '</td></tr>'
+      + '<tr><td style="background:#fffdf7;padding:32px 36px;border:1px solid rgba(26,23,21,0.1);border-top:none">'
+      + '<p style="margin:0 0 12px;color:#1a1715;font-size:15px;line-height:1.6">Hi <strong>' + toName + '</strong>,</p>'
+      + '<p style="margin:0 0 24px;color:#6b6258;font-size:14px;line-height:1.75">Your SAT tutoring session is confirmed. See you then.</p>'
+      + '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px">'
+      + '<tr><td style="padding:12px 16px;background:#f4ecd9;border-bottom:1px solid rgba(26,23,21,0.08)">'
+      + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">Date</div>'
+      + '<div style="font-size:15px;color:#1a1715;font-weight:600">' + dayStr + '</div>'
+      + '</td></tr>'
+      + '<tr><td style="padding:12px 16px;background:#fffdf7;border-bottom:1px solid rgba(26,23,21,0.08)">'
+      + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">Time</div>'
+      + '<div style="font-size:15px;color:#a31621;font-weight:600">' + timeStr + ' Eastern</div>'
+      + '</td></tr>'
+      + '<tr><td style="padding:12px 16px;background:#f4ecd9">'
+      + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">Location</div>'
+      + '<div style="font-size:15px;color:#1a1715;font-weight:600">' + (location || 'Packer Collegiate Institute') + '</div>'
+      + '</td></tr></table>'
+      + '<a href="' + calLink + '" style="display:inline-block;background:#1a1715;color:#fffdf7;text-decoration:none;padding:10px 22px;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;font-family:Arial,sans-serif">+ Add to Calendar</a>'
+      + '</td></tr>'
+      + '<tr><td style="background:#f4ecd9;padding:16px 36px;border:1px solid rgba(26,23,21,0.1);border-top:none;text-align:center">'
+      + '<p style="margin:0;color:#8a8278;font-size:11px">Questions? Reply to this email &middot; packersat.org</p>'
+      + '</td></tr></table></td></tr></table></body></html>';
 
     await fetch('https://packersat.vercel.app/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        to_email: studentEmail,
-        to_name:  studentName,
+        to_email: toEmail, to_name: toName,
         subject:  `Session confirmed: ${dayStr} at ${timeStr}`,
         html_content: html,
         from_email: 'jack@packersat.org',
@@ -264,225 +420,323 @@
     });
   }
 
-  // ── Send "request different time" email to admin ───────────────
   async function sendRequestEmail(studentName, studentEmail, requestedDate, requestedTime, location) {
     const dayStr  = formatDay(requestedDate);
     const timeStr = formatTime(requestedTime);
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#1A0508;font-family:'Helvetica Neue',Arial,sans-serif">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#1A0508;padding:40px 20px">
-  <tr><td align="center">
-    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
-      <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:32px 40px;border-radius:8px 8px 0 0;text-align:center">
-        <div style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</div>
-        <div style="font-size:11px;color:rgba(250,250,248,0.7);letter-spacing:0.12em;text-transform:uppercase;margin-top:6px">Session Time Request</div>
-      </td></tr>
-      <tr><td style="background:#2A0A10;padding:36px 40px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
-        <p style="margin:0 0 16px;color:#FAFAF8;font-size:16px;line-height:1.6">Hi Jack,</p>
-        <p style="margin:0 0 24px;color:rgba(250,250,248,0.75);font-size:14px;line-height:1.75"><strong style="color:#FAFAF8">${studentName}</strong> (${studentEmail}) couldn't make any of the offered times and has requested a new session time:</p>
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(192,24,43,0.1);border:1px solid rgba(192,24,43,0.3);border-radius:8px;margin-bottom:28px">
-          <tr><td style="padding:16px 20px">
-            <div style="font-size:11px;color:#C8A96E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Requested Date</div>
-            <div style="font-size:17px;font-weight:700;color:#FAFAF8;margin-bottom:14px">${dayStr}</div>
-            <div style="font-size:11px;color:#C8A96E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Requested Time</div>
-            <div style="font-size:17px;font-weight:700;color:#FAFAF8;margin-bottom:14px">${timeStr} Eastern</div>
-            <div style="font-size:11px;color:#C8A96E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Location</div>
-            <div style="font-size:15px;color:#FAFAF8">${location || 'Packer Collegiate Institute'}</div>
-          </td></tr>
-        </table>
-        <p style="margin:0;color:rgba(250,250,248,0.55);font-size:13px;line-height:1.6">You can confirm this time by scheduling a session in the portal, or send a new schedule picker with updated times.</p>
-      </td></tr>
-      <tr><td style="background:#0F0305;padding:20px 40px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
-        <p style="margin:0;color:rgba(250,250,248,0.25);font-size:12px">Packer SAT Tutoring &middot; packersat.org</p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>
-</body></html>`;
+    const html = '<!DOCTYPE html><html><body style="background:#f4ecd9;font-family:Inter,Arial,sans-serif;padding:40px 20px">'
+      + '<div style="max-width:520px;margin:0 auto;background:#fffdf7;border:1px solid rgba(26,23,21,0.1);padding:32px">'
+      + '<h2 style="font-family:Georgia,serif;font-size:20px;color:#1a1715;margin:0 0 16px">Session Time Request</h2>'
+      + '<p style="color:#4a423a;font-size:14px;line-height:1.7;margin:0 0 20px"><strong>' + studentName + '</strong> ('+ studentEmail +') couldn\'t make any of the offered times and has requested:</p>'
+      + '<div style="background:#f4ecd9;border-left:3px solid #a31621;padding:14px 18px;margin-bottom:20px">'
+      + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">Date</div>'
+      + '<div style="font-size:16px;font-weight:600;color:#1a1715;margin-bottom:10px">' + dayStr + '</div>'
+      + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">Time</div>'
+      + '<div style="font-size:16px;font-weight:600;color:#a31621">' + timeStr + ' Eastern</div>'
+      + '</div>'
+      + '<p style="color:#6b6258;font-size:13px;line-height:1.6;margin:0">Confirm by scheduling in the portal or send a new picker.</p>'
+      + '</div></body></html>';
 
     await fetch('https://packersat.vercel.app/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        to_email:     'jackroseblue@gmail.com',
-        to_name:      'Jack Rose',
-        subject:      `${studentName} requested a new session time — ${dayStr} at ${timeStr}`,
+        to_email: 'jackroseblue@gmail.com', to_name: 'Jack Rose',
+        subject:  studentName + ' requested a new session time — ' + dayStr + ' at ' + timeStr,
         html_content: html,
-        from_email:   'noreply@packersat.org',
-        from_name:    'Packer SAT Tutoring',
-        reply_to:     studentEmail,
+        from_email: 'noreply@packersat.org',
+        from_name:  'Packer SAT Tutoring',
+        reply_to:   studentEmail,
       }),
     });
   }
 
-  // ── Main ────────────────────────────────────────────────────────
-  const token = getToken();
+  // ── Show success ──────────────────────────────────────────────────
+  function showSuccess(date, time, location, studentName, studentEmail, calLink) {
+    const dayStr  = formatDay(date);
+    const timeStr = formatTime(time);
+    content.innerHTML = `
+      <div class="success-wrap">
+        <div class="success-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a31621" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="eyebrow">Confirmed</div>
+        <h1>You're all set.</h1>
+        <p class="sub" style="margin-top:0.5rem">
+          Your session on <strong style="color:var(--ink)">${dayStr}</strong>
+          at <strong style="color:var(--crimson)">${timeStr} Eastern</strong> is confirmed.
+          ${studentEmail ? 'A confirmation email is on its way.' : ''}
+        </p>
+        <hr class="divider">
+        <a href="${calLink}" target="_blank" class="cal-link">+ Add to Google Calendar</a>
+      </div>`;
+  }
+
+  // ── URL params ────────────────────────────────────────────────────
   const params = new URLSearchParams(window.location.search);
-  const mode   = params.get('mode'); // 'request' = request-different-time flow
-  console.log('Token result:', token);
+  const pickerId = params.get('p');   // multi-slot picker link
+  const tokenRaw = params.get('t');   // legacy single-slot token
+  const mode     = params.get('mode');
 
-  if (!token || !token.pickerId) {
+  // ══════════════════════════════════════════════════════════════════
+  //  MODE 1: Multi-slot picker  (?p=<pickerId>)
+  // ══════════════════════════════════════════════════════════════════
+  if (pickerId) {
+    let selectedIdx = null;
+
+    (async () => {
+      try {
+        const pickerSnap = await getDoc(doc(db, 'schedulePickers', pickerId));
+        if (!pickerSnap.exists()) {
+          content.innerHTML = `<div class="eyebrow">Scheduling</div><h1>Link expired</h1><p class="sub">This scheduling link is no longer valid. Contact your tutor for a new one.</p>`;
+          return;
+        }
+        const picker = pickerSnap.data();
+        const slots  = picker.slots || [];
+        const loc    = picker.location || 'Packer Collegiate Institute';
+        const note   = picker.note || '';
+        const studentName  = picker.studentName  || '';
+        const studentEmail = picker.studentEmail || '';
+        const studentId    = picker.studentId    || null;
+
+        if (!slots.length) {
+          content.innerHTML = `<div class="eyebrow">Scheduling</div><h1>No times available</h1><p class="sub">There are no time slots on this link. Contact your tutor.</p>`;
+          return;
+        }
+
+        // Render picker UI
+        function render() {
+          const slotItems = slots.map((s, i) => {
+            const used = picker[`slotUsed_${i}`];
+            const sel  = selectedIdx === i;
+            if (used) return `
+              <div class="slot-btn" style="opacity:0.4;cursor:default;pointer-events:none">
+                <div>
+                  <span class="slot-day">${formatDay(s.date)}</span>
+                  <span class="slot-time">${formatTime(s.time)} Eastern</span>
+                  <span class="slot-loc">Already booked</span>
+                </div>
+              </div>`;
+            return `
+              <button class="slot-btn ${sel ? 'selected' : ''}" onclick="selectSlot(${i})">
+                <div>
+                  <span class="slot-day">${formatDay(s.date)}</span>
+                  <span class="slot-time">${formatTime(s.time)} Eastern</span>
+                  <span class="slot-loc">📍 ${loc}</span>
+                </div>
+                <div class="check">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </button>`;
+          }).join('');
+
+          content.innerHTML = `
+            <div class="eyebrow">Scheduling</div>
+            <h1>Pick a <em>time.</em></h1>
+            <p class="sub">Choose the slot that works best for you. Once you confirm, it's on the calendar.</p>
+            ${note ? `<div class="note-box">${note}</div>` : ''}
+            <span class="slots-label">Available times</span>
+            <div class="slot-list">${slotItems}</div>
+            <button class="btn-confirm" id="confirm-btn" onclick="confirmPick()" ${selectedIdx === null ? 'disabled' : ''}>
+              Confirm this time
+            </button>
+            <div id="pick-status" class="status"></div>
+            <hr class="divider">
+            <a href="?p=${pickerId}&mode=request" class="btn-ghost" style="font-size:0.82rem;color:var(--ink-3)">
+              None of these work → Request a different time
+            </a>`;
+        }
+
+        render();
+
+        window.selectSlot = function(i) {
+          selectedIdx = i;
+          render();
+        };
+
+        window.confirmPick = async function() {
+          if (selectedIdx === null) return;
+          const slot = slots[selectedIdx];
+          const btn    = document.getElementById('confirm-btn');
+          const status = document.getElementById('pick-status');
+          btn.disabled = true;
+          btn.textContent = 'Confirming…';
+
+          try {
+            // Write session
+            await addDoc(collection(db, 'sessions'), {
+              studentId,
+              tutorId:    picker.adminId || null,
+              date:       slot.date,
+              time:       slot.time,
+              location:   loc,
+              createdAt:  new Date().toISOString(),
+              confirmedByStudent: true,
+              pickerId,
+              slotIdx:    selectedIdx,
+            });
+
+            // Mark slot used
+            await updateDoc(doc(db, 'schedulePickers', pickerId), {
+              [`slotUsed_${selectedIdx}`]: true,
+            });
+
+            // Cal link + confirmation email
+            const calLink = buildCalLink(slot.date, slot.time, studentName, loc);
+            try {
+              if (studentEmail) await sendConfirmationEmail(studentEmail, studentName, slot.date, slot.time, loc, calLink);
+            } catch(e) { console.warn('Email failed (non-critical):', e); }
+
+            showSuccess(slot.date, slot.time, loc, studentName, studentEmail, calLink);
+
+          } catch(e) {
+            console.error('Confirm error:', e);
+            btn.disabled = false;
+            btn.textContent = 'Confirm this time';
+            if (status) { status.textContent = 'Something went wrong: ' + (e?.message || String(e)); status.className = 'status error'; }
+          }
+        };
+
+      } catch(e) {
+        console.error(e);
+        content.innerHTML = `<h1>Error</h1><p class="sub">Could not load this scheduling link. Please try again or contact your tutor.</p>`;
+      }
+    })();
+
+  // ══════════════════════════════════════════════════════════════════
+  //  MODE 2: Request different time  (?p=...&mode=request)
+  // ══════════════════════════════════════════════════════════════════
+  } else if (mode === 'request' && tokenRaw) {
+    let token = null;
+    try {
+      const b64    = tokenRaw.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = b64 + '=='.slice(0, (4 - b64.length % 4) % 4);
+      token = JSON.parse(atob(padded));
+    } catch(e) { /* bad token handled below */ }
+
+    const studentName  = token?.studentName  || token?.studentEmail || 'Student';
+    const studentEmail = token?.studentEmail || '';
+    const loc          = token?.location     || 'Packer Collegiate Institute';
+
     content.innerHTML = `
-      <h1 style="margin-bottom:0.5rem">Invalid link</h1>
-      <p class="sub">This scheduling link is invalid or has expired. Please contact your tutor for a new one.</p>`;
-
-  } else if (mode === 'request') {
-    // ── Request different time flow ─────────────────────────────
-    const studentName  = token.studentName  || token.studentEmail || 'Student';
-    const studentEmail = token.studentEmail || '';
-    const location     = token.location     || 'Packer Collegiate Institute';
-
-    content.innerHTML = `
-      <h1 style="margin-bottom:0.5rem">Request a different time</h1>
-      <p class="sub">None of the offered times work for you? Pick a date and time that does, and we'll get back to you to confirm.</p>
-      <div style="margin:1.5rem 0;display:flex;flex-direction:column;gap:0.9rem">
-        <div>
-          <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(250,250,248,0.45);margin-bottom:0.4rem">Preferred Date</div>
-          <input type="date" id="req-date" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(192,24,43,0.25);border-radius:6px;padding:0.7rem 1rem;color:#FAFAF8;font-family:DM Sans,sans-serif;font-size:0.95rem;outline:none" />
-        </div>
-        <div>
-          <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(250,250,248,0.45);margin-bottom:0.4rem">Preferred Time</div>
-          <input type="time" id="req-time" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(192,24,43,0.25);border-radius:6px;padding:0.7rem 1rem;color:#FAFAF8;font-family:DM Sans,sans-serif;font-size:0.95rem;outline:none" />
-        </div>
+      <div class="eyebrow">Scheduling</div>
+      <h1>Request a <em>different time.</em></h1>
+      <p class="sub">None of the times work for you? Enter your preferred date and time and we'll get back to you to confirm.</p>
+      <div class="field-wrap">
+        <span class="field-label">Preferred date</span>
+        <input type="date" id="req-date" />
+      </div>
+      <div class="field-wrap">
+        <span class="field-label">Preferred time</span>
+        <input type="time" id="req-time" />
       </div>
       <button class="btn-confirm" id="req-btn" onclick="submitRequest()">Send Request</button>
-      <div id="req-status" class="status" style="margin-top:1rem"></div>`;
+      <div id="req-status" class="status" style="margin-top:0.8rem"></div>`;
 
     window.submitRequest = async function() {
       const btn    = document.getElementById('req-btn');
       const status = document.getElementById('req-status');
       const date   = document.getElementById('req-date').value;
       const time   = document.getElementById('req-time').value;
-
-      if (!date || !time) {
-        status.textContent = 'Please select both a date and a time.';
-        status.className   = 'status error';
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Sending…';
-
+      if (!date || !time) { status.textContent = 'Please select both a date and a time.'; status.className = 'status error'; return; }
+      btn.disabled = true; btn.textContent = 'Sending…';
       try {
-        await sendRequestEmail(studentName, studentEmail, date, time, location);
-
+        await sendRequestEmail(studentName, studentEmail, date, time, loc);
         content.innerHTML = `
           <div class="success-wrap">
-            <div class="success-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C0182B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <h1 style="margin-bottom:0.5rem">Request sent!</h1>
-            <p class="sub">Your request for <strong style="color:#FAFAF8">${formatDay(date)}</strong> at <strong style="color:#C8A96E">${formatTime(time)} Eastern</strong> has been sent. You'll hear back to confirm the time.</p>
+            <div class="success-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a31621" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="eyebrow">Sent</div>
+            <h1>Request received.</h1>
+            <p class="sub">You asked for <strong style="color:var(--ink)">${formatDay(date)}</strong> at <strong style="color:var(--crimson)">${formatTime(time)} Eastern</strong>. We'll be in touch to confirm.</p>
           </div>`;
       } catch(e) {
-        btn.disabled = false;
-        btn.textContent = 'Send Request';
-        status.textContent = 'Something went wrong: ' + (e?.message || String(e));
-        status.className   = 'status error';
+        btn.disabled = false; btn.textContent = 'Send Request';
+        status.textContent = 'Something went wrong: ' + (e?.message || String(e)); status.className = 'status error';
       }
     };
 
-  } else {
-    // ── Normal confirm flow ─────────────────────────────────────
-    if (!token.date || !token.time) {
-      content.innerHTML = `
-        <h1 style="margin-bottom:0.5rem">Invalid link</h1>
-        <p class="sub">This scheduling link is invalid or has expired. Please contact your tutor for a new one.</p>`;
+  // ══════════════════════════════════════════════════════════════════
+  //  MODE 3: Legacy single-slot token  (?t=<base64>)
+  // ══════════════════════════════════════════════════════════════════
+  } else if (tokenRaw) {
+    let token = null;
+    try {
+      const b64    = tokenRaw.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = b64 + '=='.slice(0, (4 - b64.length % 4) % 4);
+      token = JSON.parse(atob(padded));
+    } catch(e) { /* bad token */ }
+
+    if (!token?.pickerId || !token?.date || !token?.time) {
+      content.innerHTML = `<div class="eyebrow">Error</div><h1>Invalid link</h1><p class="sub">This scheduling link is invalid or has expired. Contact your tutor for a new one.</p>`;
     } else {
-    const { pickerId, studentId, date, time, location } = token;
-    const dayStr  = formatDay(date);
-    const timeStr = formatTime(time);
+      const { pickerId: pid, studentId, date, time, location: loc, idx } = token;
+      const studentName  = token.studentName  || '';
+      const studentEmail = token.studentEmail || '';
+      const dayStr  = formatDay(date);
+      const timeStr = formatTime(time);
 
-    // Show the confirmation UI
-    content.innerHTML = `
-      <h1>Confirm your session</h1>
-      <p class="sub">You're selecting the following time for your SAT tutoring session:</p>
-      <div class="slot-card">
-        <div class="slot-day">${dayStr}</div>
-        <div class="slot-time">${timeStr} Eastern</div>
-        <div class="slot-location">&#128205; ${location || 'Packer Collegiate Institute'}</div>
-      </div>
-      <button class="btn-confirm" id="confirm-btn" onclick="confirmSession()">Confirm this time</button>
-      <div class="status" id="status-msg"></div>`;
+      content.innerHTML = `
+        <div class="eyebrow">Confirm your session</div>
+        <h1>This <em>work for you?</em></h1>
+        <p class="sub">You're confirming the following SAT tutoring session:</p>
+        <div class="slot-card">
+          <div class="slot-day">${dayStr}</div>
+          <div class="slot-time">${timeStr} Eastern</div>
+          <div class="slot-loc">📍 ${loc || 'Packer Collegiate Institute'}</div>
+        </div>
+        <button class="btn-confirm" id="confirm-btn" onclick="confirmSingle()">Confirm this time</button>
+        <div class="status" id="status-msg"></div>
+        <hr class="divider">
+        <a href="?t=${tokenRaw}&mode=request" class="btn-ghost" style="font-size:0.82rem;color:var(--ink-3)">
+          This time doesn't work → Request a different time
+        </a>`;
 
-    window.confirmSession = async function() {
-      const btn    = document.getElementById('confirm-btn');
-      const status = document.getElementById('status-msg');
-      btn.disabled = true;
-      btn.textContent = 'Confirming...';
-      status.textContent = '';
-      status.className = 'status';
+      window.confirmSingle = async function() {
+        const btn    = document.getElementById('confirm-btn');
+        const status = document.getElementById('status-msg');
+        btn.disabled = true; btn.textContent = 'Confirming…';
+        try {
+          const pickerDoc = await getDoc(doc(db, 'schedulePickers', pid));
+          const picker    = pickerDoc.exists() ? pickerDoc.data() : {};
+          const resolvedName  = studentName  || picker.studentName  || 'Student';
+          const resolvedEmail = studentEmail || picker.studentEmail || '';
+          const resolvedId    = studentId    || picker.studentId    || null;
+          const tutorId       = picker.adminId || null;
 
-      try {
-        // Get picker doc to find admin/tutor info
-        const pickerDoc = await getDoc(doc(db, 'schedulePickers', pickerId));
-        if (!pickerDoc.exists()) throw new Error('Picker not found');
-        const picker = pickerDoc.data();
-
-        // Resolve student info from token and picker — no auth needed
-        // (avoid reading users collection which requires login)
-        let studentName       = token.studentName  || picker.studentName  || 'Student';
-        let studentEmail      = token.studentEmail || picker.studentEmail || '';
-        let resolvedStudentId = studentId || null;
-        let tutorId           = picker.adminId || null;
-
-        console.log('Confirming session for:', studentName, studentEmail);
-
-        // Write session to Firestore
-        await addDoc(collection(db, 'sessions'), {
-          studentId:  resolvedStudentId,
-          tutorId,
-          date,
-          time,
-          location: location || 'Packer Collegiate Institute',
-          createdAt: new Date().toISOString(),
-          confirmedByStudent: true,
-          pickerId,
-        });
-
-        // Mark picker slot as used (but don't disable other slots)
-        if (pickerId && token.idx !== undefined) {
-          await updateDoc(doc(db, 'schedulePickers', pickerId), {
-            [`slotUsed_${token.idx}`]: true,
+          await addDoc(collection(db, 'sessions'), {
+            studentId: resolvedId, tutorId, date, time,
+            location: loc || 'Packer Collegiate Institute',
+            createdAt: new Date().toISOString(),
+            confirmedByStudent: true, pickerId: pid,
           });
-        }
 
-        // Build calendar link
-        const calLink = buildCalLink(date, time, studentName, location);
-
-        // Send confirmation email — don't let email failure block the success screen
-        if (studentEmail) {
-          try {
-            await sendConfirmationEmail(studentEmail, studentName, date, time, location, calLink);
-            console.log('Confirmation email sent to:', studentEmail);
-          } catch(emailErr) {
-            console.error('Confirmation email failed (non-critical):', emailErr);
+          if (pid && idx !== undefined) {
+            await updateDoc(doc(db, 'schedulePickers', pid), { [`slotUsed_${idx}`]: true });
           }
-        } else {
-          console.warn('No student email found — skipping confirmation email');
+
+          const calLink = buildCalLink(date, time, resolvedName, loc);
+          try {
+            if (resolvedEmail) await sendConfirmationEmail(resolvedEmail, resolvedName, date, time, loc, calLink);
+          } catch(e) { console.warn('Email failed:', e); }
+
+          showSuccess(date, time, loc, resolvedName, resolvedEmail, calLink);
+        } catch(e) {
+          console.error(e);
+          btn.disabled = false; btn.textContent = 'Confirm this time';
+          if (status) { status.textContent = 'Error: ' + (e?.message || String(e)); status.className = 'status error'; }
         }
+      };
+    }
 
-        // Show success
-        content.innerHTML = `
-          <div class="success-wrap">
-            <div class="success-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C0182B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <h1 style="margin-bottom:0.5rem">You're all set!</h1>
-            <p class="sub">Your session on <strong style="color:#FAFAF8">${dayStr}</strong> at <strong style="color:#C8A96E">${timeStr} Eastern</strong> is confirmed.${studentEmail ? ' A confirmation email with your calendar invite has been sent.' : ''}</p>
-            <a href="${calLink}" target="_blank" class="cal-link">&#128197; Add to Google Calendar</a>
-          </div>`;
-
-      } catch(e) {
-        console.error('Confirmation error:', e);
-        btn.disabled = false;
-        btn.textContent = 'Confirm this time';
-        status.textContent = 'Something went wrong: ' + (e?.message || String(e));
-        status.className = 'status error';
-      }
-    };
-    } // end inner if/else (token.date check)
-  } // end outer if/else (mode check)
+  // ══════════════════════════════════════════════════════════════════
+  //  No valid params
+  // ══════════════════════════════════════════════════════════════════
+  } else {
+    content.innerHTML = `
+      <div class="eyebrow">Scheduling</div>
+      <h1>Invalid link</h1>
+      <p class="sub">This scheduling link is invalid or has expired. Please contact your tutor for a new one.</p>`;
+  }
 </script>
+
 </body>
 </html>
