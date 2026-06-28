@@ -472,15 +472,15 @@
   }
 
   // ── URL params ────────────────────────────────────────────────────
-  const params = new URLSearchParams(window.location.search);
+  const params   = new URLSearchParams(window.location.search);
   const pickerId = params.get('p');   // multi-slot picker link
   const tokenRaw = params.get('t');   // legacy single-slot token
   const mode     = params.get('mode');
 
   // ══════════════════════════════════════════════════════════════════
-  //  MODE 1: Multi-slot picker  (?p=<pickerId>)
+  //  MODE 1: Multi-slot picker  (?p=<pickerId>, no mode param)
   // ══════════════════════════════════════════════════════════════════
-  if (pickerId) {
+  if (pickerId && mode !== 'request') {
     let selectedIdx = null;
 
     (async () => {
