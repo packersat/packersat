@@ -603,56 +603,366 @@
     })();
 
   // ══════════════════════════════════════════════════════════════════
-  //  MODE 2: Request different time  (?p=...&mode=request)
+  //  MODE 2: Request different time  (?p=...&mode=request  OR  ?t=...&mode=request)
   // ══════════════════════════════════════════════════════════════════
-  } else if (mode === 'request' && tokenRaw) {
-    let token = null;
-    try {
-      const b64    = tokenRaw.replace(/-/g, '+').replace(/_/g, '/');
-      const padded = b64 + '=='.slice(0, (4 - b64.length % 4) % 4);
-      token = JSON.parse(atob(padded));
-    } catch(e) { /* bad token handled below */ }
+  } else if (mode === 'request') {
 
-    const studentName  = token?.studentName  || token?.studentEmail || 'Student';
-    const studentEmail = token?.studentEmail || '';
-    const loc          = token?.location     || 'Packer Collegiate Institute';
+    // Resolve student info
+    let studentName  = '';
+    let studentEmail = '';
+    let backHref     = null;
 
-    content.innerHTML = `
-      <div class="eyebrow">Scheduling</div>
-      <h1>Request a <em>different time.</em></h1>
-      <p class="sub">None of the times work for you? Enter your preferred date and time and we'll get back to you to confirm.</p>
-      <div class="field-wrap">
-        <span class="field-label">Preferred date</span>
-        <input type="date" id="req-date" />
-      </div>
-      <div class="field-wrap">
-        <span class="field-label">Preferred time</span>
-        <input type="time" id="req-time" />
-      </div>
-      <button class="btn-confirm" id="req-btn" onclick="submitRequest()">Send Request</button>
-      <div id="req-status" class="status" style="margin-top:0.8rem"></div>`;
-
-    window.submitRequest = async function() {
-      const btn    = document.getElementById('req-btn');
-      const status = document.getElementById('req-status');
-      const date   = document.getElementById('req-date').value;
-      const time   = document.getElementById('req-time').value;
-      if (!date || !time) { status.textContent = 'Please select both a date and a time.'; status.className = 'status error'; return; }
-      btn.disabled = true; btn.textContent = 'Sending…';
+    if (pickerId) {
+      backHref = `confirm.html?p=${pickerId}`;
       try {
-        await sendRequestEmail(studentName, studentEmail, date, time, loc);
-        content.innerHTML = `
-          <div class="success-wrap">
-            <div class="success-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a31621" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="eyebrow">Sent</div>
-            <h1>Request received.</h1>
-            <p class="sub">You asked for <strong style="color:var(--ink)">${formatDay(date)}</strong> at <strong style="color:var(--crimson)">${formatTime(time)} Eastern</strong>. We'll be in touch to confirm.</p>
-          </div>`;
-      } catch(e) {
-        btn.disabled = false; btn.textContent = 'Send Request';
-        status.textContent = 'Something went wrong: ' + (e?.message || String(e)); status.className = 'status error';
+        const snap = await getDoc(doc(db, 'schedulePickers', pickerId));
+        if (snap.exists()) {
+          const d = snap.data();
+          studentName  = d.studentName  || '';
+          studentEmail = d.studentEmail || '';
+        }
+      } catch(e) { /* non-critical */ }
+    } else if (tokenRaw) {
+      backHref = `confirm.html?t=${tokenRaw}`;
+      try {
+        const b64    = tokenRaw.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = b64 + '=='.slice(0, (4 - b64.length % 4) % 4);
+        const token  = JSON.parse(atob(padded));
+        studentName  = token?.studentName  || token?.studentEmail || '';
+        studentEmail = token?.studentEmail || '';
+      } catch(e) { /* bad token */ }
+    }
+
+    // ── Render the dial + day rail interactive ──
+    content.innerHTML = `
+      <style>
+        /* ── Request-time interactive styles ── */
+        .rt-logo { font-family:'Fraunces',serif; font-style:italic; font-size:1rem; text-align:center; letter-spacing:-0.01em; margin-bottom:1.4rem; color:var(--ink); }
+        .rt-logo .rt-dot { color:var(--crimson); font-style:normal; }
+        .rt-head { text-align:center; margin-bottom:1.4rem; }
+        .rt-eyebrow { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--crimson); display:inline-flex; align-items:center; gap:0.5rem; margin-bottom:0.7rem; }
+        .rt-eyebrow::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--crimson); }
+        .rt-h1 { font-family:'Fraunces',serif; font-weight:400; font-size:1.65rem; line-height:1.18; letter-spacing:-0.02em; color:var(--ink); }
+        .rt-h1 em { font-style:italic; color:var(--crimson); }
+        .rt-sub { color:var(--ink-3); font-size:0.85rem; line-height:1.6; margin-top:0.5rem; }
+        .rt-step { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-3); display:flex; align-items:center; gap:0.5rem; margin:0 0 0.75rem; }
+        .rt-step .rt-n { width:17px; height:17px; border-radius:50%; border:1px solid var(--rule); display:grid; place-items:center; font-size:9px; color:var(--crimson); }
+        /* day rail */
+        .rt-rail-wrap { position:relative; margin-bottom:1.5rem; }
+        .rt-rail { display:flex; gap:0.5rem; overflow-x:auto; padding:0.2rem 0.1rem 0.6rem; scroll-behavior:smooth; scrollbar-width:none; }
+        .rt-rail::-webkit-scrollbar { display:none; }
+        .rt-day { flex:0 0 auto; width:54px; padding:0.65rem 0; border:1px solid var(--rule); text-align:center; cursor:pointer; user-select:none; transition:transform 0.25s ease, border-color 0.2s, background 0.2s; background:var(--ivory); animation:rt-dayIn 0.4s ease both; }
+        @keyframes rt-dayIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+        .rt-day .rt-dow { font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-3); transition:color 0.2s; }
+        .rt-day .rt-num { font-family:'Fraunces',serif; font-size:1.3rem; font-weight:400; margin-top:0.15rem; line-height:1; color:var(--ink); transition:color 0.2s; }
+        .rt-day .rt-mon { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); margin-top:0.2rem; font-family:'JetBrains Mono',monospace; transition:color 0.2s; }
+        .rt-day:hover { border-color:var(--crimson); transform:translateY(-2px); }
+        .rt-day.sel { background:rgba(163,22,33,0.06); border-color:var(--crimson); }
+        .rt-day.sel .rt-num { color:var(--crimson); }
+        .rt-day.sel .rt-dow, .rt-day.sel .rt-mon { color:var(--crimson); opacity:0.7; }
+        .rt-fade { position:absolute; top:0; bottom:10px; width:22px; pointer-events:none; }
+        .rt-fade.l { left:0; background:linear-gradient(90deg, var(--ivory), transparent); }
+        .rt-fade.r { right:0; background:linear-gradient(270deg, var(--ivory), transparent); }
+        /* dial */
+        .rt-dialbox { display:flex; flex-direction:column; align-items:center; margin-bottom:0.4rem; }
+        .rt-dial { position:relative; width:240px; height:240px; touch-action:none; }
+        .rt-dial svg { position:absolute; inset:0; width:100%; height:100%; }
+        .rt-tick { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; fill:var(--ink-3); transition:fill 0.2s; }
+        .rt-tick.on { fill:var(--crimson); }
+        .rt-hgrp { cursor:grab; }
+        .rt-dial.drag .rt-hgrp { cursor:grabbing; }
+        .rt-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; }
+        .rt-big { font-family:'Fraunces',serif; font-weight:400; font-size:2.7rem; line-height:1; letter-spacing:-0.02em; color:var(--ink); }
+        .rt-big .rt-mer-sup { font-size:1rem; color:var(--crimson); margin-left:0.2rem; vertical-align:super; font-weight:500; }
+        .rt-readday { font-size:0.72rem; color:var(--ink-3); margin-top:0.4rem; letter-spacing:0.02em; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; text-transform:uppercase; }
+        .rt-hint { font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-4,#8a8278); margin-top:0.5rem; font-family:'JetBrains Mono',monospace; }
+        /* controls */
+        .rt-controls { display:flex; gap:0.7rem; margin:1.1rem 0 0.4rem; }
+        .rt-seg { flex:1; display:flex; background:var(--paper); border:1px solid var(--rule); padding:3px; gap:3px; }
+        .rt-seg button { flex:1; border:none; background:transparent; color:var(--ink-3); font-family:'Inter',sans-serif; font-size:0.8rem; font-weight:600; padding:0.48rem 0; cursor:pointer; transition:all 0.18s; }
+        .rt-seg button.on { background:var(--crimson); color:#fff; }
+        .rt-seg.rt-mins button.on { background:rgba(163,22,33,0.08); color:var(--crimson); border:1px solid rgba(163,22,33,0.25); }
+        .rt-ctl-col { flex:1; }
+        .rt-ctl-lbl { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-3); margin:0 0 0.4rem 0.2rem; }
+        /* submit */
+        .rt-btn { position:relative; width:100%; margin-top:1.4rem; overflow:hidden; background:var(--ink); color:var(--ivory); border:none; padding:0.95rem; font-family:'Inter',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:transform 0.12s; }
+        .rt-btn:hover { background:var(--crimson); }
+        .rt-btn:active { transform:scale(0.99); }
+        .rt-btn .rt-lbl { position:relative; z-index:2; display:inline-flex; align-items:center; gap:0.5rem; }
+        .rt-btn .rt-sweep { position:absolute; inset:0; background:linear-gradient(90deg,var(--crimson),var(--ink)); transform:translateX(-101%); z-index:1; }
+        .rt-btn.sending .rt-sweep { animation:rt-sweep 0.8s ease forwards; }
+        @keyframes rt-sweep { to { transform:translateX(0); } }
+        .rt-footnote { text-align:center; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-4,#8a8278); margin-top:0.85rem; font-family:'JetBrains Mono',monospace; }
+        /* success */
+        @keyframes rt-fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+        .rt-success { text-align:center; padding:1rem 0 0.4rem; animation:rt-fadeUp 0.5s ease both; }
+        .rt-checkring { width:76px; height:76px; margin:0 auto 1.2rem; }
+        .rt-checkring svg { width:100%; height:100%; overflow:visible; }
+        .rt-cc { fill:none; stroke:var(--crimson); stroke-width:2.5; stroke-dasharray:226; stroke-dashoffset:226; animation:rt-draw 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s forwards; }
+        .rt-ck { fill:none; stroke:var(--gold,#c8a96e); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:48; stroke-dashoffset:48; animation:rt-draw 0.4s cubic-bezier(0.16,1,0.3,1) 0.6s forwards; }
+        @keyframes rt-draw { to { stroke-dashoffset:0; } }
+        .rt-reqchip { display:inline-flex; flex-direction:column; gap:0.15rem; margin-top:1rem; background:rgba(163,22,33,0.06); border:1px solid var(--rule); padding:0.8rem 1.4rem; }
+        .rt-reqchip .rc-day { font-family:'Fraunces',serif; font-weight:400; font-size:1.05rem; color:var(--ink); }
+        .rt-reqchip .rc-time { color:var(--crimson); font-weight:600; font-size:0.88rem; }
+        @media (prefers-reduced-motion:reduce) { *, .rt-sweep { animation-duration:0.001s !important; } }
+      </style>
+
+      <div id="rt-stage">
+        <div class="rt-head">
+          <span class="rt-eyebrow">Request a time</span>
+          <div class="rt-h1">None of those work?<br /><em>Find one that does.</em></div>
+          <p class="rt-sub">Pick a day and dial in a time — we'll get back to you to confirm.</p>
+        </div>
+
+        <div class="rt-step"><span class="rt-n">1</span> Choose a day</div>
+        <div class="rt-rail-wrap">
+          <div class="rt-rail" id="rt-rail"></div>
+          <div class="rt-fade l"></div>
+          <div class="rt-fade r"></div>
+        </div>
+
+        <div class="rt-step"><span class="rt-n">2</span> Dial in a time</div>
+        <div class="rt-dialbox">
+          <div class="rt-dial" id="rt-dial">
+            <svg viewBox="0 0 248 248" id="rt-svg"></svg>
+            <div class="rt-center">
+              <div class="rt-big" id="rt-big">3:30<span class="rt-mer-sup" id="rt-mer">PM</span></div>
+              <div class="rt-readday" id="rt-readday"></div>
+              <div class="rt-hint">drag the dial</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rt-controls">
+          <div class="rt-ctl-col">
+            <div class="rt-ctl-lbl">Morning / Evening</div>
+            <div class="rt-seg" id="rt-ampm">
+              <button data-mer="AM">AM</button>
+              <button data-mer="PM" class="on">PM</button>
+            </div>
+          </div>
+          <div class="rt-ctl-col">
+            <div class="rt-ctl-lbl">Minutes</div>
+            <div class="rt-seg rt-mins" id="rt-mins">
+              <button data-min="0">:00</button>
+              <button data-min="15">:15</button>
+              <button data-min="30" class="on">:30</button>
+              <button data-min="45">:45</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="rt-btn" id="rt-sendbtn">
+          <span class="rt-sweep"></span>
+          <span class="rt-lbl">Send request
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </button>
+        <div id="rt-status" class="status" style="margin-top:0.6rem"></div>
+        <div class="rt-footnote">All times Eastern &middot; A tutor confirms within a day</div>
+        ${backHref ? `<hr class="divider"><a href="${backHref}" class="btn-ghost" style="font-size:0.82rem;color:var(--ink-3)">← Back to time slots</a>` : ''}
+      </div>`;
+
+    // ── Dial + day rail JS ──────────────────────────────────────────
+    (function initRequestTime() {
+      var NS = 'http://www.w3.org/2000/svg';
+      var CX = 124, CY = 124, R = 96, HR = 13;
+      var state = { dateISO: null, hour: 3, min: 30, mer: 'PM' };
+      var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+      function isoOf(d) {
+        return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
       }
-    };
+      function fmtTime() {
+        return state.hour + ':' + String(state.min).padStart(2,'0') + ' ' + state.mer;
+      }
+      function fmtDayLong() {
+        var d = new Date(state.dateISO + 'T12:00:00');
+        return d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+      }
+
+      // ── day rail ──
+      var rail  = document.getElementById('rt-rail');
+      var today = new Date(); today.setHours(12,0,0,0);
+      var days  = [];
+      for (var i = 1; i <= 14; i++) {
+        var d = new Date(today); d.setDate(today.getDate() + i); days.push(d);
+      }
+      days.forEach(function(d, k) {
+        var el = document.createElement('div');
+        el.className = 'rt-day';
+        el.style.animationDelay = (0.03 * k) + 's';
+        el.innerHTML = '<div class="rt-dow">' + DOW[d.getDay()] + '</div><div class="rt-num">' + d.getDate() + '</div><div class="rt-mon">' + MON[d.getMonth()] + '</div>';
+        el.addEventListener('click', function() {
+          rail.querySelectorAll('.rt-day').forEach(function(n) { n.classList.remove('sel'); });
+          el.classList.add('sel');
+          state.dateISO = isoOf(d);
+          updateRead();
+        });
+        if (k === 0) { el.classList.add('sel'); state.dateISO = isoOf(d); }
+        rail.appendChild(el);
+      });
+
+      // ── build SVG dial ──
+      function P(tag, attrs) {
+        var e = document.createElementNS(NS, tag);
+        for (var k in attrs) e.setAttribute(k, attrs[k]);
+        return e;
+      }
+      function hourPos(h, radius) {
+        var ang = (h % 12) * 30 - 90;
+        var rad = ang * Math.PI / 180;
+        return { x: CX + radius * Math.cos(rad), y: CY + radius * Math.sin(rad) };
+      }
+      function arcPath(toH) {
+        var start = hourPos(12, R);
+        var end   = hourPos(toH, R);
+        var ang   = (toH % 12) * 30;
+        var large = ang > 180 ? 1 : 0;
+        if (toH % 12 === 0) return '';
+        return 'M ' + start.x + ' ' + start.y + ' A ' + R + ' ' + R + ' 0 ' + large + ' 1 ' + end.x + ' ' + end.y;
+      }
+
+      var svg = document.getElementById('rt-svg');
+      // gradient
+      var defs = P('defs', {});
+      var grad = P('linearGradient', { id:'rtg', x1:'0', y1:'0', x2:'1', y2:'1' });
+      grad.appendChild(P('stop', { offset:'0', 'stop-color':'#a31621' }));
+      grad.appendChild(P('stop', { offset:'1', 'stop-color':'#c8a96e' }));
+      defs.appendChild(grad); svg.appendChild(defs);
+      // base ring
+      svg.appendChild(P('circle', { cx:CX, cy:CY, r:R, fill:'none', stroke:'rgba(26,23,21,0.12)', 'stroke-width':1.5 }));
+      // arc
+      var arc = P('path', { fill:'none', stroke:'url(#rtg)', 'stroke-width':3.5, 'stroke-linecap':'round' });
+      svg.appendChild(arc);
+      // ticks + labels
+      var lbls = {};
+      for (var h = 1; h <= 12; h++) {
+        var tp = hourPos(h, R);
+        svg.appendChild(P('circle', { cx:tp.x, cy:tp.y, r:1.5, fill:'rgba(26,23,21,0.2)' }));
+        var lp = hourPos(h, R - 20);
+        var t  = P('text', { x:lp.x, y:lp.y, 'text-anchor':'middle', 'dominant-baseline':'central', 'class':'rt-tick' });
+        t.textContent = h; svg.appendChild(t); lbls[h] = t;
+      }
+      // handle
+      var hg = P('g', { 'class':'rt-hgrp' });
+      hg.appendChild(P('circle', { r:HR+6, fill:'rgba(163,22,33,0.12)' }));
+      hg.appendChild(P('circle', { r:HR, fill:'#a31621', stroke:'#fffdf7', 'stroke-width':2.2 }));
+      hg.appendChild(P('circle', { r:3, fill:'#fffdf7' }));
+      svg.appendChild(hg);
+
+      function render() {
+        var pos = hourPos(state.hour, R);
+        hg.setAttribute('transform', 'translate(' + pos.x + ',' + pos.y + ')');
+        arc.setAttribute('d', arcPath(state.hour));
+        for (var h = 1; h <= 12; h++) { lbls[h].classList.toggle('on', h === state.hour); }
+        updateRead();
+      }
+      function updateRead() {
+        var mm = String(state.min).padStart(2, '0');
+        document.getElementById('rt-big').innerHTML = state.hour + ':' + mm + '<span class="rt-mer-sup" id="rt-mer">' + state.mer + '</span>';
+        if (state.dateISO) {
+          var d = new Date(state.dateISO + 'T12:00:00');
+          document.getElementById('rt-readday').textContent = DOW[d.getDay()] + ', ' + MON[d.getMonth()] + ' ' + d.getDate();
+        }
+      }
+
+      // ── drag ──
+      var dialEl  = document.getElementById('rt-dial');
+      var dragging = false;
+      function angleToHour(cx, cy) {
+        var rect = svg.getBoundingClientRect();
+        var sx = (cx - rect.left) / rect.width * 248;
+        var sy = (cy - rect.top)  / rect.height * 248;
+        var ang = Math.atan2(sy - CY, sx - CX) * 180 / Math.PI + 90;
+        if (ang < 0) ang += 360;
+        var h = Math.round(ang / 30); if (h === 0) h = 12;
+        return h;
+      }
+      function fromPointer(e) {
+        var pt = e.touches ? e.touches[0] : e;
+        state.hour = angleToHour(pt.clientX, pt.clientY);
+        render();
+      }
+      dialEl.addEventListener('pointerdown', function(e) { dragging = true; dialEl.classList.add('drag'); fromPointer(e); e.preventDefault(); });
+      window.addEventListener('pointermove',  function(e) { if (dragging) { fromPointer(e); e.preventDefault(); } });
+      window.addEventListener('pointerup',    function()  { dragging = false; dialEl.classList.remove('drag'); });
+
+      // ── AM/PM ──
+      document.getElementById('rt-ampm').addEventListener('click', function(e) {
+        var b = e.target.closest('button'); if (!b) return;
+        this.querySelectorAll('button').forEach(function(n) { n.classList.remove('on'); });
+        b.classList.add('on'); state.mer = b.dataset.mer; updateRead();
+      });
+      // ── minutes ──
+      document.getElementById('rt-mins').addEventListener('click', function(e) {
+        var b = e.target.closest('button'); if (!b) return;
+        this.querySelectorAll('button').forEach(function(n) { n.classList.remove('on'); });
+        b.classList.add('on'); state.min = parseInt(b.dataset.min, 10); updateRead();
+      });
+
+      // ── submit ──
+      document.getElementById('rt-sendbtn').addEventListener('click', async function() {
+        var btn    = document.getElementById('rt-sendbtn');
+        var status = document.getElementById('rt-status');
+        if (btn.classList.contains('sending')) return;
+        btn.classList.add('sending');
+        btn.querySelector('.rt-lbl').textContent = 'Sending…';
+        try {
+          var dayLong  = fmtDayLong();
+          var timeStr  = fmtTime();
+          var html = '<!DOCTYPE html><html><body style="background:#f4ecd9;font-family:Inter,Arial,sans-serif;padding:40px 20px">'
+            + '<div style="max-width:520px;margin:0 auto;background:#fffdf7;border:1px solid rgba(26,23,21,0.1);padding:32px">'
+            + '<h2 style="font-family:Georgia,serif;font-size:20px;color:#1a1715;margin:0 0 16px">Session Time Request</h2>'
+            + '<p style="color:#4a423a;font-size:14px;line-height:1.7;margin:0 0 20px">'
+            + (studentName ? '<strong>' + studentName + '</strong>' + (studentEmail ? ' (' + studentEmail + ')' : '') : 'Someone')
+            + ' has requested a session time:</p>'
+            + '<div style="background:#f4ecd9;border-left:3px solid #a31621;padding:14px 18px;margin-bottom:20px">'
+            + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:4px">Date</div>'
+            + '<div style="font-size:18px;font-weight:600;color:#1a1715;margin-bottom:10px">' + dayLong + '</div>'
+            + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:4px">Time</div>'
+            + '<div style="font-size:18px;font-weight:600;color:#a31621">' + timeStr + ' Eastern</div>'
+            + '</div>'
+            + '<p style="color:#6b6258;font-size:13px;line-height:1.6;margin:0">Reply to confirm or send a new picker.</p>'
+            + '</div></body></html>';
+
+          await fetch('https://packersat.vercel.app/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to_email:     'jackroseblue@gmail.com',
+              to_name:      'Jack Rose',
+              subject:      (studentName || 'Student') + ' requested: ' + dayLong + ' at ' + timeStr,
+              html_content: html,
+              from_email:   'noreply@packersat.org',
+              from_name:    'Packer SAT Tutoring',
+              reply_to:     studentEmail || 'noreply@packersat.org',
+            }),
+          });
+
+          // success screen
+          document.getElementById('rt-stage').innerHTML =
+            '<div class="rt-success">'
+            + '<div class="rt-checkring"><svg viewBox="0 0 80 80">'
+            + '<circle class="rt-cc" cx="40" cy="40" r="36"/>'
+            + '<path class="rt-ck" d="M26 41 L36 51 L55 30"/>'
+            + '</svg></div>'
+            + '<span class="rt-eyebrow" style="justify-content:center;margin-bottom:0.5rem">Request sent</span>'
+            + '<div class="rt-h1" style="margin-bottom:0.5rem">We\u2019re <em>on it.</em></div>'
+            + '<p class="rt-sub">Your preferred time has been sent. You\u2019ll hear back shortly to lock it in.</p>'
+            + '<div class="rt-reqchip"><span class="rc-day">' + dayLong + '</span><span class="rc-time">' + timeStr + ' Eastern</span></div>'
+            + '</div>';
+
+        } catch(e) {
+          btn.classList.remove('sending');
+          btn.querySelector('.rt-lbl').innerHTML = 'Send request <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+          if (status) { status.textContent = 'Something went wrong: ' + (e?.message || String(e)); status.className = 'status error'; }
+        }
+      });
+
+      render();
+    })();
 
   // ══════════════════════════════════════════════════════════════════
   //  MODE 3: Legacy single-slot token  (?t=<base64>)
