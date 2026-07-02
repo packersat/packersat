@@ -1769,8 +1769,7 @@
 
     }
 
-     */
-    @media (prefers-reduced-motion: no-preference) {
+        @media (prefers-reduced-motion: no-preference) {
       @keyframes psat-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
       #main-content > .card,
       #main-content > .welcome-banner,
@@ -7106,7 +7105,7 @@ Good luck!`,
       getDocs(query(collection(db,'scores'), where('studentId','==',studentId))),
       getDocs(collection(db,'sessions')),
       getDocs(query(collection(db,'assignments'), where('studentId','==',studentId))),
-      getDocs(query(collection(db,'sessionLogs'), where('studentId','==',studentId))),
+      getDocs(collection(db,'sessionLogs')),
       getDocs(query(collection(db,'practiceSessions'), where('studentId','==',studentId))),
       getDocs(query(collection(db,'actScores'), where('studentId','==',studentId))),
     ]);
@@ -7115,7 +7114,7 @@ Good luck!`,
     const actScores = actSnap.docs.map(d=>d.data()).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
     const sessions = sessSnap.docs.map(d=>({id:d.id,...d.data()})).filter(d=>d.studentId===studentId||((d.studentIds||[]).includes(studentId)));
     const assigns  = assignSnap.docs.map(d=>d.data());
-    const logs     = logSnap.docs.map(d=>d.data()).sort((a,b)=>b.date.localeCompare(a.date));
+    const logs     = logSnap.docs.map(d=>d.data()).filter(d=>d.studentId===studentId||(d.studentIds&&d.studentIds.includes(studentId))).sort((a,b)=>b.date.localeCompare(a.date));
     const pracSessions = pracSnap.docs.map(d=>d.data()).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
     const tutorName = allUsers[student.tutorId]?.name || CU.name || 'Tutor';
     const today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
