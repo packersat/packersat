@@ -1495,7 +1495,231 @@
     .mobile-nav-bar { background: rgba(255,253,247,0.97); border-top: 1px solid var(--rule); }
     .hamburger-btn span { background: var(--ink-3); }
 
-    /* staggered entrance for dashboard content (cosmetic) */
+    /* ── MOBILE REDESIGN LAYER — iOS native app aesthetic ── */
+    @media (max-width: 768px) {
+
+      /* ─ Global: paper background, no horizontal overflow ─ */
+      #portal-screen.active { overflow-x: hidden; }
+
+      /* ─ Login: hero top + frosted card bottom ─ */
+      #login-screen .login-editorial { display: none !important; }
+      #login-screen {
+        min-height: 100dvh;
+        background:
+          radial-gradient(55% 50% at 75% 0%, rgba(163,22,33,0.32), transparent 55%),
+          radial-gradient(45% 50% at 0% 100%, rgba(163,22,33,0.18), transparent 65%),
+          linear-gradient(170deg, #f8f2e5, #efe8d5 55%, #e8d4c4 100%) !important;
+        display: flex !important; flex-direction: column;
+        justify-content: flex-end; padding: 0 !important;
+      }
+      #login-screen .login-right {
+        background: rgba(255,253,247,0.95) !important;
+        border-top-left-radius: 28px; border-top-right-radius: 28px;
+        border: 1px solid rgba(26,23,21,0.08); border-bottom: none;
+        padding: 28px 22px calc(44px + env(safe-area-inset-bottom,0px)) !important;
+        box-shadow: 0 -10px 40px rgba(26,23,21,0.10);
+      }
+      #login-screen .login-right .num { display: none; }
+      #login-screen .login-right h2 {
+        font-family: 'Fraunces', serif !important; font-size: 1.7rem !important;
+        font-weight: 400 !important; letter-spacing: -0.015em !important;
+        margin-bottom: 1.4rem !important; color: var(--ink) !important;
+      }
+      #login-screen .login-form .login-btn-main {
+        border-radius: 14px !important; font-family: 'Fraunces', serif !important;
+        font-size: 1rem !important; padding: 1rem !important;
+      }
+      #login-screen .login-form input {
+        border-radius: 12px !important; padding: 0.88rem 1rem !important;
+        font-size: 1rem !important; border: 1px solid var(--rule) !important;
+        background: rgba(26,23,21,0.04) !important; color: var(--ink) !important;
+      }
+      #login-screen .login-form input:focus { border-color: var(--crimson) !important; }
+      /* hero text above the card */
+      #login-screen::before {
+        content: 'Packer · SAT';
+        position: absolute; top: calc(max(14vh, 60px)); left: 0; right: 0;
+        text-align: center;
+        font-family: 'Fraunces', serif; font-weight: 360;
+        font-variation-settings: "SOFT" 30;
+        font-size: clamp(42px, 12vw, 56px);
+        letter-spacing: -0.025em; line-height: 1; color: var(--ink);
+        pointer-events: none;
+      }
+
+      /* ─ Top nav ─ */
+      .portal-nav { height: 52px !important; padding: 0 14px !important; }
+      .portal-nav-logo {
+        font-family: 'Fraunces', serif !important; font-size: 1.1rem !important;
+        font-weight: 500 !important; letter-spacing: -0.01em !important;
+      }
+
+      /* ─ Content area ─ */
+      .main-content { padding: 0 0 calc(5.5rem + env(safe-area-inset-bottom,0px)) 0 !important; background: var(--paper) !important; }
+
+      /* ─ Page header ─ */
+      .page-header { padding: 0 16px !important; margin-bottom: 1rem !important; }
+      .page-header h2 {
+        font-family: 'Fraunces', serif !important; font-size: 1.65rem !important;
+        font-weight: 400 !important; letter-spacing: -0.02em !important;
+        font-variation-settings: "SOFT" 30 !important;
+      }
+      .page-header p { font-size: 0.85rem !important; color: var(--ink-3) !important; margin-top: 0.2rem !important; }
+
+      /* ─ Welcome banner: dark maroon hero card, rounded, padded ─ */
+      .welcome-banner {
+        margin: 12px 14px 0 !important;
+        border-radius: 20px !important; border: none !important;
+        padding: 22px 20px !important;
+        background: linear-gradient(140deg, #6b0f1a, #3a0a12) !important;
+        box-shadow: 0 6px 24px rgba(106,15,26,0.28) !important;
+      }
+      .welcome-banner h3 { font-family: 'Fraunces', serif !important; font-size: 1.3rem !important; font-weight: 500 !important; }
+
+      /* ─ Stats: 2×2 rounded card grid ─ */
+      .stats-row {
+        display: grid !important; grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important; padding: 12px 14px !important;
+        background: transparent !important; border: none !important;
+      }
+      .stat-card {
+        background: var(--paper2, #fffdf7) !important; border: 1px solid var(--rule) !important;
+        border-radius: 18px !important; padding: 16px 14px !important;
+        box-shadow: none !important;
+      }
+      .stat-card::before { display: none !important; }
+      .stat-num {
+        font-family: 'Fraunces', serif !important; font-weight: 400 !important;
+        font-size: 2rem !important; letter-spacing: -0.025em !important; line-height: 1 !important;
+        color: var(--ink) !important;
+      }
+      .stat-label {
+        font-family: 'JetBrains Mono', monospace !important; font-size: 0.58rem !important;
+        letter-spacing: 0.14em !important; text-transform: uppercase !important;
+        color: var(--ink-3) !important; margin-top: 6px !important;
+      }
+      .stat-change { font-size: 0.72rem !important; }
+
+      /* ─ Grid layouts: single column ─ */
+      .grid-2, .grid-3 { grid-template-columns: 1fr !important; gap: 10px !important; padding: 0 14px !important; }
+
+      /* ─ Cards: rounded, paper, no horizontal borders ─ */
+      .card {
+        border-radius: 18px !important; background: #fffdf7 !important;
+        border: 1px solid var(--rule) !important; margin: 0 14px !important;
+        box-shadow: none !important;
+        padding: 18px 16px !important;
+      }
+      .card-title {
+        font-family: 'Fraunces', serif !important; font-weight: 400 !important;
+        font-variation-settings: "SOFT" 30 !important; font-size: 1.05rem !important;
+        letter-spacing: -0.01em !important; padding-bottom: 0.7rem !important;
+        border-bottom: 1px solid var(--rule) !important;
+      }
+
+      /* ─ Score rows: rounded pill style ─ */
+      .score-row-item, tr {
+        border-bottom: 1px solid var(--rule-soft, rgba(26,23,21,0.07)) !important;
+      }
+      th { font-size: 0.60rem !important; padding: 8px 12px !important; color: var(--ink-3) !important; }
+      td { font-size: 0.84rem !important; padding: 10px 12px !important; }
+      .score-pill {
+        font-family: 'Fraunces', serif !important; font-weight: 700 !important;
+        font-size: 0.95rem !important; background: var(--crimson) !important;
+        color: #fff !important; border-radius: 10px !important;
+        padding: 4px 10px !important;
+      }
+
+      /* ─ Countdown: rounded card ─ */
+      #student-countdown .countdown-box, .countdown-box {
+        border-radius: 18px !important; margin: 0 14px 10px !important;
+        border: 1px solid rgba(192,24,43,0.28) !important;
+      }
+      .countdown-days { font-family: 'Fraunces', serif !important; font-size: 2.6rem !important; font-weight: 700 !important; }
+
+      /* ─ Tables: scroll container ─ */
+      .table-wrap, .card table { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+      table { min-width: 400px !important; }
+
+      /* ─ Session cards: dark header ─ */
+      .session-card, .session-item {
+        border-radius: 16px !important; overflow: hidden !important;
+        margin: 0 14px 10px !important; border: none !important;
+      }
+
+      /* ─ Bottom tab bar: taller, paper, crimson active ─ */
+      .mobile-nav-bar {
+        height: calc(60px + env(safe-area-inset-bottom,0px)) !important;
+        background: rgba(255,253,247,0.95) !important;
+        border-top: 1px solid var(--rule) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+      }
+      .mobile-nav-btn { font-size: 0.57rem !important; font-weight: 600 !important; letter-spacing: 0.02em !important; padding: 6px 2px 0 !important; gap: 3px !important; }
+      .mobile-nav-btn.active { color: var(--crimson) !important; }
+      .mobile-nav-btn svg { width: 24px !important; height: 24px !important; }
+
+      /* ─ Sidebar drawer: paper, editorial ─ */
+      .sidebar {
+        width: min(76vw,270px) !important; background: var(--paper) !important;
+        border-right: 1px solid var(--rule) !important;
+        box-shadow: 6px 0 24px rgba(26,23,21,0.10) !important;
+        padding-top: 0 !important;
+      }
+      .sidebar-section {
+        font-family: 'JetBrains Mono', monospace !important; font-size: 0.58rem !important;
+        letter-spacing: 0.18em !important; text-transform: uppercase !important;
+        color: var(--crimson) !important; padding: 14px 18px 5px !important;
+      }
+      .sidebar-item {
+        padding: 11px 18px !important; font-size: 0.88rem !important;
+        border-radius: 0 !important; border-left: 2.5px solid transparent !important;
+        transition: background 0.15s !important;
+      }
+      .sidebar-item.active {
+        background: rgba(163,22,33,0.08) !important;
+        border-left-color: var(--crimson) !important; color: var(--ink) !important;
+      }
+
+      /* ─ Modals: bottom sheets ─ */
+      .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
+      .modal {
+        border-radius: 24px 24px 0 0 !important; border-bottom: none !important;
+        max-height: 90dvh !important; overflow-y: auto !important;
+        padding: 14px 20px calc(28px + env(safe-area-inset-bottom,0px)) !important;
+        width: 100% !important; max-width: 480px !important;
+        background: var(--paper2, #fffdf7) !important; color: var(--ink) !important;
+      }
+      .modal::before { content: ''; display: block; width: 38px; height: 4px; background: var(--rule); border-radius: 2px; margin: 0 auto 20px; }
+      .modal h3 { color: var(--ink) !important; }
+      .modal .modal-eyebrow { color: var(--crimson) !important; }
+      .modal .modal-sub { color: var(--ink-3) !important; }
+      .field-label { font-family: 'JetBrains Mono', monospace !important; font-size: 0.65rem !important; letter-spacing: 0.14em !important; text-transform: uppercase !important; }
+      .input-field {
+        background: rgba(26,23,21,0.04) !important; border: 1px solid var(--rule) !important;
+        border-radius: 12px !important; color: var(--ink) !important;
+        padding: 0.88rem 1rem !important; font-size: 1rem !important;
+      }
+      .input-field:focus { border-color: var(--crimson) !important; background: rgba(163,22,33,0.03) !important; }
+      .btn-red { border-radius: 12px !important; padding: 0.8rem 1.2rem !important; }
+      .btn-ghost { border-radius: 12px !important; padding: 0.8rem 1.2rem !important; }
+
+      /* ─ Assignment / resource cards ─ */
+      .assignment-card, .resource-card {
+        border-radius: 16px !important; margin: 0 14px 10px !important;
+        border: 1px solid var(--rule) !important;
+      }
+
+      /* ─ Form rows ─ */
+      .form-row { grid-template-columns: 1fr !important; }
+
+      /* ─ Section wrappers: spacing ─ */
+      #main-content > * { margin-bottom: 0 !important; }
+      #main-content > * + * { margin-top: 10px !important; }
+
+    }
+
+     */
     @media (prefers-reduced-motion: no-preference) {
       @keyframes psat-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
       #main-content > .card,
@@ -2722,10 +2946,7 @@
                 <textarea class="input-field" id="sp-note" rows="3" placeholder="I'd like to schedule our next tutoring session. Please click on a time that works for you:" oninput="updateSchedulePreview()" style="resize:vertical;font-family:inherit;line-height:1.6"></textarea>
               </div>
 
-              <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
-                <button class="btn-red" onclick="sendSchedulePicker()" id="sp-send-btn">Send Schedule Picker</button>
-                <button class="btn-ghost" onclick="copyScheduleLink()" id="sp-link-btn" style="font-size:0.85rem">🔗 Copy Schedule Link</button>
-              </div>
+              <button class="btn-red" onclick="sendSchedulePicker()" id="sp-send-btn">Send Schedule Picker</button>
               <div class="form-msg" id="sp-msg" style="margin-top:0.6rem"></div>
             </div>
 
@@ -6372,39 +6593,44 @@ Good luck!`,
 
   function buildSchedulePickerEmailHTML(studentName, slots, note, studentId, isPreview) {
     const baseUrl  = 'https://www.packersat.org';
+    const stuEmail = (studentId && allUsers && allUsers[studentId]) ? (allUsers[studentId].email || '') : '';
+    const location = document.getElementById('sp-location')?.value?.trim() || 'Packer Collegiate Institute';
     const slotButtons = slots.length
       ? slots.map((s, i) => {
-          const label    = formatSlotDisplay(s.date, s.time);
-          const token    = btoa(JSON.stringify({ studentId, date: s.date, time: s.time, idx: i }));
-          const href     = isPreview ? '#' : `${baseUrl}/confirm.html?t=${encodeURIComponent(token)}`;
+          const label = formatSlotDisplay(s.date, s.time);
+          const token = btoa(JSON.stringify({ studentId, studentEmail: stuEmail, studentName, date: s.date, time: s.time, location, idx: i }));
+          const href  = isPreview ? '#' : `${baseUrl}/confirm.html?t=${encodeURIComponent(token)}`;
           return `
             <a href="${href}" style="display:block;text-decoration:none;margin-bottom:0.6rem" ${isPreview ? 'onclick="return false"' : ''}>
-              <div style="border:1px solid rgba(192,24,43,0.4);border-radius:8px;padding:0.9rem 1.2rem;background:rgba(192,24,43,0.08);cursor:pointer;transition:all 0.15s">
+              <div style="border:1px solid rgba(192,24,43,0.4);border-radius:8px;padding:0.9rem 1.2rem;background:rgba(192,24,43,0.08)">
                 <div style="display:flex;justify-content:space-between;align-items:center">
                   <div>
                     <div style="font-size:0.88rem;font-weight:600;color:#1a1715">${label.split(' at ')[0]}</div>
                     <div style="font-size:0.82rem;color:#9a7b1f;margin-top:0.15rem">${label.includes(' at ') ? label.split(' at ').slice(1).join(' at ') : ''}</div>
                   </div>
-                  <div style="background:#C0182B;color:#fff;font-size:0.72rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:20px;flex-shrink:0;margin-left:1rem">Select</div>
+                  <div style="background:#C0182B;color:#fff;font-size:0.72rem;font-weight:700;padding:0.3rem 0.7rem;border-radius:4px">Confirm</div>
                 </div>
               </div>
             </a>`;
         }).join('')
       : '<div style="color:rgba(250,250,248,0.3);font-size:0.85rem;font-style:italic">No time slots added yet.</div>';
 
+    const noneLink = `<p style="margin:14px 0 0;text-align:center"><a href="${isPreview ? '#' : (baseUrl+'/confirm.html?t='+encodeURIComponent(btoa(JSON.stringify({studentId,studentEmail:stuEmail,studentName,date:slots[0]?.date||'',time:slots[0]?.time||'',location,idx:0})))+'&mode=request')}" style="color:#C8A96E;font-size:12px;font-family:Arial,sans-serif;text-decoration:underline" ${isPreview ? 'onclick="return false"' : ''}>None of these work &mdash; request a different time</a></p>`;
+
     return `
       <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;font-family:'Helvetica Neue',Arial,sans-serif">
-        <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:28px 32px;border-radius:8px 8px 0 0;text-align:center">
+        <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:28px 32px;border-radius:8px 8px 0 0">
           <div style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</div>
           <div style="font-size:11px;color:rgba(250,250,248,0.7);letter-spacing:0.1em;text-transform:uppercase;margin-top:6px">Session Scheduling</div>
         </td></tr>
         <tr><td style="background:#2A0A10;padding:32px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
           <p style="margin:0 0 12px;color:#FAFAF8;font-size:15px;line-height:1.6">Hi <strong>${studentName}</strong>,</p>
-          <p style="margin:0 0 20px;color:rgba(250,250,248,0.75);font-size:14px;line-height:1.7">${note || "I'd like to schedule our next tutoring session. Please click on a time that works for you:"}</p>
+          <p style="margin:0 0 20px;color:rgba(250,250,248,0.75);font-size:14px;line-height:1.7">${note || "I'd like to schedule our next SAT tutoring session. Please pick one of the times below:"}</p>
           <div style="margin-bottom:20px">${slotButtons}</div>
-          <p style="margin:0;color:rgba(250,250,248,0.4);font-size:12px;line-height:1.6">Once you select a time, your session will be confirmed automatically and you'll receive a calendar invite.</p>
+          ${noneLink}
+          <p style="margin:14px 0 0;color:rgba(250,250,248,0.4);font-size:12px;line-height:1.6">Once you select a time, the session will be confirmed automatically.</p>
         </td></tr>
-        <tr><td style="background:#1A0508;padding:16px 32px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
+        <tr><td style="background:#1A0508;padding:16px 32px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none">
           <p style="margin:0;color:rgba(250,250,248,0.2);font-size:11px">Packer SAT Tutoring &middot; packersat.org</p>
         </td></tr>
       </table>`;
