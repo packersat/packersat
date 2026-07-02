@@ -1498,178 +1498,221 @@
     /* ── MOBILE REDESIGN LAYER — iOS native app aesthetic ── */
     @media (max-width: 768px) {
 
-      /* ─ Global: paper background, no horizontal overflow ─ */
-      #portal-screen.active { overflow-x: hidden; }
+      /* ─ Global shell ─ */
+      #portal-screen.active {
+        overflow-x: hidden;
+        background: var(--paper, #f4ecd9) !important;
+      }
+      .portal-body {
+        background: var(--paper, #f4ecd9) !important;
+        min-height: unset !important;
+      }
+      .main-content {
+        padding: 0 0 calc(5.5rem + env(safe-area-inset-bottom,0px)) 0 !important;
+        background: var(--paper, #f4ecd9) !important;
+        overflow-y: auto !important;
+      }
 
-      /* ─ Login: hero top + frosted card bottom ─ */
-      #login-screen .login-editorial { display: none !important; }
+      /* ─ Login: paper hero + frosted card ─ */
       #login-screen {
-        min-height: 100dvh;
+        min-height: 100dvh !important;
         background:
-          radial-gradient(55% 50% at 75% 0%, rgba(163,22,33,0.32), transparent 55%),
+          radial-gradient(55% 50% at 75% 0%, rgba(163,22,33,0.30), transparent 55%),
           radial-gradient(45% 50% at 0% 100%, rgba(163,22,33,0.18), transparent 65%),
           linear-gradient(170deg, #f8f2e5, #efe8d5 55%, #e8d4c4 100%) !important;
-        display: flex !important; flex-direction: column;
-        justify-content: flex-end; padding: 0 !important;
+        display: flex !important; flex-direction: column !important;
+        justify-content: flex-end !important; padding: 0 !important;
+        position: relative !important;
       }
-      #login-screen .login-right {
-        background: rgba(255,253,247,0.95) !important;
-        border-top-left-radius: 28px; border-top-right-radius: 28px;
-        border: 1px solid rgba(26,23,21,0.08); border-bottom: none;
-        padding: 28px 22px calc(44px + env(safe-area-inset-bottom,0px)) !important;
-        box-shadow: 0 -10px 40px rgba(26,23,21,0.10);
-      }
-      #login-screen .login-right .num { display: none; }
-      #login-screen .login-right h2 {
-        font-family: 'Fraunces', serif !important; font-size: 1.7rem !important;
-        font-weight: 400 !important; letter-spacing: -0.015em !important;
-        margin-bottom: 1.4rem !important; color: var(--ink) !important;
-      }
-      #login-screen .login-form .login-btn-main {
-        border-radius: 14px !important; font-family: 'Fraunces', serif !important;
-        font-size: 1rem !important; padding: 1rem !important;
-      }
-      #login-screen .login-form input {
-        border-radius: 12px !important; padding: 0.88rem 1rem !important;
-        font-size: 1rem !important; border: 1px solid var(--rule) !important;
-        background: rgba(26,23,21,0.04) !important; color: var(--ink) !important;
-      }
-      #login-screen .login-form input:focus { border-color: var(--crimson) !important; }
-      /* hero text above the card */
       #login-screen::before {
         content: 'Packer · SAT';
-        position: absolute; top: calc(max(14vh, 60px)); left: 0; right: 0;
+        position: absolute; top: calc(max(12vh, 52px)); left: 0; right: 0;
         text-align: center;
         font-family: 'Fraunces', serif; font-weight: 360;
         font-variation-settings: "SOFT" 30;
-        font-size: clamp(42px, 12vw, 56px);
-        letter-spacing: -0.025em; line-height: 1; color: var(--ink);
-        pointer-events: none;
+        font-size: clamp(40px, 11vw, 54px);
+        letter-spacing: -0.025em; line-height: 1; color: var(--ink, #1a1715);
+        pointer-events: none; z-index: 1;
       }
+      #login-screen .login-editorial { display: none !important; }
+      #login-screen .login-right {
+        background: rgba(255,253,247,0.97) !important;
+        border-top-left-radius: 28px !important; border-top-right-radius: 28px !important;
+        border: 1px solid rgba(26,23,21,0.08) !important; border-bottom: none !important;
+        padding: 28px 22px calc(44px + env(safe-area-inset-bottom,0px)) !important;
+        box-shadow: 0 -10px 40px rgba(26,23,21,0.10) !important;
+        position: relative; z-index: 2;
+      }
+      #login-screen .login-right .num { display: none !important; }
+      #login-screen .login-right h2 {
+        font-family: 'Fraunces', serif !important; font-size: 1.65rem !important;
+        font-weight: 400 !important; letter-spacing: -0.015em !important;
+        margin-bottom: 1.3rem !important; color: var(--ink, #1a1715) !important;
+      }
+      #login-screen .login-form .login-btn-main {
+        border-radius: 14px !important; font-size: 1rem !important; padding: 1rem !important;
+      }
+      #login-screen .login-form input {
+        border-radius: 12px !important; padding: 0.88rem 1rem !important;
+        font-size: 1rem !important; border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
+        background: rgba(26,23,21,0.04) !important; color: var(--ink, #1a1715) !important;
+      }
+      #login-screen .login-form input:focus { border-color: var(--crimson, #a31621) !important; }
+      .ob-bar { background: linear-gradient(90deg, #a31621, #c8a96e) !important; }
 
-      /* ─ Top nav ─ */
-      .portal-nav { height: 52px !important; padding: 0 14px !important; }
+      /* ─ Portal nav: frosted glass topbar ─ */
+      .portal-nav {
+        height: 52px !important; padding: 0 14px !important;
+        background: rgba(244,236,217,0.92) !important;
+        backdrop-filter: blur(20px) saturate(130%) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
+        border-bottom: 1px solid rgba(26,23,21,0.08) !important;
+        box-shadow: none !important;
+        position: sticky !important; top: 0 !important; z-index: 50 !important;
+      }
       .portal-nav-logo {
         font-family: 'Fraunces', serif !important; font-size: 1.1rem !important;
         font-weight: 500 !important; letter-spacing: -0.01em !important;
+        color: var(--ink, #1a1715) !important;
       }
+      .hamburger-btn { color: var(--ink-2, #4a423a) !important; }
 
-      /* ─ Content area ─ */
-      .main-content { padding: 0 0 calc(5.5rem + env(safe-area-inset-bottom,0px)) 0 !important; background: var(--paper) !important; }
+      /* ─ Page content: top spacing from sticky nav ─ */
+      .page { padding-top: 4px !important; }
 
       /* ─ Page header ─ */
-      .page-header { padding: 0 16px !important; margin-bottom: 1rem !important; }
+      .page-header {
+        padding: 16px 16px 0 !important; margin-bottom: 1rem !important;
+      }
       .page-header h2 {
         font-family: 'Fraunces', serif !important; font-size: 1.65rem !important;
         font-weight: 400 !important; letter-spacing: -0.02em !important;
         font-variation-settings: "SOFT" 30 !important;
+        color: var(--ink, #1a1715) !important;
       }
-      .page-header p { font-size: 0.85rem !important; color: var(--ink-3) !important; margin-top: 0.2rem !important; }
+      .page-header p {
+        font-size: 0.85rem !important; color: var(--ink-3, #6b6258) !important;
+        margin-top: 0.2rem !important;
+      }
 
-      /* ─ Welcome banner: dark maroon hero card, rounded, padded ─ */
+      /* ─ Welcome banner: dark maroon rounded card ─ */
       .welcome-banner {
         margin: 12px 14px 0 !important;
         border-radius: 20px !important; border: none !important;
         padding: 22px 20px !important;
         background: linear-gradient(140deg, #6b0f1a, #3a0a12) !important;
         box-shadow: 0 6px 24px rgba(106,15,26,0.28) !important;
+        position: relative !important; overflow: hidden !important;
       }
-      .welcome-banner h3 { font-family: 'Fraunces', serif !important; font-size: 1.3rem !important; font-weight: 500 !important; }
+      .welcome-banner h3 {
+        font-family: 'Fraunces', serif !important; font-size: 1.3rem !important;
+        font-weight: 500 !important; color: #fafaf8 !important;
+      }
+      .welcome-banner p { color: rgba(250,250,248,0.65) !important; font-size: 0.88rem !important; }
 
       /* ─ Stats: 2×2 rounded card grid ─ */
       .stats-row {
         display: grid !important; grid-template-columns: 1fr 1fr !important;
         gap: 10px !important; padding: 12px 14px !important;
         background: transparent !important; border: none !important;
+        margin-bottom: 0 !important;
       }
       .stat-card {
-        background: var(--paper2, #fffdf7) !important; border: 1px solid var(--rule) !important;
+        background: #fffdf7 !important; border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
         border-radius: 18px !important; padding: 16px 14px !important;
-        box-shadow: none !important;
+        box-shadow: none !important; position: relative !important;
       }
       .stat-card::before { display: none !important; }
       .stat-num {
         font-family: 'Fraunces', serif !important; font-weight: 400 !important;
-        font-size: 2rem !important; letter-spacing: -0.025em !important; line-height: 1 !important;
-        color: var(--ink) !important;
+        font-size: 2rem !important; letter-spacing: -0.025em !important;
+        line-height: 1 !important; color: var(--ink, #1a1715) !important;
       }
       .stat-label {
         font-family: 'JetBrains Mono', monospace !important; font-size: 0.58rem !important;
         letter-spacing: 0.14em !important; text-transform: uppercase !important;
-        color: var(--ink-3) !important; margin-top: 6px !important;
+        color: var(--ink-3, #6b6258) !important; margin-top: 6px !important;
       }
       .stat-change { font-size: 0.72rem !important; }
 
       /* ─ Grid layouts: single column ─ */
-      .grid-2, .grid-3 { grid-template-columns: 1fr !important; gap: 10px !important; padding: 0 14px !important; }
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr !important; gap: 10px !important;
+        padding: 0 14px !important; margin-bottom: 10px !important;
+      }
 
-      /* ─ Cards: rounded, paper, no horizontal borders ─ */
+      /* ─ Cards: rounded, paper ─ */
       .card {
         border-radius: 18px !important; background: #fffdf7 !important;
-        border: 1px solid var(--rule) !important; margin: 0 14px !important;
-        box-shadow: none !important;
+        border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
+        margin: 0 14px !important; box-shadow: none !important;
         padding: 18px 16px !important;
       }
       .card-title {
         font-family: 'Fraunces', serif !important; font-weight: 400 !important;
         font-variation-settings: "SOFT" 30 !important; font-size: 1.05rem !important;
         letter-spacing: -0.01em !important; padding-bottom: 0.7rem !important;
-        border-bottom: 1px solid var(--rule) !important;
+        border-bottom: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
+        color: var(--ink, #1a1715) !important;
       }
 
-      /* ─ Score rows: rounded pill style ─ */
-      .score-row-item, tr {
-        border-bottom: 1px solid var(--rule-soft, rgba(26,23,21,0.07)) !important;
-      }
-      th { font-size: 0.60rem !important; padding: 8px 12px !important; color: var(--ink-3) !important; }
+      /* ─ Score rows ─ */
+      th { font-size: 0.60rem !important; padding: 8px 12px !important; color: var(--ink-3, #6b6258) !important; }
       td { font-size: 0.84rem !important; padding: 10px 12px !important; }
       .score-pill {
         font-family: 'Fraunces', serif !important; font-weight: 700 !important;
-        font-size: 0.95rem !important; background: var(--crimson) !important;
+        font-size: 0.9rem !important; background: var(--crimson, #a31621) !important;
         color: #fff !important; border-radius: 10px !important;
-        padding: 4px 10px !important;
+        padding: 3px 9px !important;
       }
 
-      /* ─ Countdown: rounded card ─ */
-      #student-countdown .countdown-box, .countdown-box {
+      /* ─ Tables ─ */
+      .table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+      table { min-width: 400px !important; }
+
+      /* ─ Countdown ─ */
+      .countdown-box {
         border-radius: 18px !important; margin: 0 14px 10px !important;
         border: 1px solid rgba(192,24,43,0.28) !important;
       }
-      .countdown-days { font-family: 'Fraunces', serif !important; font-size: 2.6rem !important; font-weight: 700 !important; }
-
-      /* ─ Tables: scroll container ─ */
-      .table-wrap, .card table { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
-      table { min-width: 400px !important; }
-
-      /* ─ Session cards: dark header ─ */
-      .session-card, .session-item {
-        border-radius: 16px !important; overflow: hidden !important;
-        margin: 0 14px 10px !important; border: none !important;
+      .countdown-days {
+        font-family: 'Fraunces', serif !important; font-size: 2.4rem !important;
+        font-weight: 700 !important;
       }
 
-      /* ─ Bottom tab bar: taller, paper, crimson active ─ */
+      /* ─ Assignment & resource cards ─ */
+      .assignment-card, .resource-card {
+        border-radius: 16px !important; margin: 0 14px 10px !important;
+        border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
+      }
+
+      /* ─ Bottom tab bar ─ */
       .mobile-nav-bar {
         height: calc(60px + env(safe-area-inset-bottom,0px)) !important;
-        background: rgba(255,253,247,0.95) !important;
-        border-top: 1px solid var(--rule) !important;
+        background: rgba(255,253,247,0.97) !important;
+        border-top: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
       }
-      .mobile-nav-btn { font-size: 0.57rem !important; font-weight: 600 !important; letter-spacing: 0.02em !important; padding: 6px 2px 0 !important; gap: 3px !important; }
-      .mobile-nav-btn.active { color: var(--crimson) !important; }
-      .mobile-nav-btn svg { width: 24px !important; height: 24px !important; }
+      .mobile-nav-btn {
+        font-size: 0.57rem !important; font-weight: 600 !important;
+        letter-spacing: 0.02em !important; padding: 6px 2px 0 !important;
+        gap: 3px !important; color: var(--ink-3, #6b6258) !important;
+      }
+      .mobile-nav-btn.active { color: var(--crimson, #a31621) !important; }
+      .mobile-nav-btn svg { width: 24px !important; height: 24px !important; stroke-width: 1.8 !important; }
 
       /* ─ Sidebar drawer: paper, editorial ─ */
       .sidebar {
-        width: min(76vw,270px) !important; background: var(--paper) !important;
-        border-right: 1px solid var(--rule) !important;
+        width: min(76vw, 270px) !important; background: var(--paper, #f4ecd9) !important;
+        border-right: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
         box-shadow: 6px 0 24px rgba(26,23,21,0.10) !important;
         padding-top: 0 !important;
       }
       .sidebar-section {
         font-family: 'JetBrains Mono', monospace !important; font-size: 0.58rem !important;
         letter-spacing: 0.18em !important; text-transform: uppercase !important;
-        color: var(--crimson) !important; padding: 14px 18px 5px !important;
+        color: var(--crimson, #a31621) !important; padding: 14px 18px 5px !important;
       }
       .sidebar-item {
         padding: 11px 18px !important; font-size: 0.88rem !important;
@@ -1678,7 +1721,7 @@
       }
       .sidebar-item.active {
         background: rgba(163,22,33,0.08) !important;
-        border-left-color: var(--crimson) !important; color: var(--ink) !important;
+        border-left-color: var(--crimson, #a31621) !important; color: var(--ink, #1a1715) !important;
       }
 
       /* ─ Modals: bottom sheets ─ */
@@ -1687,35 +1730,42 @@
         border-radius: 24px 24px 0 0 !important; border-bottom: none !important;
         max-height: 90dvh !important; overflow-y: auto !important;
         padding: 14px 20px calc(28px + env(safe-area-inset-bottom,0px)) !important;
-        width: 100% !important; max-width: 480px !important;
-        background: var(--paper2, #fffdf7) !important; color: var(--ink) !important;
+        width: 100% !important; max-width: 100% !important;
+        background: #fffdf7 !important; color: var(--ink, #1a1715) !important;
       }
-      .modal::before { content: ''; display: block; width: 38px; height: 4px; background: var(--rule); border-radius: 2px; margin: 0 auto 20px; }
-      .modal h3 { color: var(--ink) !important; }
-      .modal .modal-eyebrow { color: var(--crimson) !important; }
-      .modal .modal-sub { color: var(--ink-3) !important; }
-      .field-label { font-family: 'JetBrains Mono', monospace !important; font-size: 0.65rem !important; letter-spacing: 0.14em !important; text-transform: uppercase !important; }
+      .modal::before {
+        content: ''; display: block; width: 38px; height: 4px;
+        background: var(--rule, rgba(26,23,21,0.14)); border-radius: 2px; margin: 0 auto 20px;
+      }
+      .modal h3 { color: var(--ink, #1a1715) !important; }
+      .modal .modal-eyebrow { color: var(--crimson, #a31621) !important; }
+      .modal .modal-sub { color: var(--ink-3, #6b6258) !important; }
+
+      /* ─ Form fields ─ */
+      .field-label {
+        font-family: 'JetBrains Mono', monospace !important; font-size: 0.65rem !important;
+        letter-spacing: 0.14em !important; text-transform: uppercase !important;
+        color: var(--ink-3, #6b6258) !important;
+      }
       .input-field {
-        background: rgba(26,23,21,0.04) !important; border: 1px solid var(--rule) !important;
-        border-radius: 12px !important; color: var(--ink) !important;
+        background: rgba(26,23,21,0.04) !important;
+        border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
+        border-radius: 12px !important; color: var(--ink, #1a1715) !important;
         padding: 0.88rem 1rem !important; font-size: 1rem !important;
       }
-      .input-field:focus { border-color: var(--crimson) !important; background: rgba(163,22,33,0.03) !important; }
+      .input-field:focus {
+        border-color: var(--crimson, #a31621) !important;
+        background: rgba(163,22,33,0.03) !important;
+      }
+      .form-row { grid-template-columns: 1fr !important; }
+      .form-row.three { grid-template-columns: 1fr !important; }
+
+      /* ─ Buttons ─ */
       .btn-red { border-radius: 12px !important; padding: 0.8rem 1.2rem !important; }
       .btn-ghost { border-radius: 12px !important; padding: 0.8rem 1.2rem !important; }
 
-      /* ─ Assignment / resource cards ─ */
-      .assignment-card, .resource-card {
-        border-radius: 16px !important; margin: 0 14px 10px !important;
-        border: 1px solid var(--rule) !important;
-      }
-
-      /* ─ Form rows ─ */
-      .form-row { grid-template-columns: 1fr !important; }
-
-      /* ─ Section wrappers: spacing ─ */
-      #main-content > * { margin-bottom: 0 !important; }
-      #main-content > * + * { margin-top: 10px !important; }
+      /* ─ Portal body padding ─ */
+      .portal-body { padding-bottom: 0 !important; }
 
     }
 
@@ -6593,44 +6643,42 @@ Good luck!`,
 
   function buildSchedulePickerEmailHTML(studentName, slots, note, studentId, isPreview) {
     const baseUrl  = 'https://www.packersat.org';
-    const stuEmail = (studentId && allUsers && allUsers[studentId]) ? (allUsers[studentId].email || '') : '';
-    const location = document.getElementById('sp-location')?.value?.trim() || 'Packer Collegiate Institute';
     const slotButtons = slots.length
       ? slots.map((s, i) => {
-          const label = formatSlotDisplay(s.date, s.time);
-          const token = btoa(JSON.stringify({ studentId, studentEmail: stuEmail, studentName, date: s.date, time: s.time, location, idx: i }));
-          const href  = isPreview ? '#' : `${baseUrl}/confirm.html?t=${encodeURIComponent(token)}`;
+          const label    = formatSlotDisplay(s.date, s.time);
+          const stuEmail = (studentId && allUsers && allUsers[studentId]) ? (allUsers[studentId].email || '') : '';
+          const stuLoc   = document.getElementById('sp-location')?.value?.trim() || 'Packer Collegiate Institute';
+          const token    = btoa(JSON.stringify({ studentId, studentEmail: stuEmail, studentName, date: s.date, time: s.time, location: stuLoc, idx: i }));
+          const href     = isPreview ? '#' : `${baseUrl}/confirm.html?t=${encodeURIComponent(token)}`;
           return `
             <a href="${href}" style="display:block;text-decoration:none;margin-bottom:0.6rem" ${isPreview ? 'onclick="return false"' : ''}>
-              <div style="border:1px solid rgba(192,24,43,0.4);border-radius:8px;padding:0.9rem 1.2rem;background:rgba(192,24,43,0.08)">
+              <div style="border:1px solid rgba(192,24,43,0.4);border-radius:8px;padding:0.9rem 1.2rem;background:rgba(192,24,43,0.08);cursor:pointer;transition:all 0.15s">
                 <div style="display:flex;justify-content:space-between;align-items:center">
                   <div>
                     <div style="font-size:0.88rem;font-weight:600;color:#1a1715">${label.split(' at ')[0]}</div>
                     <div style="font-size:0.82rem;color:#9a7b1f;margin-top:0.15rem">${label.includes(' at ') ? label.split(' at ').slice(1).join(' at ') : ''}</div>
                   </div>
-                  <div style="background:#C0182B;color:#fff;font-size:0.72rem;font-weight:700;padding:0.3rem 0.7rem;border-radius:4px">Confirm</div>
+                  <div style="background:#C0182B;color:#fff;font-size:0.72rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:20px;flex-shrink:0;margin-left:1rem">Select</div>
                 </div>
               </div>
             </a>`;
         }).join('')
       : '<div style="color:rgba(250,250,248,0.3);font-size:0.85rem;font-style:italic">No time slots added yet.</div>';
 
-    const noneLink = `<p style="margin:14px 0 0;text-align:center"><a href="${isPreview ? '#' : (baseUrl+'/confirm.html?t='+encodeURIComponent(btoa(JSON.stringify({studentId,studentEmail:stuEmail,studentName,date:slots[0]?.date||'',time:slots[0]?.time||'',location,idx:0})))+'&mode=request')}" style="color:#C8A96E;font-size:12px;font-family:Arial,sans-serif;text-decoration:underline" ${isPreview ? 'onclick="return false"' : ''}>None of these work &mdash; request a different time</a></p>`;
-
     return `
       <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;font-family:'Helvetica Neue',Arial,sans-serif">
-        <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:28px 32px;border-radius:8px 8px 0 0">
+        <tr><td style="background:linear-gradient(135deg,#6B0F1A,#C0182B);padding:28px 32px;border-radius:8px 8px 0 0;text-align:center">
           <div style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#FAFAF8">Packer <span style="color:#C8A96E">SAT</span> Prep</div>
           <div style="font-size:11px;color:rgba(250,250,248,0.7);letter-spacing:0.1em;text-transform:uppercase;margin-top:6px">Session Scheduling</div>
         </td></tr>
         <tr><td style="background:#2A0A10;padding:32px;border-left:1px solid rgba(192,24,43,0.2);border-right:1px solid rgba(192,24,43,0.2)">
           <p style="margin:0 0 12px;color:#FAFAF8;font-size:15px;line-height:1.6">Hi <strong>${studentName}</strong>,</p>
-          <p style="margin:0 0 20px;color:rgba(250,250,248,0.75);font-size:14px;line-height:1.7">${note || "I'd like to schedule our next SAT tutoring session. Please pick one of the times below:"}</p>
+          <p style="margin:0 0 20px;color:rgba(250,250,248,0.75);font-size:14px;line-height:1.7">${note || "I'd like to schedule our next tutoring session. Please click on a time that works for you:"}</p>
           <div style="margin-bottom:20px">${slotButtons}</div>
-          ${noneLink}
-          <p style="margin:14px 0 0;color:rgba(250,250,248,0.4);font-size:12px;line-height:1.6">Once you select a time, the session will be confirmed automatically.</p>
+          <p style="margin:0;color:rgba(250,250,248,0.4);font-size:12px;line-height:1.6">Once you select a time, your session will be confirmed automatically and you'll receive a calendar invite.</p>
+          <p style="margin:14px 0 0;text-align:center"><a href="${isPreview ? '#' : (baseUrl+'/confirm.html?t='+encodeURIComponent(btoa(JSON.stringify({studentId,studentEmail:(studentId&&allUsers&&allUsers[studentId])?allUsers[studentId].email||'':'',studentName,date:slots[0]?.date||'',time:slots[0]?.time||'',location:document.getElementById('sp-location')?.value?.trim()||'Packer Collegiate Institute',idx:0})))+'&mode=request')}" style="color:#C8A96E;font-size:12px;font-family:Arial,sans-serif;text-decoration:underline" ${isPreview ? 'onclick="return false"' : ''}>None of these work &mdash; request a different time</a></p>
         </td></tr>
-        <tr><td style="background:#1A0508;padding:16px 32px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none">
+        <tr><td style="background:#1A0508;padding:16px 32px;border-radius:0 0 8px 8px;border:1px solid rgba(192,24,43,0.15);border-top:none;text-align:center">
           <p style="margin:0;color:rgba(250,250,248,0.2);font-size:11px">Packer SAT Tutoring &middot; packersat.org</p>
         </td></tr>
       </table>`;
@@ -6719,66 +6767,6 @@ Good luck!`,
     }
     btn.disabled = false;
     btn.textContent = 'Send Schedule Picker';
-  };
-
-  // ── Copy sharable schedule link (no email needed) ─────────────────
-  window.copyScheduleLink = async function() {
-    const btn = document.getElementById('sp-link-btn');
-    const msg = document.getElementById('sp-msg');
-
-    const validSlots = _spSlots.filter(s => s.date && s.time);
-    if (!validSlots.length) { showMsg(msg, 'Please add at least one time slot first.', 'error'); return; }
-
-    // Resolve recipient info (optional for link — can be used without a specific student)
-    const uid      = document.getElementById('sp-student')?.value;
-    const location = document.getElementById('sp-location')?.value?.trim() || 'Packer Collegiate Institute';
-    const note     = document.getElementById('sp-note')?.value?.trim() || '';
-    let toName  = '';
-    let toEmail = '';
-    let toId    = null;
-
-    if (uid === '__custom__') {
-      toEmail = document.getElementById('sp-custom-email')?.value.trim() || '';
-      toName  = document.getElementById('sp-custom-name')?.value.trim() || toEmail;
-    } else if (uid) {
-      const student = allUsers[uid];
-      toEmail = student?.email || '';
-      toName  = student?.name || student?.email || '';
-      toId    = uid;
-    }
-
-    btn.disabled = true;
-    btn.textContent = '⏳ Generating…';
-
-    try {
-      // Create a picker doc in Firestore — same as email flow
-      const pickerRef = await addDoc(collection(db, 'schedulePickers'), {
-        studentId:    toId,
-        studentName:  toName,
-        studentEmail: toEmail,
-        adminId:      CU.uid,
-        slots:        validSlots,
-        location,
-        note,
-        createdAt:    new Date().toISOString(),
-        used:         false,
-        linkOnly:     true,   // flag so we know this was shared as a link
-      });
-
-      // Build the shareable URL — point directly to confirm.html
-      const url = `https://www.packersat.org/confirm.html?p=${pickerRef.id}`;
-
-      // Copy to clipboard
-      await navigator.clipboard.writeText(url);
-      showMsg(msg, '✓ Link copied! Share it with your student — they can pick a slot directly.', 'success');
-      btn.textContent = '✓ Copied!';
-      setTimeout(() => { btn.textContent = '🔗 Copy Schedule Link'; btn.disabled = false; }, 2500);
-    } catch(e) {
-      console.error('copyScheduleLink error:', e);
-      showMsg(msg, 'Failed to generate link: ' + (e?.message || String(e)), 'error');
-      btn.textContent = '🔗 Copy Schedule Link';
-      btn.disabled = false;
-    }
   };
 
   function buildSchedulePickerEmailHTMLWithTokens(studentName, slotsWithTokens, note) {
@@ -10185,8 +10173,6 @@ Good luck!`,
   function convertWaitlistToUser(id)   { window.convertWaitlistToUser && window.convertWaitlistToUser(id); }
   function removeFromWaitlist(id)      { window.removeFromWaitlist && window.removeFromWaitlist(id); }
   function addToWaitlist()             { window.addToWaitlist && window.addToWaitlist(); }
-  function openEditStudent(uid)        { window.openEditStudent && window.openEditStudent(uid); }
-  function saveEditStudent()           { window.saveEditStudent && window.saveEditStudent(); }
   function adminLogACTScore()          { window.adminLogACTScore    && window.adminLogACTScore(); }
   function adminDeleteACTScore(id)     { window.adminDeleteACTScore && window.adminDeleteACTScore(id); }
   function loadAllACTScores()          { window.loadAllACTScores    && window.loadAllACTScores(); }
@@ -10227,7 +10213,6 @@ Good luck!`,
   function updateSlotTime(i,v)         { window.updateSlotTime && window.updateSlotTime(i,v); }
   function updateSchedulePreview()     { window.updateSchedulePreview && window.updateSchedulePreview(); }
   function sendSchedulePicker()        { window.sendSchedulePicker && window.sendSchedulePicker(); }
-  function copyScheduleLink()          { window.copyScheduleLink  && window.copyScheduleLink();  }
   function onSpRecipientChange()       { window.onSpRecipientChange && window.onSpRecipientChange(); }
   function toggleReminders(v)          { window.toggleReminders && window.toggleReminders(v); }
   function toggleAnnouncementPopup(v)  { window.toggleAnnouncementPopup && window.toggleAnnouncementPopup(v); }
