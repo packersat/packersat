@@ -1495,280 +1495,23 @@
     .mobile-nav-bar { background: rgba(255,253,247,0.97); border-top: 1px solid var(--rule); }
     .hamburger-btn span { background: var(--ink-3); }
 
-    /* ── MOBILE REDESIGN LAYER — iOS native app aesthetic ── */
+    /* ── Mobile — minimal layout fixes (design via portal-mobile.html redirect) ── */
     @media (max-width: 768px) {
-
-      /* ─ Global shell ─ */
-      #portal-screen.active {
-        overflow-x: hidden;
-        background: var(--paper, #f4ecd9) !important;
-      }
-      .portal-body {
-        background: var(--paper, #f4ecd9) !important;
-        min-height: unset !important;
-      }
-      .main-content {
-        padding: 0 0 calc(5.5rem + env(safe-area-inset-bottom,0px)) 0 !important;
-        background: var(--paper, #f4ecd9) !important;
-        overflow-y: auto !important;
-      }
-
-      /* ─ Login: paper hero + frosted card ─ */
-      #login-screen {
-        min-height: 100dvh !important;
-        background:
-          radial-gradient(55% 50% at 75% 0%, rgba(163,22,33,0.30), transparent 55%),
-          radial-gradient(45% 50% at 0% 100%, rgba(163,22,33,0.18), transparent 65%),
-          linear-gradient(170deg, #f8f2e5, #efe8d5 55%, #e8d4c4 100%) !important;
-        display: flex !important; flex-direction: column !important;
-        justify-content: flex-end !important; padding: 0 !important;
-        position: relative !important;
-      }
-      #login-screen::before {
-        content: 'Packer · SAT';
-        position: absolute; top: calc(max(12vh, 52px)); left: 0; right: 0;
-        text-align: center;
-        font-family: 'Fraunces', serif; font-weight: 360;
-        font-variation-settings: "SOFT" 30;
-        font-size: clamp(40px, 11vw, 54px);
-        letter-spacing: -0.025em; line-height: 1; color: var(--ink, #1a1715);
-        pointer-events: none; z-index: 1;
-      }
-      #login-screen .login-editorial { display: none !important; }
-      #login-screen .login-right {
-        background: rgba(255,253,247,0.97) !important;
-        border-top-left-radius: 28px !important; border-top-right-radius: 28px !important;
-        border: 1px solid rgba(26,23,21,0.08) !important; border-bottom: none !important;
-        padding: 28px 22px calc(44px + env(safe-area-inset-bottom,0px)) !important;
-        box-shadow: 0 -10px 40px rgba(26,23,21,0.10) !important;
-        position: relative; z-index: 2;
-      }
-      #login-screen .login-right .num { display: none !important; }
-      #login-screen .login-right h2 {
-        font-family: 'Fraunces', serif !important; font-size: 1.65rem !important;
-        font-weight: 400 !important; letter-spacing: -0.015em !important;
-        margin-bottom: 1.3rem !important; color: var(--ink, #1a1715) !important;
-      }
-      #login-screen .login-form .login-btn-main {
-        border-radius: 14px !important; font-size: 1rem !important; padding: 1rem !important;
-      }
-      #login-screen .login-form input {
-        border-radius: 12px !important; padding: 0.88rem 1rem !important;
-        font-size: 1rem !important; border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
-        background: rgba(26,23,21,0.04) !important; color: var(--ink, #1a1715) !important;
-      }
-      #login-screen .login-form input:focus { border-color: var(--crimson, #a31621) !important; }
-      .ob-bar { background: linear-gradient(90deg, #a31621, #c8a96e) !important; }
-
-      /* ─ Portal nav: frosted glass topbar ─ */
-      .portal-nav {
-        height: 52px !important; padding: 0 14px !important;
-        background: rgba(244,236,217,0.92) !important;
-        backdrop-filter: blur(20px) saturate(130%) !important;
-        -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
-        border-bottom: 1px solid rgba(26,23,21,0.08) !important;
-        box-shadow: none !important;
-        position: sticky !important; top: 0 !important; z-index: 50 !important;
-      }
-      .portal-nav-logo {
-        font-family: 'Fraunces', serif !important; font-size: 1.1rem !important;
-        font-weight: 500 !important; letter-spacing: -0.01em !important;
-        color: var(--ink, #1a1715) !important;
-      }
-      .hamburger-btn { color: var(--ink-2, #4a423a) !important; }
-
-      /* ─ Page content: top spacing from sticky nav ─ */
-      .page { padding-top: 4px !important; }
-
-      /* ─ Page header ─ */
-      .page-header {
-        padding: 16px 16px 0 !important; margin-bottom: 1rem !important;
-      }
-      .page-header h2 {
-        font-family: 'Fraunces', serif !important; font-size: 1.65rem !important;
-        font-weight: 400 !important; letter-spacing: -0.02em !important;
-        font-variation-settings: "SOFT" 30 !important;
-        color: var(--ink, #1a1715) !important;
-      }
-      .page-header p {
-        font-size: 0.85rem !important; color: var(--ink-3, #6b6258) !important;
-        margin-top: 0.2rem !important;
-      }
-
-      /* ─ Welcome banner: dark maroon rounded card ─ */
-      .welcome-banner {
-        margin: 12px 14px 0 !important;
-        border-radius: 20px !important; border: none !important;
-        padding: 22px 20px !important;
-        background: linear-gradient(140deg, #6b0f1a, #3a0a12) !important;
-        box-shadow: 0 6px 24px rgba(106,15,26,0.28) !important;
-        position: relative !important; overflow: hidden !important;
-      }
-      .welcome-banner h3 {
-        font-family: 'Fraunces', serif !important; font-size: 1.3rem !important;
-        font-weight: 500 !important; color: #fafaf8 !important;
-      }
-      .welcome-banner p { color: rgba(250,250,248,0.65) !important; font-size: 0.88rem !important; }
-
-      /* ─ Stats: 2×2 rounded card grid ─ */
-      .stats-row {
-        display: grid !important; grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important; padding: 12px 14px !important;
-        background: transparent !important; border: none !important;
-        margin-bottom: 0 !important;
-      }
-      .stat-card {
-        background: #fffdf7 !important; border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
-        border-radius: 18px !important; padding: 16px 14px !important;
-        box-shadow: none !important; position: relative !important;
-      }
-      .stat-card::before { display: none !important; }
-      .stat-num {
-        font-family: 'Fraunces', serif !important; font-weight: 400 !important;
-        font-size: 2rem !important; letter-spacing: -0.025em !important;
-        line-height: 1 !important; color: var(--ink, #1a1715) !important;
-      }
-      .stat-label {
-        font-family: 'JetBrains Mono', monospace !important; font-size: 0.58rem !important;
-        letter-spacing: 0.14em !important; text-transform: uppercase !important;
-        color: var(--ink-3, #6b6258) !important; margin-top: 6px !important;
-      }
-      .stat-change { font-size: 0.72rem !important; }
-
-      /* ─ Grid layouts: single column ─ */
-      .grid-2, .grid-3 {
-        grid-template-columns: 1fr !important; gap: 10px !important;
-        padding: 0 14px !important; margin-bottom: 10px !important;
-      }
-
-      /* ─ Cards: rounded, paper ─ */
-      .card {
-        border-radius: 18px !important; background: #fffdf7 !important;
-        border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
-        margin: 0 14px !important; box-shadow: none !important;
-        padding: 18px 16px !important;
-      }
-      .card-title {
-        font-family: 'Fraunces', serif !important; font-weight: 400 !important;
-        font-variation-settings: "SOFT" 30 !important; font-size: 1.05rem !important;
-        letter-spacing: -0.01em !important; padding-bottom: 0.7rem !important;
-        border-bottom: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
-        color: var(--ink, #1a1715) !important;
-      }
-
-      /* ─ Score rows ─ */
-      th { font-size: 0.60rem !important; padding: 8px 12px !important; color: var(--ink-3, #6b6258) !important; }
-      td { font-size: 0.84rem !important; padding: 10px 12px !important; }
-      .score-pill {
-        font-family: 'Fraunces', serif !important; font-weight: 700 !important;
-        font-size: 0.9rem !important; background: var(--crimson, #a31621) !important;
-        color: #fff !important; border-radius: 10px !important;
-        padding: 3px 9px !important;
-      }
-
-      /* ─ Tables ─ */
-      .table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
-      table { min-width: 400px !important; }
-
-      /* ─ Countdown ─ */
-      .countdown-box {
-        border-radius: 18px !important; margin: 0 14px 10px !important;
-        border: 1px solid rgba(192,24,43,0.28) !important;
-      }
-      .countdown-days {
-        font-family: 'Fraunces', serif !important; font-size: 2.4rem !important;
-        font-weight: 700 !important;
-      }
-
-      /* ─ Assignment & resource cards ─ */
-      .assignment-card, .resource-card {
-        border-radius: 16px !important; margin: 0 14px 10px !important;
-        border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
-      }
-
-      /* ─ Bottom tab bar ─ */
-      .mobile-nav-bar {
-        height: calc(60px + env(safe-area-inset-bottom,0px)) !important;
-        background: rgba(255,253,247,0.97) !important;
-        border-top: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-      }
-      .mobile-nav-btn {
-        font-size: 0.57rem !important; font-weight: 600 !important;
-        letter-spacing: 0.02em !important; padding: 6px 2px 0 !important;
-        gap: 3px !important; color: var(--ink-3, #6b6258) !important;
-      }
-      .mobile-nav-btn.active { color: var(--crimson, #a31621) !important; }
-      .mobile-nav-btn svg { width: 24px !important; height: 24px !important; stroke-width: 1.8 !important; }
-
-      /* ─ Sidebar drawer: paper, editorial ─ */
-      .sidebar {
-        width: min(76vw, 270px) !important; background: var(--paper, #f4ecd9) !important;
-        border-right: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
-        box-shadow: 6px 0 24px rgba(26,23,21,0.10) !important;
-        padding-top: 0 !important;
-      }
-      .sidebar-section {
-        font-family: 'JetBrains Mono', monospace !important; font-size: 0.58rem !important;
-        letter-spacing: 0.18em !important; text-transform: uppercase !important;
-        color: var(--crimson, #a31621) !important; padding: 14px 18px 5px !important;
-      }
-      .sidebar-item {
-        padding: 11px 18px !important; font-size: 0.88rem !important;
-        border-radius: 0 !important; border-left: 2.5px solid transparent !important;
-        transition: background 0.15s !important;
-      }
-      .sidebar-item.active {
-        background: rgba(163,22,33,0.08) !important;
-        border-left-color: var(--crimson, #a31621) !important; color: var(--ink, #1a1715) !important;
-      }
-
-      /* ─ Modals: bottom sheets ─ */
-      .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
-      .modal {
-        border-radius: 24px 24px 0 0 !important; border-bottom: none !important;
-        max-height: 90dvh !important; overflow-y: auto !important;
-        padding: 14px 20px calc(28px + env(safe-area-inset-bottom,0px)) !important;
-        width: 100% !important; max-width: 100% !important;
-        background: #fffdf7 !important; color: var(--ink, #1a1715) !important;
-      }
-      .modal::before {
-        content: ''; display: block; width: 38px; height: 4px;
-        background: var(--rule, rgba(26,23,21,0.14)); border-radius: 2px; margin: 0 auto 20px;
-      }
-      .modal h3 { color: var(--ink, #1a1715) !important; }
-      .modal .modal-eyebrow { color: var(--crimson, #a31621) !important; }
-      .modal .modal-sub { color: var(--ink-3, #6b6258) !important; }
-
-      /* ─ Form fields ─ */
-      .field-label {
-        font-family: 'JetBrains Mono', monospace !important; font-size: 0.65rem !important;
-        letter-spacing: 0.14em !important; text-transform: uppercase !important;
-        color: var(--ink-3, #6b6258) !important;
-      }
-      .input-field {
-        background: rgba(26,23,21,0.04) !important;
-        border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
-        border-radius: 12px !important; color: var(--ink, #1a1715) !important;
-        padding: 0.88rem 1rem !important; font-size: 1rem !important;
-      }
-      .input-field:focus {
-        border-color: var(--crimson, #a31621) !important;
-        background: rgba(163,22,33,0.03) !important;
-      }
+      .sidebar { display: none !important; }
+      .mobile-nav-bar { display: flex !important; }
+      .hamburger-btn { display: flex !important; }
+      .main-content { padding: 1rem 0 calc(5rem + env(safe-area-inset-bottom,0px)) 0; }
+      .portal-nav { padding: 0 1rem; }
+      .page { padding: 0 14px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
       .form-row { grid-template-columns: 1fr !important; }
-      .form-row.three { grid-template-columns: 1fr !important; }
-
-      /* ─ Buttons ─ */
-      .btn-red { border-radius: 12px !important; padding: 0.8rem 1.2rem !important; }
-      .btn-ghost { border-radius: 12px !important; padding: 0.8rem 1.2rem !important; }
-
-      /* ─ Portal body padding ─ */
-      .portal-body { padding-bottom: 0 !important; }
-
+      .modal-overlay { align-items: flex-end; padding: 0; }
+      .modal { border-radius: 24px 24px 0 0; max-height: 90dvh; overflow-y: auto;
+        padding-bottom: calc(28px + env(safe-area-inset-bottom,0px)); width: 100%; }
+      table { font-size: 0.82rem; }
+      th { font-size: 0.65rem; padding: 6px 8px; }
+      td { padding: 8px; }
     }
-
         @media (prefers-reduced-motion: no-preference) {
       @keyframes psat-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
       #main-content > .card,
@@ -2995,7 +2738,10 @@
                 <textarea class="input-field" id="sp-note" rows="3" placeholder="I'd like to schedule our next tutoring session. Please click on a time that works for you:" oninput="updateSchedulePreview()" style="resize:vertical;font-family:inherit;line-height:1.6"></textarea>
               </div>
 
-              <button class="btn-red" onclick="sendSchedulePicker()" id="sp-send-btn">Send Schedule Picker</button>
+              <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">
+                <button class="btn-red" onclick="sendSchedulePicker()" id="sp-send-btn">Send via Email</button>
+                <button class="btn-ghost" onclick="copySchedulePickerLink()" id="sp-copy-btn">Copy Link</button>
+              </div>
               <div class="form-msg" id="sp-msg" style="margin-top:0.6rem"></div>
             </div>
 
@@ -6683,6 +6429,58 @@ Good luck!`,
       </table>`;
   }
 
+  window.copySchedulePickerLink = async function() {
+    const btn = document.getElementById('sp-copy-btn');
+    const msg = document.getElementById('sp-msg');
+    const uid = document.getElementById('sp-student')?.value;
+    const note = document.getElementById('sp-note')?.value.trim() || '';
+    const loc = document.getElementById('sp-location')?.value?.trim() || 'Packer Collegiate Institute';
+    const validSlots = _spSlots.filter(s => s.date && s.time);
+    if (!validSlots.length) { showMsg(msg, 'Add at least one time slot first.', 'error'); return; }
+    let toId = '', toName = '', toEmail = '';
+    if (uid === '__custom__') {
+      toName  = document.getElementById('sp-custom-name')?.value.trim()  || 'Recipient';
+      toEmail = document.getElementById('sp-custom-email')?.value.trim() || '';
+    } else if (uid) {
+      const u = allUsers[uid];
+      if (!u?.email) { showMsg(msg, 'Selected student has no email address.', 'error'); return; }
+      toId = uid; toName = u.name || u.email; toEmail = u.email;
+    } else { showMsg(msg, 'Please select a student first.', 'error'); return; }
+    try {
+      btn.disabled = true; btn.textContent = 'Saving…';
+      const pickerRef = await addDoc(collection(db, 'schedulePickers'), {
+        studentId: toId, studentName: toName, studentEmail: toEmail,
+        adminId: CU.uid, note, location: loc,
+        slots: validSlots.map(s => ({ date: s.date, time: s.time })),
+        createdAt: new Date().toISOString(), method: 'link'
+      });
+      const slotsWithTokens = [];
+      for (let i = 0; i < validSlots.length; i++) {
+        const s = validSlots[i];
+        const tokenDoc = await addDoc(collection(db, 'scheduleTokens'), {
+          pickerId: pickerRef.id, studentId: toId, studentEmail: toEmail,
+          studentName: toName, date: s.date, time: s.time, location: loc, idx: i,
+          used: false, createdAt: new Date().toISOString()
+        });
+        slotsWithTokens.push({ ...s, tokenId: tokenDoc.id });
+      }
+      const payload = btoa(JSON.stringify({
+        pickerId: pickerRef.id, studentId: toId, studentEmail: toEmail,
+        studentName: toName, location: loc, note,
+        slots: slotsWithTokens.map(s => ({ date: s.date, time: s.time, tokenId: s.tokenId }))
+      }));
+      const link = `https://www.packersat.org/confirm.html?picker=${encodeURIComponent(payload)}`;
+      await navigator.clipboard.writeText(link);
+      btn.disabled = false; btn.textContent = '✓ Link Copied!';
+      setTimeout(() => { btn.textContent = 'Copy Link'; }, 2800);
+      showMsg(msg, 'Link copied — share it directly with the student.', 'success');
+    } catch(e) {
+      console.error('copySchedulePickerLink:', e);
+      btn.disabled = false; btn.textContent = 'Copy Link';
+      showMsg(msg, 'Failed to generate link. Please try again.', 'error');
+    }
+  };
+
   window.sendSchedulePicker = async function() {
     const btn      = document.getElementById('sp-send-btn');
     const msg      = document.getElementById('sp-msg');
@@ -10067,6 +9865,7 @@ Good luck!`,
   function addScheduleSlot() { window.addScheduleSlot && window.addScheduleSlot(); }
   function removeScheduleSlot(i) { window.removeScheduleSlot && window.removeScheduleSlot(i); }
   function sendSchedulePicker() { window.sendSchedulePicker && window.sendSchedulePicker(); }
+  function copySchedulePickerLink() { window.copySchedulePickerLink && window.copySchedulePickerLink(); }
   function onSpRecipientChange() { window.onSpRecipientChange && window.onSpRecipientChange(); }
   function updateSchedulePreview() { window.updateSchedulePreview && window.updateSchedulePreview(); }
   function updateSlotDate(i, v) { window.updateSlotDate && window.updateSlotDate(i, v); }
@@ -10212,6 +10011,7 @@ Good luck!`,
   function updateSlotTime(i,v)         { window.updateSlotTime && window.updateSlotTime(i,v); }
   function updateSchedulePreview()     { window.updateSchedulePreview && window.updateSchedulePreview(); }
   function sendSchedulePicker()        { window.sendSchedulePicker && window.sendSchedulePicker(); }
+  function copySchedulePickerLink()     { window.copySchedulePickerLink && window.copySchedulePickerLink(); }
   function onSpRecipientChange()       { window.onSpRecipientChange && window.onSpRecipientChange(); }
   function toggleReminders(v)          { window.toggleReminders && window.toggleReminders(v); }
   function toggleAnnouncementPopup(v)  { window.toggleAnnouncementPopup && window.toggleAnnouncementPopup(v); }
