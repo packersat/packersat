@@ -1495,7 +1495,7 @@
     .mobile-nav-bar { background: rgba(255,253,247,0.97); border-top: 1px solid var(--rule); }
     .hamburger-btn span { background: var(--ink-3); }
 
-    /* ── MOBILE REDESIGN LAYER — iOS native app aesthetic (rebuilt to match portal-mobile.html handoff) ── */
+    /* ── MOBILE REDESIGN LAYER — iOS native app aesthetic ── */
     @media (max-width: 768px) {
 
       /* ─ Global shell ─ */
@@ -1517,20 +1517,20 @@
       #login-screen {
         min-height: 100dvh !important;
         background:
-          radial-gradient(60% 60% at 70% 0%, rgba(163,22,33,0.30), transparent 55%),
-          radial-gradient(50% 60% at 0% 100%, rgba(163,22,33,0.20), transparent 65%),
-          linear-gradient(175deg, #f8f2e5, #efe8d5 50%, #e8d8c8 100%) !important;
+          radial-gradient(55% 50% at 75% 0%, rgba(163,22,33,0.30), transparent 55%),
+          radial-gradient(45% 50% at 0% 100%, rgba(163,22,33,0.18), transparent 65%),
+          linear-gradient(170deg, #f8f2e5, #efe8d5 55%, #e8d4c4 100%) !important;
         display: flex !important; flex-direction: column !important;
         justify-content: flex-end !important; padding: 0 !important;
         position: relative !important;
       }
       #login-screen::before {
         content: 'Packer · SAT';
-        position: absolute; top: calc(max(11vh, 48px)); left: 0; right: 0;
+        position: absolute; top: calc(max(12vh, 52px)); left: 0; right: 0;
         text-align: center;
         font-family: 'Fraunces', serif; font-weight: 360;
         font-variation-settings: "SOFT" 30;
-        font-size: clamp(38px, 11vw, 48px);
+        font-size: clamp(40px, 11vw, 54px);
         letter-spacing: -0.025em; line-height: 1; color: var(--ink, #1a1715);
         pointer-events: none; z-index: 1;
       }
@@ -1540,7 +1540,7 @@
         border-top-left-radius: 28px !important; border-top-right-radius: 28px !important;
         border: 1px solid rgba(26,23,21,0.08) !important; border-bottom: none !important;
         padding: 28px 22px calc(44px + env(safe-area-inset-bottom,0px)) !important;
-        box-shadow: 0 -8px 40px rgba(26,23,21,0.10) !important;
+        box-shadow: 0 -10px 40px rgba(26,23,21,0.10) !important;
         position: relative; z-index: 2;
       }
       #login-screen .login-right .num { display: none !important; }
@@ -1549,25 +1549,21 @@
         font-weight: 400 !important; letter-spacing: -0.015em !important;
         margin-bottom: 1.3rem !important; color: var(--ink, #1a1715) !important;
       }
-      /* NOTE: previously scoped to a nonexistent ".login-form" wrapper, so these
-         never actually applied — targeting the real elements directly now. */
-      #login-screen .login-right .login-btn-main {
+      #login-screen .login-form .login-btn-main {
         border-radius: 14px !important; font-size: 1rem !important; padding: 1rem !important;
-        justify-content: center !important; gap: 8px !important;
       }
-      #login-screen .login-right .login-btn-main:active { transform: scale(0.97); }
-      #login-screen .login-right input {
+      #login-screen .login-form input {
         border-radius: 12px !important; padding: 0.88rem 1rem !important;
         font-size: 1rem !important; border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
         background: rgba(26,23,21,0.04) !important; color: var(--ink, #1a1715) !important;
       }
-      #login-screen .login-right input:focus { border-color: var(--crimson, #a31621) !important; }
+      #login-screen .login-form input:focus { border-color: var(--crimson, #a31621) !important; }
       .ob-bar { background: linear-gradient(90deg, #a31621, #c8a96e) !important; }
 
       /* ─ Portal nav: frosted glass topbar ─ */
       .portal-nav {
         height: 52px !important; padding: 0 14px !important;
-        background: rgba(244,236,217,0.88) !important;
+        background: rgba(244,236,217,0.92) !important;
         backdrop-filter: blur(20px) saturate(130%) !important;
         -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
         border-bottom: 1px solid rgba(26,23,21,0.08) !important;
@@ -1575,25 +1571,11 @@
         position: sticky !important; top: 0 !important; z-index: 50 !important;
       }
       .portal-nav-logo {
-        font-family: 'Fraunces', serif !important; font-size: 1rem !important;
+        font-family: 'Fraunces', serif !important; font-size: 1.1rem !important;
         font-weight: 500 !important; letter-spacing: -0.01em !important;
         color: var(--ink, #1a1715) !important;
       }
       .hamburger-btn { color: var(--ink-2, #4a423a) !important; }
-
-      /* condense the right-side controls so they fit a 52px frosted topbar
-         (the "Home" link is redundant on the app shell, so it's hidden here) */
-      .portal-nav-right {
-        gap: 0.4rem !important; overflow-x: auto !important; white-space: nowrap !important;
-        -webkit-overflow-scrolling: touch !important; scrollbar-width: none !important;
-      }
-      .portal-nav-right::-webkit-scrollbar { display: none !important; }
-      .portal-nav-right a.logout-btn { display: none !important; }
-      .portal-nav-right .role-pill { font-size: 0.58rem !important; padding: 0.14rem 0.5rem !important; }
-      .portal-nav-right button.logout-btn {
-        font-size: 0.66rem !important; padding: 0.32rem 0.6rem !important;
-        border-radius: 20px !important; flex-shrink: 0 !important;
-      }
 
       /* ─ Page content: top spacing from sticky nav ─ */
       .page { padding-top: 4px !important; }
@@ -1613,7 +1595,7 @@
         margin-top: 0.2rem !important;
       }
 
-      /* ─ Welcome banner: dark maroon rounded card (= mockup's dash-hero) ─ */
+      /* ─ Welcome banner: dark maroon rounded card ─ */
       .welcome-banner {
         margin: 12px 14px 0 !important;
         border-radius: 20px !important; border: none !important;
@@ -1628,7 +1610,7 @@
       }
       .welcome-banner p { color: rgba(250,250,248,0.65) !important; font-size: 0.88rem !important; }
 
-      /* ─ Stats: rounded card grid (= mockup's kpi-row) ─ */
+      /* ─ Stats: 2×2 rounded card grid ─ */
       .stats-row {
         display: grid !important; grid-template-columns: 1fr 1fr !important;
         gap: 10px !important; padding: 12px 14px !important;
@@ -1637,18 +1619,18 @@
       }
       .stat-card {
         background: #fffdf7 !important; border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
-        border-radius: 16px !important; padding: 16px 14px !important;
-        box-shadow: none !important; position: relative !important; text-align: center !important;
+        border-radius: 18px !important; padding: 16px 14px !important;
+        box-shadow: none !important; position: relative !important;
       }
       .stat-card::before { display: none !important; }
       .stat-num {
         font-family: 'Fraunces', serif !important; font-weight: 400 !important;
-        font-size: 1.75rem !important; letter-spacing: -0.02em !important;
+        font-size: 2rem !important; letter-spacing: -0.025em !important;
         line-height: 1 !important; color: var(--ink, #1a1715) !important;
       }
       .stat-label {
-        font-family: 'JetBrains Mono', monospace !important; font-size: 0.53rem !important;
-        letter-spacing: 0.12em !important; text-transform: uppercase !important;
+        font-family: 'JetBrains Mono', monospace !important; font-size: 0.58rem !important;
+        letter-spacing: 0.14em !important; text-transform: uppercase !important;
         color: var(--ink-3, #6b6258) !important; margin-top: 6px !important;
       }
       .stat-change { font-size: 0.72rem !important; }
@@ -1679,24 +1661,23 @@
       td { font-size: 0.84rem !important; padding: 10px 12px !important; }
       .score-pill {
         font-family: 'Fraunces', serif !important; font-weight: 700 !important;
-        font-size: 1.05rem !important; letter-spacing: -0.01em !important;
-        background: var(--crimson, #a31621) !important;
-        color: #fff !important; border-radius: 12px !important;
-        padding: 6px 12px !important;
+        font-size: 0.9rem !important; background: var(--crimson, #a31621) !important;
+        color: #fff !important; border-radius: 10px !important;
+        padding: 3px 9px !important;
       }
 
       /* ─ Tables ─ */
       .table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
       table { min-width: 400px !important; }
 
-      /* ─ Countdown (= mockup's next-sess card) ─ */
+      /* ─ Countdown ─ */
       .countdown-box {
         border-radius: 18px !important; margin: 0 14px 10px !important;
         border: 1px solid rgba(192,24,43,0.28) !important;
       }
       .countdown-days {
-        font-family: 'Fraunces', serif !important; font-size: 2.25rem !important;
-        font-weight: 700 !important; letter-spacing: -0.03em !important;
+        font-family: 'Fraunces', serif !important; font-size: 2.4rem !important;
+        font-weight: 700 !important;
       }
 
       /* ─ Assignment & resource cards ─ */
@@ -1705,22 +1686,21 @@
         border: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
       }
 
-      /* ─ Bottom tab bar (= mockup's tabbar) ─ */
+      /* ─ Bottom tab bar ─ */
       .mobile-nav-bar {
-        height: calc(58px + env(safe-area-inset-bottom,0px)) !important;
+        height: calc(60px + env(safe-area-inset-bottom,0px)) !important;
         background: rgba(255,253,247,0.97) !important;
         border-top: 1px solid var(--rule, rgba(26,23,21,0.14)) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        padding-top: 6px !important;
       }
       .mobile-nav-btn {
-        font-size: 0.625rem !important; font-weight: 600 !important;
-        letter-spacing: 0.02em !important; padding: 0 2px !important;
-        gap: 4px !important; color: var(--ink-3, #6b6258) !important;
+        font-size: 0.57rem !important; font-weight: 600 !important;
+        letter-spacing: 0.02em !important; padding: 6px 2px 0 !important;
+        gap: 3px !important; color: var(--ink-3, #6b6258) !important;
       }
       .mobile-nav-btn.active { color: var(--crimson, #a31621) !important; }
-      .mobile-nav-btn svg { width: 23px !important; height: 23px !important; stroke-width: 1.8 !important; }
+      .mobile-nav-btn svg { width: 24px !important; height: 24px !important; stroke-width: 1.8 !important; }
 
       /* ─ Sidebar drawer: paper, editorial ─ */
       .sidebar {
@@ -1744,7 +1724,7 @@
         border-left-color: var(--crimson, #a31621) !important; color: var(--ink, #1a1715) !important;
       }
 
-      /* ─ Modals: bottom sheets (= mockup's sheet-overlay) ─ */
+      /* ─ Modals: bottom sheets ─ */
       .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
       .modal {
         border-radius: 24px 24px 0 0 !important; border-bottom: none !important;
@@ -1752,10 +1732,7 @@
         padding: 14px 20px calc(28px + env(safe-area-inset-bottom,0px)) !important;
         width: 100% !important; max-width: 100% !important;
         background: #fffdf7 !important; color: var(--ink, #1a1715) !important;
-        transform: translateY(24px) !important;
-        transition: transform 0.38s cubic-bezier(0.22,1,0.36,1) !important;
       }
-      .modal-overlay.open .modal { transform: translateY(0) !important; }
       .modal::before {
         content: ''; display: block; width: 38px; height: 4px;
         background: var(--rule, rgba(26,23,21,0.14)); border-radius: 2px; margin: 0 auto 20px;
@@ -1784,8 +1761,8 @@
       .form-row.three { grid-template-columns: 1fr !important; }
 
       /* ─ Buttons ─ */
-      .btn-red, .btn-ghost { border-radius: 14px !important; padding: 0.85rem 1.2rem !important; }
-      .btn-red:active, .btn-ghost:active { transform: scale(0.97); }
+      .btn-red { border-radius: 12px !important; padding: 0.8rem 1.2rem !important; }
+      .btn-ghost { border-radius: 12px !important; padding: 0.8rem 1.2rem !important; }
 
       /* ─ Portal body padding ─ */
       .portal-body { padding-bottom: 0 !important; }
