@@ -532,16 +532,18 @@
         // directly by the admin) with no relation to this picker doc's own
         // slotUsed_* flags. confirm.html runs unauthenticated, so it can't read
         // `sessions` directly (Firestore rules rightly keep that private) —
-        // this asks a server endpoint instead, which only ever hands back
-        // taken date|time keys, never session/student details.
+        // this asks a server endpoint instead, which resolves the student's
+        // actual assigned tutor(s) and only ever hands back taken date|time
+        // keys, never session/student details.
         const crossBookedSet = new Set(); // "date|time"
-        if (picker.adminId) {
+        if (studentId || picker.adminId) {
           try {
             const availRes = await fetch('/api/check-taken-slots', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                tutorId: picker.adminId,
+                studentId,
+                adminId: picker.adminId,
                 slots: slots.map(s => ({ date: s.date, time: s.time })),
               }),
             });
