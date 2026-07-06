@@ -173,6 +173,30 @@
     .slot-btn .check svg { display: none; }
     .slot-btn.selected .check svg { display: block; }
 
+    .slot-btn.taken {
+      cursor: default;
+      pointer-events: none;
+      background: rgba(26,23,21,0.03);
+      overflow: hidden;
+    }
+    .slot-btn.taken::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(135deg, transparent, transparent 7px, rgba(26,23,21,0.035) 7px, rgba(26,23,21,0.035) 8px);
+      pointer-events: none;
+    }
+    .slot-btn.taken .taken-label {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(163,22,33,0.55);
+      margin-bottom: 0.25rem;
+    }
+    .slot-btn.taken .slot-day { text-decoration: line-through; color: var(--ink-3); }
+    .slot-btn.taken .slot-time { color: var(--ink-3); }
+
     /* ── Buttons ── */
     .btn-confirm {
       width: 100%;
@@ -509,11 +533,11 @@
             const used = picker[`slotUsed_${i}`];
             const sel  = selectedIdx === i;
             if (used) return `
-              <div class="slot-btn" style="opacity:0.4;cursor:default;pointer-events:none">
+              <div class="slot-btn taken">
                 <div>
+                  <span class="taken-label">Already taken</span>
                   <span class="slot-day">${formatDay(s.date)}</span>
                   <span class="slot-time">${formatTime(s.time)} Eastern</span>
-                  <span class="slot-loc">Already booked</span>
                 </div>
               </div>`;
             return `
