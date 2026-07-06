@@ -354,7 +354,7 @@
 
 <script type="module">
   import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, doc, getDoc, updateDoc, addDoc, collection }
+  import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, where, getDocs }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const app = initializeApp({
@@ -527,10 +527,26 @@
           return;
         }
 
+        // Cross-link booked check — a date+time already booked through a
+        // *different* picker link (same tutor) should also show as taken here,
+        // since slotUsed_* only lives on the picker doc it was confirmed from.
+        const crossBookedSet = new Set(); // "date|time"
+        if (picker.adminId) {
+          try {
+            const otherPickers = await getDocs(query(collection(db, 'schedulePickers'), where('adminId', '==', picker.adminId)));
+            otherPickers.forEach(snap => {
+              const d = snap.data();
+              (d.slots || []).forEach((s, i) => {
+                if (d[`slotUsed_${i}`] && s.date && s.time) crossBookedSet.add(`${s.date}|${s.time}`);
+              });
+            });
+          } catch(e) { console.warn('Could not check cross-link bookings:', e); }
+        }
+
         // Render picker UI
         function render() {
           const slotItems = slots.map((s, i) => {
-            const used = picker[`slotUsed_${i}`];
+            const used = picker[`slotUsed_${i}`] || crossBookedSet.has(`${s.date}|${s.time}`);
             const sel  = selectedIdx === i;
             if (used) return `
               <div class="slot-btn taken">
