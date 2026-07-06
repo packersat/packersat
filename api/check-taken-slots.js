@@ -1,13 +1,10 @@
 // check-taken-slots.js — no dependencies, uses Firestore REST API
 // Public endpoint (confirm.html runs unauthenticated) that checks whether
-// specific date/time combinations already have a confirmed session with the
-// STUDENT'S ACTUAL ASSIGNED TUTOR(S) — regardless of which picker link (or
-// the admin portal directly) created the existing session. Deliberately
-// does NOT key off whoever clicked "Copy Link" (schedulePickers.adminId):
-// an admin often creates links on behalf of a tutor, so that field is the
-// admin's own uid, not the tutor conducting the session — comparing against
-// it silently misses real conflicts. Returns only the taken date|time keys
-// — never session/student details.
+// specific date/time combinations already have ANY confirmed session —
+// program-wide, not scoped to a particular tutor or student. There's a
+// single admin running the whole schedule, so "already taken" just means
+// the time slot itself is spoken for, regardless of who it's with.
+// Returns only the taken date|time keys — never session/student details.
 
 const PROJECT_ID = 'packer-sat';
 const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents`;
@@ -77,7 +74,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { studentId, adminId, slots } = req.body || {};
+  const { slots } = req.body || {};
   if (!Array.isArray(slots) || !slots.length) {
     return res.status(400).json({ error: 'slots[] is required' });
   }
@@ -85,52 +82,17 @@ export default async function handler(req, res) {
   try {
     const token = await getAccessToken();
 
-    // Resolve the student's real assigned tutor(s) from their user doc.
-    let tutorIds = [];
-    if (studentId) {
-      const userRes = await fetch(`${FIRESTORE_BASE}/users/${encodeURIComponent(studentId)}`, {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (userRes.ok) {
-        const userDoc = await userRes.json();
-        const fields = userDoc.fields || {};
-        if (fields.tutorIds?.arrayValue?.values?.length) {
-          tutorIds = fields.tutorIds.arrayValue.values.map(v => v.stringValue).filter(Boolean);
-        } else if (fields.tutorId?.stringValue) {
-          tutorIds = [fields.tutorId.stringValue];
-        }
-      }
-    }
-    // Best-effort fallback for links with no resolvable student (e.g. a
-    // custom-recipient link) — treat whoever created the link as the tutor.
-    if (!tutorIds.length && adminId) tutorIds = [adminId];
-
-    if (!tutorIds.length) {
-      return res.status(200).json({ taken: [] });
-    }
-
-    const runQueryRes = await fetch(`${FIRESTORE_BASE}:runQuery`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({
-        structuredQuery: {
-          from: [{ collectionId: 'sessions' }],
-          where: {
-            fieldFilter: {
-              field: { fieldPath: 'tutorId' },
-              op: 'IN',
-              value: { arrayValue: { values: tutorIds.map(id => ({ stringValue: id })) } },
-            },
-          },
-        },
-      }),
+    // Whole-collection fetch, filtered here — same pattern already used by
+    // api/remind-log.js. The program's sessions collection is small enough
+    // that this is simpler and safer than trying to pre-filter server-side.
+    const listRes = await fetch(`${FIRESTORE_BASE}/sessions?pageSize=1000`, {
+      headers: { 'Authorization': `Bearer ${token}` },
     });
-    const rows = await runQueryRes.json();
+    const listData = await listRes.json();
 
     const takenSet = new Set();
-    (Array.isArray(rows) ? rows : []).forEach(r => {
-      const fields = r.document?.fields;
-      if (!fields) return;
+    (listData.documents || []).forEach(doc => {
+      const fields = doc.fields || {};
       const date = parseValue(fields.date);
       const time = parseValue(fields.time);
       if (date && time) takenSet.add(`${date}|${time}`);
