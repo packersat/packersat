@@ -1,8 +1,13 @@
 // check-taken-slots.js — no dependencies, uses Firestore REST API
 // Public endpoint (confirm.html runs unauthenticated) that checks whether
-// specific tutor/date/time combinations already have a confirmed session,
-// regardless of which picker link (or the admin portal directly) created it.
-// Returns only the taken date|time keys — never session/student details.
+// specific date/time combinations already have a confirmed session with the
+// STUDENT'S ACTUAL ASSIGNED TUTOR(S) — regardless of which picker link (or
+// the admin portal directly) created the existing session. Deliberately
+// does NOT key off whoever clicked "Copy Link" (schedulePickers.adminId):
+// an admin often creates links on behalf of a tutor, so that field is the
+// admin's own uid, not the tutor conducting the session — comparing against
+// it silently misses real conflicts. Returns only the taken date|time keys
+// — never session/student details.
 
 const PROJECT_ID = 'packer-sat';
 const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents`;
@@ -72,13 +77,37 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { tutorId, slots } = req.body || {};
-  if (!tutorId || !Array.isArray(slots) || !slots.length) {
-    return res.status(400).json({ error: 'tutorId and slots[] are required' });
+  const { studentId, adminId, slots } = req.body || {};
+  if (!Array.isArray(slots) || !slots.length) {
+    return res.status(400).json({ error: 'slots[] is required' });
   }
 
   try {
     const token = await getAccessToken();
+
+    // Resolve the student's real assigned tutor(s) from their user doc.
+    let tutorIds = [];
+    if (studentId) {
+      const userRes = await fetch(`${FIRESTORE_BASE}/users/${encodeURIComponent(studentId)}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (userRes.ok) {
+        const userDoc = await userRes.json();
+        const fields = userDoc.fields || {};
+        if (fields.tutorIds?.arrayValue?.values?.length) {
+          tutorIds = fields.tutorIds.arrayValue.values.map(v => v.stringValue).filter(Boolean);
+        } else if (fields.tutorId?.stringValue) {
+          tutorIds = [fields.tutorId.stringValue];
+        }
+      }
+    }
+    // Best-effort fallback for links with no resolvable student (e.g. a
+    // custom-recipient link) — treat whoever created the link as the tutor.
+    if (!tutorIds.length && adminId) tutorIds = [adminId];
+
+    if (!tutorIds.length) {
+      return res.status(200).json({ taken: [] });
+    }
 
     const runQueryRes = await fetch(`${FIRESTORE_BASE}:runQuery`, {
       method: 'POST',
@@ -89,8 +118,8 @@ export default async function handler(req, res) {
           where: {
             fieldFilter: {
               field: { fieldPath: 'tutorId' },
-              op: 'EQUAL',
-              value: { stringValue: tutorId },
+              op: 'IN',
+              value: { arrayValue: { values: tutorIds.map(id => ({ stringValue: id })) } },
             },
           },
         },
