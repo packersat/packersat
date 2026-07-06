@@ -532,25 +532,22 @@
         // directly by the admin) with no relation to this picker doc's own
         // slotUsed_* flags. confirm.html runs unauthenticated, so it can't read
         // `sessions` directly (Firestore rules rightly keep that private) —
-        // this asks a server endpoint instead, which resolves the student's
-        // actual assigned tutor(s) and only ever hands back taken date|time
-        // keys, never session/student details.
+        // this asks a server endpoint instead, program-wide (one admin runs
+        // the whole schedule, so a taken time blocks the slot regardless of
+        // which tutor/student it's with). Only ever hands back taken
+        // date|time keys, never session/student details.
         const crossBookedSet = new Set(); // "date|time"
-        if (studentId || picker.adminId) {
-          try {
-            const availRes = await fetch('/api/check-taken-slots', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                studentId,
-                adminId: picker.adminId,
-                slots: slots.map(s => ({ date: s.date, time: s.time })),
-              }),
-            });
-            const availData = await availRes.json();
-            (availData.taken || []).forEach(key => crossBookedSet.add(key));
-          } catch(e) { console.warn('Could not check existing bookings:', e); }
-        }
+        try {
+          const availRes = await fetch('/api/check-taken-slots', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              slots: slots.map(s => ({ date: s.date, time: s.time })),
+            }),
+          });
+          const availData = await availRes.json();
+          (availData.taken || []).forEach(key => crossBookedSet.add(key));
+        } catch(e) { console.warn('Could not check existing bookings:', e); }
 
         // Render picker UI
         function render() {
