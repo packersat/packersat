@@ -474,6 +474,58 @@
     });
   }
 
+  // Notify the admin whenever a student confirms a session.
+  async function sendAdminNotification(studentName, studentEmail, date, time, location, calLink) {
+    const dayStr  = formatDay(date);
+    const timeStr = formatTime(time);
+    const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
+      + '<body style="margin:0;padding:0;background:#f4ecd9;font-family:\'Inter\',Arial,sans-serif">'
+      + '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4ecd9;padding:40px 20px">'
+      + '<tr><td align="center"><table width="560" style="max-width:560px;width:100%">'
+      + '<tr><td style="background:#1a1715;padding:28px 36px;text-align:center">'
+      + '<div style="font-family:Georgia,serif;font-size:22px;color:#fffdf7;font-style:italic">Packer<span style="color:#a31621">·</span>SAT</div>'
+      + '<div style="font-size:10px;color:rgba(255,253,247,0.5);letter-spacing:0.18em;text-transform:uppercase;margin-top:6px">New Session Booked</div>'
+      + '</td></tr>'
+      + '<tr><td style="background:#fffdf7;padding:32px 36px;border:1px solid rgba(26,23,21,0.1);border-top:none">'
+      + '<p style="margin:0 0 12px;color:#1a1715;font-size:15px;line-height:1.6">Hi <strong>Jack</strong>,</p>'
+      + '<p style="margin:0 0 24px;color:#6b6258;font-size:14px;line-height:1.75"><strong>' + studentName + '</strong> just confirmed a tutoring session. Details below.</p>'
+      + '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px">'
+      + '<tr><td style="padding:12px 16px;background:#f4ecd9;border-bottom:1px solid rgba(26,23,21,0.08)">'
+      + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">Student</div>'
+      + '<div style="font-size:15px;color:#1a1715;font-weight:600">' + studentName + (studentEmail ? ' <span style="color:#6b6258;font-weight:400">&middot; ' + studentEmail + '</span>' : '') + '</div>'
+      + '</td></tr>'
+      + '<tr><td style="padding:12px 16px;background:#fffdf7;border-bottom:1px solid rgba(26,23,21,0.08)">'
+      + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">Date</div>'
+      + '<div style="font-size:15px;color:#1a1715;font-weight:600">' + dayStr + '</div>'
+      + '</td></tr>'
+      + '<tr><td style="padding:12px 16px;background:#f4ecd9;border-bottom:1px solid rgba(26,23,21,0.08)">'
+      + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">Time</div>'
+      + '<div style="font-size:15px;color:#a31621;font-weight:600">' + timeStr + ' Eastern</div>'
+      + '</td></tr>'
+      + '<tr><td style="padding:12px 16px;background:#fffdf7">'
+      + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">Location</div>'
+      + '<div style="font-size:15px;color:#1a1715;font-weight:600">' + (location || 'Packer Collegiate Institute') + '</div>'
+      + '</td></tr></table>'
+      + '<a href="' + calLink + '" style="display:inline-block;background:#1a1715;color:#fffdf7;text-decoration:none;padding:10px 22px;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;font-family:Arial,sans-serif">+ Add to Calendar</a>'
+      + '</td></tr>'
+      + '<tr><td style="background:#f4ecd9;padding:16px 36px;border:1px solid rgba(26,23,21,0.1);border-top:none;text-align:center">'
+      + '<p style="margin:0;color:#8a8278;font-size:11px">Automated confirmation &middot; packersat.org</p>'
+      + '</td></tr></table></td></tr></table></body></html>';
+
+    await fetch('https://packersat.vercel.app/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to_email: 'jackroseblue@gmail.com', to_name: 'Jack Rose',
+        subject:  studentName + ' booked a session — ' + dayStr + ' at ' + timeStr,
+        html_content: html,
+        from_email: 'noreply@packersat.org',
+        from_name:  'Packer SAT Tutoring',
+        reply_to:   studentEmail,
+      }),
+    });
+  }
+
   // ── Show success ──────────────────────────────────────────────────
   function showSuccess(date, time, location, studentName, studentEmail, calLink) {
     const dayStr  = formatDay(date);
@@ -631,6 +683,9 @@
             try {
               if (studentEmail) await sendConfirmationEmail(studentEmail, studentName, slot.date, slot.time, loc, calLink);
             } catch(e) { console.warn('Email failed (non-critical):', e); }
+            try {
+              await sendAdminNotification(studentName || 'A student', studentEmail, slot.date, slot.time, loc, calLink);
+            } catch(e) { console.warn('Admin notification failed (non-critical):', e); }
 
             showSuccess(slot.date, slot.time, loc, studentName, studentEmail, calLink);
 
@@ -1073,6 +1128,9 @@
           try {
             if (resolvedEmail) await sendConfirmationEmail(resolvedEmail, resolvedName, date, time, loc, calLink);
           } catch(e) { console.warn('Email failed:', e); }
+          try {
+            await sendAdminNotification(resolvedName || 'A student', resolvedEmail, date, time, loc, calLink);
+          } catch(e) { console.warn('Admin notification failed:', e); }
 
           showSuccess(date, time, loc, resolvedName, resolvedEmail, calLink);
         } catch(e) {
