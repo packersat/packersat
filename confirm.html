@@ -590,7 +590,7 @@
         // date|time keys, never session/student details.
         const crossBookedSet = new Set(); // "date|time"
         try {
-          const availRes = await fetch('/api/check-taken-slots', {
+          const availRes = await fetch('https://packersat.vercel.app/api/check-taken-slots', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
