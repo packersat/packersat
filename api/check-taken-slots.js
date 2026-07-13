@@ -104,6 +104,7 @@ export default async function handler(req, res) {
     const takenSet = new Set();
     (listData.documents || []).forEach(doc => {
       const fields = doc.fields || {};
+      if (parseValue(fields.status) === 'cancelled') return; // cancelled frees the slot
       const date = parseValue(fields.date);
       const time = parseValue(fields.time);
       if (date && time) takenSet.add(`${date}|${time}`);
