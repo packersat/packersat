@@ -2334,6 +2334,24 @@
           <!-- Divider -->
           <div style="border-top:1px solid rgba(26,23,21,0.06);margin:1rem 0"></div>
 
+          <!-- Student Session Reminders -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;color:#1a1715">Student Session Reminders</div>
+              <div style="font-size:0.8rem;color:rgba(26,23,21,0.45);margin-top:0.2rem">Students are emailed the evening before each upcoming session</div>
+            </div>
+            <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0;margin-left:1.5rem;cursor:pointer">
+              <input type="checkbox" id="student-reminder-toggle" style="opacity:0;width:0;height:0;position:absolute" onchange="toggleStudentReminders(this.checked)">
+              <span id="student-reminder-slider" style="position:absolute;inset:0;border-radius:26px;background:rgba(26,23,21,0.15);transition:background 0.2s;cursor:pointer">
+                <span id="student-reminder-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.2s"></span>
+              </span>
+            </label>
+          </div>
+          <div id="student-reminder-status-text" style="font-size:0.75rem;color:rgba(26,23,21,0.3);margin-top:0.3rem"></div>
+
+          <!-- Divider -->
+          <div style="border-top:1px solid rgba(26,23,21,0.06);margin:1rem 0"></div>
+
           <!-- Announcement Popup -->
           <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
             <div>
@@ -2715,6 +2733,18 @@
                 <div class="field-label" style="margin-bottom:0.6rem">Available Time Slots <span style="color:rgba(26,23,21,0.3);font-size:0.72rem">(add up to 4)</span></div>
                 <div id="sp-slots" style="display:flex;flex-direction:column;gap:0.5rem"></div>
                 <button class="btn-ghost" onclick="addScheduleSlot()" id="sp-add-btn" style="margin-top:0.6rem;font-size:0.8rem;padding:0.35rem 0.9rem">+ Add Time Slot</button>
+              </div>
+
+              <div style="margin-bottom:0.9rem">
+                <div class="field-label">Repeat weekly <span style="color:rgba(26,23,21,0.3);font-size:0.72rem">(each slot repeats on the same weekday &amp; time)</span></div>
+                <select class="input-field" id="sp-repeat" onchange="updateSchedulePreview()">
+                  <option value="0">Just these dates</option>
+                  <option value="1">Repeat for 2 weeks</option>
+                  <option value="2">Repeat for 3 weeks</option>
+                  <option value="3">Repeat for 4 weeks</option>
+                  <option value="5">Repeat for 6 weeks</option>
+                  <option value="7">Repeat for 8 weeks</option>
+                </select>
               </div>
 
               <div style="margin-bottom:0.9rem">
@@ -3123,6 +3153,7 @@
 
     loadAdminStats();
     loadReminderToggle();
+    loadStudentReminderToggle();
     // Load waitlist badge
     setTimeout(async () => {
       const wlSnap = await getDocs(collection(db,'waitlist'));
@@ -3358,7 +3389,13 @@
             <td>${allUsers[r.studentId]?.name||'—'}</td>
             <td>${allUsers[r.tutorId]?.name||'—'}</td>
             <td>${r.location||'—'}</td>
-            <td><button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button></td>
+            <td style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center">
+              ${sessionStatusChip(r.status)}
+              ${r.status
+                ? `<button class="action-btn" onclick="markSessionStatus('${r.id}','')">Undo</button>`
+                : `<button class="action-btn" onclick="markSessionStatus('${r.id}','cancelled')">Cancel</button>`}
+              <button class="action-btn danger" onclick="deleteSession('${r.id}')">Remove</button>
+            </td>
           </tr>`).join('');
       }
     }
@@ -3376,7 +3413,12 @@
               <td>${allUsers[r.studentId]?.name||'—'}</td>
               <td>${allUsers[r.tutorId]?.name||'—'}</td>
               <td>${r.location||'—'}</td>
-              <td style="display:flex;gap:0.4rem;flex-wrap:wrap">
+              <td style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center">
+                ${sessionStatusChip(r.status)}
+                ${r.status
+                  ? `<button class="action-btn" onclick="markSessionStatus('${r.id}','')">Undo</button>`
+                  : `<button class="action-btn" onclick="markSessionStatus('${r.id}','completed')">&#10003; Done</button>
+                     <button class="action-btn" onclick="markSessionStatus('${r.id}','no-show')">No-show</button>`}
                 ${r.logged
                   ? '<span style="font-size:0.75rem;color:rgba(26,23,21,0.35)"> Logged</span>'
                   : `<button class="action-btn" onclick="openSessionLogModal('${r.id}')"> Log</button>`}
@@ -3469,6 +3511,25 @@
   window.deleteSession = async function(id) {
     await deleteDoc(doc(db,'sessions',id));
     loadAdminSessions(); loadAdminSessionsPreview(); loadAdminStats();
+  };
+
+  // ── Session status (completed / no-show / cancelled) ──────────────
+  function sessionStatusChip(status) {
+    if (status === 'completed') return '<span style="font-size:0.72rem;font-weight:600;color:#1f8a4d;background:rgba(46,204,113,0.12);border:1px solid rgba(31,138,77,0.30);padding:0.15rem 0.55rem;border-radius:20px;white-space:nowrap">&#10003; Completed</span>';
+    if (status === 'no-show')   return '<span style="font-size:0.72rem;font-weight:600;color:#b3261e;background:rgba(192,24,43,0.08);border:1px solid rgba(179,38,30,0.30);padding:0.15rem 0.55rem;border-radius:20px;white-space:nowrap">&#10007; No-show</span>';
+    if (status === 'cancelled') return '<span style="font-size:0.72rem;font-weight:600;color:#9a7b1f;background:rgba(200,150,0,0.12);border:1px solid rgba(154,123,31,0.32);padding:0.15rem 0.55rem;border-radius:20px;white-space:nowrap">Cancelled</span>';
+    return '';
+  }
+
+  window.markSessionStatus = async function(id, status) {
+    try {
+      await updateDoc(doc(db,'sessions',id), { status: status || '' });
+      if (CU.role === 'admin') { loadAdminSessions(); loadAdminSessionsPreview(); }
+      else { loadTutorSessionsPage(); }
+    } catch(e) {
+      console.error('markSessionStatus:', e);
+      alert('Could not update the session status. Please try again.');
+    }
   };
 
   async function loadAdminAnnouncements() {
@@ -4222,7 +4283,13 @@
           <td>${s.time ? formatTime(s.time) : '—'}</td>
           <td>${allUsers[s.studentId]?.name||'—'}</td>
           <td>${s.location||'—'}</td>
-          <td><button class="action-btn danger" onclick="deleteSession('${s.id}')">Remove</button></td>
+          <td style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center">
+            ${sessionStatusChip(s.status)}
+            ${s.status
+              ? `<button class="action-btn" onclick="markSessionStatus('${s.id}','')">Undo</button>`
+              : `<button class="action-btn" onclick="markSessionStatus('${s.id}','cancelled')">Cancel</button>`}
+            <button class="action-btn danger" onclick="deleteSession('${s.id}')">Remove</button>
+          </td>
         </tr>`;
       }).join('');
     }
@@ -4237,6 +4304,11 @@
           <td>${allUsers[s.studentId]?.name||'—'}</td>
           <td>${s.location||'—'}</td>
           <td style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center">
+            ${sessionStatusChip(s.status)}
+            ${s.status
+              ? `<button class="action-btn" onclick="markSessionStatus('${s.id}','')">Undo</button>`
+              : `<button class="action-btn" onclick="markSessionStatus('${s.id}','completed')">&#10003; Done</button>
+                 <button class="action-btn" onclick="markSessionStatus('${s.id}','no-show')">No-show</button>`}
             ${s._logged
               ? '<span style="color:#7dffaa;font-size:0.85rem" title="Session logged">&#10003; Logged</span>'
               : `<button class="action-btn" onclick="openSessionLogModal('${s.id}')"> Log</button>`}
@@ -4957,7 +5029,7 @@
     const mySessions = [];
     sessSnap.forEach(d=>{ if(d.data().studentId===CU.uid) mySessions.push({id:d.id,...d.data()}); });
     mySessions.sort((a,b)=>a.date.localeCompare(b.date));
-    const upcoming = mySessions.filter(s=>s.date>=today());
+    const upcoming = mySessions.filter(s=>s.date>=today() && s.status!=='cancelled');
 
     const sessPreview = document.getElementById('student-sessions-preview');
     if (!upcoming.length) { sessPreview.innerHTML = '<div class="empty-state"><div class="icon"></div>No upcoming sessions.</div>'; }
@@ -4971,7 +5043,7 @@
     if (sessTbody) {
       if (!mySessions.length) { sessTbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="icon"></div>No sessions yet.</div></td></tr>'; }
       else sessTbody.innerHTML = mySessions.map(s=>`
-        <tr><td>${formatDate(s.date)}</td><td>${s.time ? formatTime(s.time) : '—'}</td><td>${allUsers[s.tutorId]?.name||'—'}</td><td>${s.location||'—'}</td></tr>`).join('');
+        <tr><td>${formatDate(s.date)} ${sessionStatusChip(s.status)}</td><td>${s.time ? formatTime(s.time) : '—'}</td><td>${allUsers[s.tutorId]?.name||'—'}</td><td>${s.location||'—'}</td></tr>`).join('');
     }
 
     // Notes
@@ -5380,6 +5452,7 @@
             <button class="action-btn" onclick="openGroupSessionModal('${uid}')">+ Group Session</button>
             <button class="action-btn" onclick="openEditStudent('${uid}')">Edit Info</button>
             <button class="action-btn" onclick="printStudentReport('${uid}')">&#128438; Print Report</button>
+            ${u.parentEmail ? `<button class="action-btn" onclick="sendParentUpdate('${uid}', this)">&#9993; Parent Update</button>` : ''}
           </div>
           <div class="grid-2">
             <div>
@@ -6342,6 +6415,23 @@ Good luck!`,
     if (addBtn) addBtn.style.display = _spSlots.length >= 4 ? 'none' : 'inline-block';
   }
 
+  // Expands base slots by the "Repeat weekly" selection: each slot is copied
+  // onto the same weekday/time for N additional weeks, sorted chronologically.
+  function expandRecurringSlots(slots) {
+    const weeks = parseInt(document.getElementById('sp-repeat')?.value || '0', 10) || 0;
+    const out = [];
+    slots.forEach(s => {
+      for (let w = 0; w <= weeks; w++) {
+        const [yr, mo, dy] = s.date.split('-').map(Number);
+        const d = new Date(yr, mo - 1, dy + 7 * w);
+        const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        out.push({ date: iso, time: s.time });
+      }
+    });
+    out.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+    return out;
+  }
+
   function formatSlotDisplay(date, time) {
     if (!date) return '';
     const d = new Date(date + 'T12:00:00');
@@ -6366,7 +6456,7 @@ Good luck!`,
       studentName = uid ? (allUsers[uid]?.name || allUsers[uid]?.email || 'Student') : 'Student';
     }
     const note       = document.getElementById('sp-note')?.value.trim() || '';
-    const validSlots = _spSlots.filter(s => s.date && s.time);
+    const validSlots = expandRecurringSlots(_spSlots.filter(s => s.date && s.time));
     preview.innerHTML = buildSchedulePickerEmailHTML(studentName, validSlots, note, uid, true);
   };
 
@@ -6416,7 +6506,7 @@ Good luck!`,
     const uid      = document.getElementById('sp-student')?.value;
     const note     = document.getElementById('sp-note')?.value.trim() || '';
     const location = document.getElementById('sp-location')?.value.trim() || 'Packer Collegiate Institute';
-    const validSlots = _spSlots.filter(s => s.date && s.time);
+    const validSlots = expandRecurringSlots(_spSlots.filter(s => s.date && s.time));
 
     // Resolve recipient
     let toEmail, toName, toId;
@@ -6483,6 +6573,8 @@ Good luck!`,
       showMsg(msg, `Schedule picker sent to ${toName}.`, 'success');
       _spSlots = [];
       renderScheduleSlots();
+      const repeatSel = document.getElementById('sp-repeat');
+      if (repeatSel) repeatSel.value = '0';
       window.updateSchedulePreview();
       document.getElementById('sp-student').value = '';
       document.getElementById('sp-note').value = '';
@@ -6500,7 +6592,7 @@ Good luck!`,
     const btn = document.getElementById('sp-link-btn');
     const msg = document.getElementById('sp-msg');
 
-    const validSlots = _spSlots.filter(s => s.date && s.time);
+    const validSlots = expandRecurringSlots(_spSlots.filter(s => s.date && s.time));
     if (!validSlots.length) { showMsg(msg, 'Please add at least one time slot first.', 'error'); return; }
 
     // Resolve recipient info (optional for link — can be used without a specific student)
@@ -8151,6 +8243,41 @@ Good luck!`,
     }
   };
 
+  async function loadStudentReminderToggle() {
+    const toggle = document.getElementById('student-reminder-toggle');
+    const slider = document.getElementById('student-reminder-slider');
+    const knob   = document.getElementById('student-reminder-knob');
+    const status = document.getElementById('student-reminder-status-text');
+    if (!toggle) return;
+    try {
+      const snap = await getDoc(doc(db, 'settings', 'studentReminders'));
+      // Default to enabled if doc doesn't exist yet
+      const enabled = snap.exists() ? snap.data().enabled !== false : true;
+      applyStudentReminderUI(enabled, toggle, slider, knob, status);
+    } catch(e) {
+      console.log('Could not load student reminder setting:', e);
+    }
+  }
+
+  function applyStudentReminderUI(enabled, toggle, slider, knob, status) {
+    toggle.checked = enabled;
+    slider.style.background = enabled ? '#C0182B' : 'rgba(26,23,21,0.15)';
+    knob.style.transform     = enabled ? 'translateX(22px)' : 'translateX(0)';
+    if (status) status.textContent = enabled ? 'Reminders are on — students are emailed the evening before their session.' : 'Reminders are off — no student emails will be sent.';
+  }
+
+  window.toggleStudentReminders = async function(enabled) {
+    const slider = document.getElementById('student-reminder-slider');
+    const knob   = document.getElementById('student-reminder-knob');
+    const status = document.getElementById('student-reminder-status-text');
+    applyStudentReminderUI(enabled, document.getElementById('student-reminder-toggle'), slider, knob, status);
+    try {
+      await setDoc(doc(db, 'settings', 'studentReminders'), { enabled, updatedAt: new Date().toISOString() });
+    } catch(e) {
+      console.error('Failed to save student reminder setting:', e);
+    }
+  };
+
 
 
   window.openManualLogModal = async function() {
@@ -9689,6 +9816,88 @@ Good luck!`,
     }
   }
 
+  // ── Parent progress snapshot email (admin) ─────────────────────────
+  window.sendParentUpdate = async function(uid, btn) {
+    const u = allUsers[uid];
+    if (!u?.parentEmail) { alert('No parent email on file for this student — add one via Edit Info.'); return; }
+    const origText = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+    try {
+      const [scoreSnap, sessSnap, logSnap] = await Promise.all([
+        getDocs(query(collection(db,'scores'), where('studentId','==',uid))),
+        getDocs(collection(db,'sessions')),
+        getDocs(collection(db,'sessionLogs')),
+      ]);
+      const scores = scoreSnap.docs.map(d=>d.data()).filter(s=>s.total).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+      const latest = scores[scores.length-1] || null;
+      const first  = scores[0] || null;
+      const gain   = (latest && first && scores.length > 1) ? latest.total - first.total : null;
+      const loggedCount = logSnap.docs.map(d=>d.data()).filter(l=>l.studentId===uid||(l.studentIds&&l.studentIds.includes(uid))).length;
+      const upcoming = sessSnap.docs.map(d=>d.data())
+        .filter(s=>s.studentId===uid && s.date && s.date >= today() && s.status !== 'cancelled')
+        .sort((a,b)=>a.date.localeCompare(b.date));
+      const next = upcoming[0] || null;
+
+      const studentName = u.name || u.email || 'your student';
+      const parentName  = u.parentName || 'there';
+      const recentRows = scores.slice(-3).reverse().map((s, i) => (
+        '<tr><td style="padding:10px 16px;background:' + (i % 2 ? '#fffdf7' : '#f4ecd9') + ';border-bottom:1px solid rgba(26,23,21,0.08)">'
+        + '<span style="font-size:13px;color:#6b6258">' + formatDate(s.date) + '</span></td>'
+        + '<td style="padding:10px 16px;background:' + (i % 2 ? '#fffdf7' : '#f4ecd9') + ';border-bottom:1px solid rgba(26,23,21,0.08);text-align:right">'
+        + '<span style="font-size:14px;font-weight:600;color:#a31621">' + s.total + '</span></td></tr>'
+      )).join('');
+
+      const statRow = function(label, value, alt) {
+        return '<tr><td style="padding:12px 16px;background:' + (alt ? '#fffdf7' : '#f4ecd9') + ';border-bottom:1px solid rgba(26,23,21,0.08)">'
+          + '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px">' + label + '</div>'
+          + '<div style="font-size:15px;color:#1a1715;font-weight:600">' + value + '</div>'
+          + '</td></tr>';
+      };
+
+      const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
+        + '<body style="margin:0;padding:0;background:#f4ecd9;font-family:\'Inter\',Arial,sans-serif">'
+        + '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4ecd9;padding:40px 20px">'
+        + '<tr><td align="center"><table width="560" style="max-width:560px;width:100%">'
+        + '<tr><td style="background:#1a1715;padding:28px 36px;text-align:center">'
+        + '<div style="font-family:Georgia,serif;font-size:22px;color:#fffdf7;font-style:italic">Packer<span style="color:#a31621">&middot;</span>SAT</div>'
+        + '<div style="font-size:10px;color:rgba(255,253,247,0.5);letter-spacing:0.18em;text-transform:uppercase;margin-top:6px">Family Progress Update</div>'
+        + '</td></tr>'
+        + '<tr><td style="background:#fffdf7;padding:32px 36px;border:1px solid rgba(26,23,21,0.1);border-top:none">'
+        + '<p style="margin:0 0 12px;color:#1a1715;font-size:15px;line-height:1.6">Hi <strong>' + parentName + '</strong>,</p>'
+        + '<p style="margin:0 0 24px;color:#6b6258;font-size:14px;line-height:1.75">Here is a quick update on <strong>' + studentName + '</strong>&rsquo;s progress in the Packer SAT tutoring program.</p>'
+        + '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px">'
+        + statRow('Latest Score', latest ? latest.total : 'No scores logged yet', false)
+        + (gain !== null ? statRow('Improvement so far', (gain >= 0 ? '+' : '') + gain + ' points', true) : '')
+        + statRow('Sessions Completed', loggedCount, gain !== null ? false : true)
+        + statRow('Next Session', next ? (formatDate(next.date) + (next.time ? ' at ' + formatTime(next.time) : '') + (next.location ? ' &middot; ' + next.location : '')) : 'None scheduled yet', gain !== null ? true : false)
+        + '</table>'
+        + (recentRows
+            ? '<div style="font-size:10px;color:#6b6258;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px">Recent Scores</div>'
+              + '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px">' + recentRows + '</table>'
+            : '')
+        + '</td></tr>'
+        + '<tr><td style="background:#f4ecd9;padding:16px 36px;border:1px solid rgba(26,23,21,0.1);border-top:none;text-align:center">'
+        + '<p style="margin:0;color:#8a8278;font-size:11px">Questions? Reply to this email &middot; packersat.org</p>'
+        + '</td></tr></table></td></tr></table></body></html>';
+
+      await sendBrevoEmail({
+        to_email:     u.parentEmail,
+        to_name:      u.parentName || 'Parent',
+        subject:      'Progress update for ' + studentName + ' — Packer SAT',
+        html_content: html,
+        from_email:   'jack@packersat.org',
+        from_name:    'Jack Rose',
+        reply_to:     'jack@packersat.org',
+      });
+
+      if (btn) { btn.textContent = '✓ Sent!'; setTimeout(() => { btn.innerHTML = origText; btn.disabled = false; }, 2500); }
+    } catch(e) {
+      console.error('sendParentUpdate:', e);
+      alert('Failed to send the parent update: ' + (e?.message || String(e)));
+      if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+    }
+  };
+
   function newAccountEmailHTML(name, email, password, role) {
     return `<!DOCTYPE html>
 <html>
@@ -9766,6 +9975,7 @@ Good luck!`,
     if (pageId==='admin-session-logs') loadAdminSessionLogs();
     if (pageId==='admin-announce') loadAdminAnnouncements();
     if (pageId==='admin-dashboard') loadReminderToggle();
+    if (pageId==='admin-dashboard') loadStudentReminderToggle();
     if (pageId==='admin-dashboard') loadPopupSettings();
     if (pageId==='student-scores'||pageId==='student-sessions'||pageId==='student-notes') loadStudentDashboard();
     if (pageId==='student-act-scores') loadStudentACTScores();
@@ -10004,6 +10214,9 @@ Good luck!`,
   function copyScheduleLink()          { window.copyScheduleLink  && window.copyScheduleLink();  }
   function onSpRecipientChange()       { window.onSpRecipientChange && window.onSpRecipientChange(); }
   function toggleReminders(v)          { window.toggleReminders && window.toggleReminders(v); }
+  function toggleStudentReminders(v)   { window.toggleStudentReminders && window.toggleStudentReminders(v); }
+  function markSessionStatus(id,s)     { window.markSessionStatus && window.markSessionStatus(id,s); }
+  function sendParentUpdate(uid,btn)   { window.sendParentUpdate && window.sendParentUpdate(uid,btn); }
   function toggleAnnouncementPopup(v)  { window.toggleAnnouncementPopup && window.toggleAnnouncementPopup(v); }
   function savePopupDraft()            { window.savePopupDraft && window.savePopupDraft(); }
   function savePopupSettings()         { window.savePopupSettings && window.savePopupSettings(); }
