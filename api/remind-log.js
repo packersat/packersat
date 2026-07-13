@@ -123,6 +123,7 @@ export default async function handler(req, res) {
 
     const unlogged = sessions.filter(s => {
       if (loggedSessionIds.has(s.id)) return false;
+      if (s.status === 'cancelled' || s.status === 'no-show') return false; // nothing to log
       if (!s.date) return false;
       const [yr, mo, dy] = s.date.split('-').map(Number);
       let sessionStart;
