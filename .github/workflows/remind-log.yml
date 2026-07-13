@@ -1,4 +1,4 @@
-name: Nightly Session Log Reminder
+name: Nightly Reminders
 
 on:
   schedule:
@@ -9,19 +9,37 @@ jobs:
   remind:
     runs-on: ubuntu-latest
     steps:
-      - name: Send session log reminders
+      - name: Send session log reminders (tutors)
         run: |
           curl -s -o response.json -w "%{http_code}" \
             -X GET https://packersat.vercel.app/api/remind-log \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             > status_code.txt
-          
+
           STATUS=$(cat status_code.txt)
           echo "HTTP Status: $STATUS"
           echo "Response:"
           cat response.json
-          
+
           if [ "$STATUS" != "200" ]; then
             echo "ERROR: remind-log returned status $STATUS"
+            exit 1
+          fi
+
+      - name: Send session reminders (students)
+        if: always()  # still runs even if the tutor step failed
+        run: |
+          curl -s -o response2.json -w "%{http_code}" \
+            -X GET https://packersat.vercel.app/api/remind-students \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            > status_code2.txt
+
+          STATUS=$(cat status_code2.txt)
+          echo "HTTP Status: $STATUS"
+          echo "Response:"
+          cat response2.json
+
+          if [ "$STATUS" != "200" ]; then
+            echo "ERROR: remind-students returned status $STATUS"
             exit 1
           fi
