@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>The Bridge — a continuous build</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html,body{margin:0;padding:0;background:#0e0c0a}
+  body{height:900vh}
+  canvas#stage{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+  .hint{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:10;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:rgba(245,240,230,0.55);transition:opacity .6s;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .hint.gone{opacity:0}
+  .hint .chev{width:14px;height:14px;border-right:1px solid rgba(245,240,230,0.55);border-bottom:1px solid rgba(245,240,230,0.55);transform:rotate(45deg);animation:chev 1.8s ease-in-out infinite}
+  @keyframes chev{0%,100%{transform:rotate(45deg) translate(0,0);opacity:.9}50%{transform:rotate(45deg) translate(4px,4px);opacity:.4}}
+  a{color:#c4253a}
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<div class="hint" id="hint"><span>Scroll to build</span><span class="chev"></span></div>
+<script src="bridge-scroll.js"></script>
+</body>
+</html>
